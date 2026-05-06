@@ -4,7 +4,7 @@ const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent]
 });
 
-const TOKEN = "TU_TOKEN";
+const TOKEN = "MTQ5ODgwMzc0MjM5MTQwNjYzMw.G4BJXu.VTeL3IJbFQLIRjJT32B5eXeW2meTr6Uvd-pNM0";
 const CLIENT_ID = "TU_CLIENT_ID";
 const GUILD_ID = "TU_SERVER_ID";
 
