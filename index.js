@@ -4,9 +4,9 @@ const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent]
 });
 
-const TOKEN = "MTQ5ODgwMzc0MjM5MTQwNjYzMw.G4BJXu.VTeL3IJbFQLIRjJT32B5eXeW2meTr6Uvd-pNM0";
-const CLIENT_ID = "TU_CLIENT_ID";
-const GUILD_ID = "TU_SERVER_ID";
+const TOKEN = process.env.DISCORD_TOKEN;
+const CLIENT_ID = process.env.DISCORD_CLIENT_ID;
+const GUILD_ID = process.env.DISCORD_GUILD_ID;
 
 // personajes posibles
 const characters = [
