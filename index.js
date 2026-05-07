@@ -55,9 +55,10 @@ const commands = [
     .setDescription('Spawnea un personaje')
 ].map(cmd => cmd.toJSON());
 
-// REGISTRAR COMMANDS
+// REST
 const rest = new REST({ version: '10' }).setToken(TOKEN);
 
+// REGISTRAR SLASH COMMANDS
 (async () => {
 
   try {
@@ -98,7 +99,7 @@ client.on('interactionCreate', async interaction => {
 
   try {
 
-    // YA HAY SPAWN
+    // YA HAY PERSONAJE
     if (activeSpawn) {
 
       return interaction.reply({
@@ -126,8 +127,14 @@ client.on('interactionCreate', async interaction => {
       )
       .setImage(random.image);
 
-    // ENVÍA EL PANEL
+    // RESPUESTA INVISIBLE
     await interaction.reply({
+      content: '✅',
+      ephemeral: true
+    });
+
+    // MENSAJE DEL BOT
+    await interaction.channel.send({
       embeds: [embed]
     });
 
