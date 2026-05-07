@@ -7,31 +7,25 @@ const {
 
 const TOKEN = process.env.TOKEN;
 
-// TU CLIENT ID
-const CLIENT_ID = '1498803742391406633';
-
-// TU SERVER ID
-const GUILD_ID = '1433246929588060432';
+const CLIENT_ID = 'TU_CLIENT_ID';
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds]
 });
-
-const commands = [];
 
 const rest = new REST({ version: '10' }).setToken(TOKEN);
 
 (async () => {
   try {
 
-    console.log('🗑️ Eliminando slash commands...');
+    console.log('🗑️ Eliminando comandos globales...');
 
     await rest.put(
-      Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
-      { body: commands }
+      Routes.applicationCommands(CLIENT_ID),
+      { body: [] }
     );
 
-    console.log('✅ Slash commands eliminados');
+    console.log('✅ Comandos eliminados');
 
   } catch (error) {
     console.error(error);
@@ -39,7 +33,14 @@ const rest = new REST({ version: '10' }).setToken(TOKEN);
 })();
 
 client.once('ready', () => {
-  console.log(`✅ Bot conectado como ${client.user.tag}`);
+  console.log(`✅ ${client.user.tag}`);
 });
 
 client.login(TOKEN);
+
+const http = require('http');
+
+http.createServer((req, res) => {
+  res.write('Bot online');
+  res.end();
+}).listen(process.env.PORT || 3000);
