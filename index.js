@@ -8,18 +8,16 @@ const {
   WebhookClient
 } = require('discord.js');
 
+const http = require('http');
+
 const TOKEN = process.env.TOKEN;
 
 const CLIENT_ID = '1498803742391406633';
 const GUILD_ID = '1433246929588060432';
 
-// WEBHOOK
-const WEBHOOK_URL = 'TU_WEBHOOK_URL';
+const WEBHOOK_URL = 'https://discord.com/api/webhooks/1502070557896868011/ge6EuwOXJU8TQp6yNelpq5D7P0QATSiEKZeFBxYgM7dDj8kNvYFcHzakjM0PsAYOzl2H';
 
-const webhook = new WebhookClient({
-  url: WEBHOOK_URL
-});
-
+// CLIENTE
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -28,79 +26,101 @@ const client = new Client({
   ]
 });
 
+// WEBHOOK
+const webhook = new WebhookClient({
+  url: WEBHOOK_URL
+});
+
 // PERSONAJES
 const characters = [
   {
     code: '001',
     name: 'Rudy',
-    rarity: 'Común',
+    rarity: 'Common',
     image: 'https://i.postimg.cc/vB49MTQv/rudyicon.png'
   },
   {
     code: '002',
-    name: 'ChaloApps',
-    rarity: 'Común',
+    name: 'Zombie Chicken',
+    rarity: 'Rare',
     image: 'https://i.postimg.cc/pT594SZJ/chaloappsicon.png'
   },
   {
     code: '003',
     name: 'Dragon Dude',
-    rarity: 'Raro',
+    rarity: 'Rare',
     image: 'https://i.postimg.cc/0Q7ymXsg/dragondudeiconlegacy.png'
-}
+  },
 ];
 
+// SPAWN ACTIVO
 let activeSpawn = null;
 
-// SLASH COMMANDS
+// COMANDOS
 const commands = [
   new SlashCommandBuilder()
     .setName('spawn')
     .setDescription('Spawnea un personaje')
-].map(command => command.toJSON());
-
-const rest = new REST({ version: '10' }).s,
-  etToken(TOKEN);
+].map(cmd => cmd.toJSON());
 
 // REGISTRAR COMMANDS
+const rest = new REST({ version: '10' }).setToken(TOKEN);
+
 (async () => {
+
   try {
 
+    console.log('⌛ Registrando Slash Commands...');
+
     await rest.put(
-      Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
+      Routes.applicationGuildCommands(
+        CLIENT_ID,
+        GUILD_ID
+      ),
       { body: commands }
     );
 
-    console.log('✅ Slash Commands listos');
+    console.log('✅ Slash Commands registrados');
 
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error(err);
   }
+
 })();
 
+// BOT ONLINE
 client.once('ready', () => {
-  console.log(`✅ Conectado como ${client.user.tag}`);
+  console.log(`✅ Online como ${client.user.tag}`);
 });
 
-// SPAWN
+// /SPAWN
 client.on('interactionCreate', async interaction => {
 
   if (!interaction.isChatInputCommand()) return;
 
-  if (interaction.commandName === 'spawn') {
+  if (interaction.commandName !== 'spawn') return;
 
+  try {
+
+    // YA HAY SPAWN
     if (activeSpawn) {
+
       return interaction.reply({
         content: '❌ Ya hay un personaje activo.',
         ephemeral: true
       });
+
     }
 
+    // RANDOM
     const random =
-      characters[Math.floor(Math.random() * characters.length)];
+      characters[
+        Math.floor(Math.random() * characters.length)
+      ];
 
     activeSpawn = random;
 
+    // PANEL
     const embed = new EmbedBuilder()
       .setTitle('✨ Un personaje ha aparecido')
       .setDescription(
@@ -112,49 +132,68 @@ client.on('interactionCreate', async interaction => {
 
     // RESPUESTA INVISIBLE
     await interaction.reply({
-      content: '✅ Personaje spawneado',
+      content: '✅ Spawn realizado',
       ephemeral: true
     });
 
-    // MENSAJE DEL WEBHOOK
+    // WEBHOOK
     await webhook.send({
       username: 'CGDex',
       avatarURL: client.user.displayAvatarURL(),
       embeds: [embed]
     });
+
+  } catch (err) {
+
+    console.error(err);
+
   }
+
 });
 
 // RECLAMAR
 client.on('messageCreate', async message => {
 
-  if (message.author.bot) return;
-  if (!activeSpawn) return;
+  try {
 
-  const guess =
-    message.content.toLowerCase().trim();
+    if (message.author.bot) return;
 
-  const answer =
-    activeSpawn.name.toLowerCase();
+    if (!activeSpawn) return;
 
-  if (guess === answer) {
+    const userAnswer =
+      message.content.toLowerCase().trim();
 
-    await message.reply(
-`🏆 ${message.author} reclamó a ${activeSpawn.name}
+    const correctAnswer =
+      activeSpawn.name.toLowerCase();
+
+    // RESPUESTA CORRECTA
+    if (userAnswer === correctAnswer) {
+
+      await message.reply(
+`🏆 ${message.author.username} reclamó a ${activeSpawn.name}
 
 🆔 Código: ${activeSpawn.code}`
-    );
+      );
 
-    activeSpawn = null;
+      activeSpawn = null;
+
+    }
+
+  } catch (err) {
+
+    console.error(err);
+
   }
+
 });
 
+// LOGIN
 client.login(TOKEN);
 
 // PORT PARA RENDER
-const http = require('http');
-
 http.createServer((req, res) => {
+
   res.write('CGDex Online');
   res.end();
+
 }).listen(process.env.PORT || 3000);
