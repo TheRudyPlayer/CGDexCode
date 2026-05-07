@@ -10,8 +10,8 @@ const {
 
 const TOKEN = process.env.TOKEN;
 
-const CLIENT_ID = 'TU_CLIENT_ID';
-const GUILD_ID = 'TU_GUILD_ID';
+const CLIENT_ID = '1498803742391406633';
+const GUILD_ID = '1433246929588060432';
 
 // WEBHOOK
 const WEBHOOK_URL = 'TU_WEBHOOK_URL';
@@ -34,14 +34,20 @@ const characters = [
     code: '001',
     name: 'Rudy',
     rarity: 'Común',
-    image: 'https://LINK-IMAGEN.png'
+    image: 'https://i.postimg.cc/vB49MTQv/rudyicon.png'
   },
   {
     code: '002',
     name: 'ChaloApps',
+    rarity: 'Común',
+    image: 'https://i.postimg.cc/pT594SZJ/chaloappsicon.png'
+  },
+  {
+    code: '003',
+    name: 'Dragon Dude',
     rarity: 'Raro',
-    image: 'https://LINK-IMAGEN.png'
-  }
+    image: 'https://i.postimg.cc/0Q7ymXsg/dragondudeiconlegacy.png'
+}
 ];
 
 let activeSpawn = null;
@@ -53,7 +59,8 @@ const commands = [
     .setDescription('Spawnea un personaje')
 ].map(command => command.toJSON());
 
-const rest = new REST({ version: '10' }).setToken(TOKEN);
+const rest = new REST({ version: '10' }).s,
+  etToken(TOKEN);
 
 // REGISTRAR COMMANDS
 (async () => {
