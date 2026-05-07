@@ -153,6 +153,7 @@ client.on('messageCreate', async message => {
 
     if (message.author.bot) return;
 
+    // SI NO HAY SPAWN
     if (!activeSpawn) return;
 
     const userAnswer =
@@ -164,13 +165,18 @@ client.on('messageCreate', async message => {
     // RESPUESTA CORRECTA
     if (userAnswer === correctAnswer) {
 
-      await message.reply(
-`🏆 ${message.author.username} reclamó a ${activeSpawn.name}
+      // GUARDA EL PERSONAJE ANTES
+      const claimedCharacter = activeSpawn;
 
-🆔 Código: ${activeSpawn.code}`
-      );
-
+      // ELIMINA EL SPAWN INMEDIATAMENTE
       activeSpawn = null;
+
+      // MENSAJE
+      await message.reply(
+`🏆 ${message.author.username} reclamó a ${claimedCharacter.name}
+
+🆔 Código: ${claimedCharacter.code}`
+      );
 
     }
 
