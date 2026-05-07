@@ -4,8 +4,7 @@ const {
   SlashCommandBuilder,
   REST,
   Routes,
-  EmbedBuilder,
-  WebhookClient
+  EmbedBuilder
 } = require('discord.js');
 
 const http = require('http');
@@ -15,8 +14,6 @@ const TOKEN = process.env.TOKEN;
 const CLIENT_ID = '1498803742391406633';
 const GUILD_ID = '1433246929588060432';
 
-const WEBHOOK_URL = 'https://discord.com/api/webhooks/1502070557896868011/ge6EuwOXJU8TQp6yNelpq5D7P0QATSiEKZeFBxYgM7dDj8kNvYFcHzakjM0PsAYOzl2H';
-
 // CLIENTE
 const client = new Client({
   intents: [
@@ -24,11 +21,6 @@ const client = new Client({
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent
   ]
-});
-
-// WEBHOOK
-const webhook = new WebhookClient({
-  url: WEBHOOK_URL
 });
 
 // PERSONAJES
@@ -41,8 +33,8 @@ const characters = [
   },
   {
     code: '002',
-    name: 'Zombie Chicken',
-    rarity: 'Rare',
+    name: 'ChaloApps',
+    rarity: 'Common',
     image: 'https://i.postimg.cc/pT594SZJ/chaloappsicon.png'
   },
   {
@@ -50,7 +42,7 @@ const characters = [
     name: 'Dragon Dude',
     rarity: 'Rare',
     image: 'https://i.postimg.cc/0Q7ymXsg/dragondudeiconlegacy.png'
-  },
+  }
 ];
 
 // SPAWN ACTIVO
@@ -83,14 +75,18 @@ const rest = new REST({ version: '10' }).setToken(TOKEN);
     console.log('✅ Slash Commands registrados');
 
   } catch (err) {
+
     console.error(err);
+
   }
 
 })();
 
 // BOT ONLINE
 client.once('ready', () => {
+
   console.log(`✅ Online como ${client.user.tag}`);
+
 });
 
 // /SPAWN
@@ -130,16 +126,8 @@ client.on('interactionCreate', async interaction => {
       )
       .setImage(random.image);
 
-    // RESPUESTA INVISIBLE
+    // ENVÍA EL PANEL
     await interaction.reply({
-      content: '✅ Spawn realizado',
-      ephemeral: true
-    });
-
-    // WEBHOOK
-    await webhook.send({
-      username: 'CGDex',
-      avatarURL: client.user.displayAvatarURL(),
       embeds: [embed]
     });
 
