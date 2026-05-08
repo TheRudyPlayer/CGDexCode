@@ -11,8 +11,8 @@ const http = require('http');
 
 const TOKEN = process.env.TOKEN;
 
-const CLIENT_ID = '1498803742391406633';
-const GUILD_ID = '1433246929588060432', '1501669636700373002';
+const CLIENT_ID = 'TU_CLIENT_ID';
+const GUILD_ID = 'TU_GUILD_ID';
 
 // CLIENTE
 const client = new Client({
@@ -22,6 +22,14 @@ const client = new Client({
     GatewayIntentBits.MessageContent
   ]
 });
+
+// RAREZAS
+const rarities = {
+  Common: 50,
+  Rare: 30,
+  Epic: 15,
+  Legendary: 5
+};
 
 // PERSONAJES
 const characters = [
@@ -63,10 +71,61 @@ const characters = [
   }
 ];
 
+// RANDOM POR RAREZA
+function getRandomCharacter() {
+
+  const total =
+    Object.values(rarities)
+      .reduce((a, b) => a + b, 0);
+
+  // VERIFICAR 100%
+  if (total !== 100) {
+
+    console.log('❌ Las rarezas no suman 100%');
+
+    return null;
+
+  }
+
+  const random =
+    Math.random() * 100;
+
+  let cumulative = 0;
+
+  let selectedRarity = null;
+
+  // ELEGIR RAREZA
+  for (const rarity in rarities) {
+
+    cumulative += rarities[rarity];
+
+    if (random <= cumulative) {
+
+      selectedRarity = rarity;
+
+      break;
+
+    }
+
+  }
+
+  // FILTRAR PERSONAJES
+  const filtered =
+    characters.filter(
+      c => c.rarity === selectedRarity
+    );
+
+  // RANDOM ENTRE ELLOS
+  return filtered[
+    Math.floor(Math.random() * filtered.length)
+  ];
+
+}
+
 // SPAWN ACTIVO
 let activeSpawn = null;
 
-// COMANDOS
+// SLASH COMMANDS
 const commands = [
   new SlashCommandBuilder()
     .setName('spawn')
@@ -76,7 +135,7 @@ const commands = [
 // REST
 const rest = new REST({ version: '10' }).setToken(TOKEN);
 
-// REGISTRAR SLASH COMMANDS
+// REGISTRAR COMMANDS
 (async () => {
 
   try {
@@ -101,7 +160,7 @@ const rest = new REST({ version: '10' }).setToken(TOKEN);
 
 })();
 
-// BOT ONLINE
+// READY
 client.once('ready', () => {
 
   console.log(`✅ Online como ${client.user.tag}`);
@@ -128,10 +187,17 @@ client.on('interactionCreate', async interaction => {
     }
 
     // RANDOM
-    const random =
-      characters[
-        Math.floor(Math.random() * characters.length)
-      ];
+    const random = getRandomCharacter();
+
+    // ERROR
+    if (!random) {
+
+      return interaction.reply({
+        content: '❌ Error en las rarezas.',
+        ephemeral: true
+      });
+
+    }
 
     activeSpawn = random;
 
@@ -151,7 +217,7 @@ client.on('interactionCreate', async interaction => {
       ephemeral: true
     });
 
-    // MENSAJE DEL BOT
+    // PANEL DEL BOT
     await interaction.channel.send({
       embeds: [embed]
     });
@@ -183,10 +249,10 @@ client.on('messageCreate', async message => {
     // RESPUESTA CORRECTA
     if (userAnswer === correctAnswer) {
 
-      // GUARDA EL PERSONAJE ANTES
+      // GUARDAR
       const claimedCharacter = activeSpawn;
 
-      // ELIMINA EL SPAWN INMEDIATAMENTE
+      // ELIMINAR SPAWN
       activeSpawn = null;
 
       // MENSAJE
