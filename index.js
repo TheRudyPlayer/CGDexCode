@@ -42,6 +42,24 @@ const characters = [
     name: 'Dragon Dude',
     rarity: 'Rare',
     image: 'https://i.postimg.cc/0Q7ymXsg/dragondudeiconlegacy.png'
+  },
+  {
+    code: '004',
+    name: 'Mr Meow',
+    rarity: 'Rare',
+    image: 'https://i.postimg.cc/nrrjGqYM/mrmeowicon.png'
+  },
+  {
+    code: '005',
+    name: 'MirtHD',
+    rarity: 'Common',
+    image: 'https://i.postimg.cc/8PrskpyV/mirthdicon.png'
+  },
+  {
+    code: '006',
+    name: 'TheRudyPlayer',
+    rarity: 'Common',
+    image: 'https://i.postimg.cc/cJdJcQ02/therudyplayericon.png'
   }
 ];
 
