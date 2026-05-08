@@ -11,7 +11,7 @@ const http = require('http');
 
 const TOKEN = process.env.TOKEN;
 
-const CLIENT_ID = 'TU_CLIENT_ID';
+const CLIENT_ID = '1498803742391406633';
 const GUILD_ID = 'TU_GUILD_ID';
 
 // CLIENTE
