@@ -11,8 +11,8 @@ const http = require('http');
 
 const TOKEN = process.env.TOKEN;
 
-const CLIENT_ID = '1498803742391406633';
-const GUILD_ID = '1433246929588060432', '1501669636700373002';
+const CLIENT_ID = 'TU_CLIENT_ID';
+const GUILD_ID = 'TU_GUILD_ID';
 
 // CLIENTE
 const client = new Client({
@@ -92,21 +92,7 @@ const characters = [
 // RANDOM POR RAREZA
 function getRandomCharacter() {
 
-  const total =
-    Object.values(rarities)
-      .reduce((a, b) => a + b, 0);
-
-  // VERIFICAR 100%
-  if (total !== 100) {
-
-    console.log('❌ Las rarezas no suman 100%');
-
-    return null;
-
-  }
-
-  const random =
-    Math.random() * 100;
+  const random = Math.random() * 100;
 
   let cumulative = 0;
 
@@ -127,11 +113,25 @@ function getRandomCharacter() {
 
   }
 
+  // SI NO ENCUENTRA
+  if (!selectedRarity) {
+    selectedRarity = 'Common';
+  }
+
   // FILTRAR PERSONAJES
   const filtered =
     characters.filter(
       c => c.rarity === selectedRarity
     );
+
+  // SI NO HAY PERSONAJES
+  if (filtered.length === 0) {
+
+    return characters[
+      Math.floor(Math.random() * characters.length)
+    ];
+
+  }
 
   // RANDOM ENTRE ELLOS
   return filtered[
@@ -206,16 +206,6 @@ client.on('interactionCreate', async interaction => {
 
     // RANDOM
     const random = getRandomCharacter();
-
-    // ERROR
-    if (!random) {
-
-      return interaction.reply({
-        content: '❌ Error en las rarezas.',
-        ephemeral: true
-      });
-
-    }
 
     activeSpawn = random;
 
