@@ -53,7 +53,7 @@ const characters = [
   },
   {
     code: '004',
-    name: 'Mr Meow',
+    name: 'Mr Meow','Mr Meow 5033',
     rarity: 'Rare',
     image: 'https://i.postimg.cc/nrrjGqYM/mrmeowicon.png'
   },
@@ -68,6 +68,24 @@ const characters = [
     name: 'TheRudyPlayer',
     rarity: 'Common',
     image: 'https://i.postimg.cc/cJdJcQ02/therudyplayericon.png'
+  },
+  {
+    code: '007',
+    name: 'Diego Gormaz','Diego Gormaz Gamer',
+    rarity: 'Epic',
+    image: 'https://i.postimg.cc/2S7PfZR0/diegogormazgamericon.png'
+  },
+  {
+    code: '008',
+    name: 'Stiff LXR',
+    rarity: 'Epic',
+    image: 'https://i.postimg.cc/TY7tjJxy/stifflxricon.png'
+  },
+  {
+    code: '009',
+    name: 'JR Crack',
+    rarity: 'Epic',
+    image: 'https://i.postimg.cc/6qHf0tkJ/jrcrackicon.png'
   }
 ];
 
