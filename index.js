@@ -12,7 +12,7 @@ const http = require('http');
 const TOKEN = process.env.TOKEN;
 
 const CLIENT_ID = '1498803742391406633';
-const GUILD_ID = '1433246929588060432';
+const GUILD_ID = '1433246929588060432','1501669636700373002';
 
 // CLIENTE
 const client = new Client({
