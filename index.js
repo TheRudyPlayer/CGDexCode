@@ -12,7 +12,7 @@ const http = require('http');
 const TOKEN = process.env.TOKEN;
 
 const CLIENT_ID = '1498803742391406633';
-const GUILD_ID = '1433246929588060432','1501669636700373002';
+const GUILD_ID = '1433246929588060432', '1501669636700373002';
 
 // CLIENTE
 const client = new Client({
@@ -33,6 +33,7 @@ const rarities = {
 
 // PERSONAJES
 const characters = [
+
   {
     code: '001',
     name: 'Rudy',
@@ -87,25 +88,28 @@ const characters = [
     rarity: 'Epic',
     image: 'https://i.postimg.cc/6qHf0tkJ/jrcrackicon.png'
   }
+
 ];
 
 // RANDOM POR RAREZA
 function getRandomCharacter() {
 
-  const random = Math.random() * 100;
+  // RANDOM 1-100
+  const randomNumber =
+    Math.floor(Math.random() * 100) + 1;
 
-  let cumulative = 0;
+  let raritySelected = 'Common';
 
-  let selectedRarity = null;
+  let current = 0;
 
   // ELEGIR RAREZA
   for (const rarity in rarities) {
 
-    cumulative += rarities[rarity];
+    current += rarities[rarity];
 
-    if (random <= cumulative) {
+    if (randomNumber <= current) {
 
-      selectedRarity = rarity;
+      raritySelected = rarity;
 
       break;
 
@@ -113,19 +117,15 @@ function getRandomCharacter() {
 
   }
 
-  // SI NO ENCUENTRA
-  if (!selectedRarity) {
-    selectedRarity = 'Common';
-  }
-
-  // FILTRAR PERSONAJES
-  const filtered =
+  // PERSONAJES DE ESA RAREZA
+  const rarityCharacters =
     characters.filter(
-      c => c.rarity === selectedRarity
+      character =>
+        character.rarity === raritySelected
     );
 
   // SI NO HAY PERSONAJES
-  if (filtered.length === 0) {
+  if (rarityCharacters.length === 0) {
 
     return characters[
       Math.floor(Math.random() * characters.length)
@@ -134,8 +134,10 @@ function getRandomCharacter() {
   }
 
   // RANDOM ENTRE ELLOS
-  return filtered[
-    Math.floor(Math.random() * filtered.length)
+  return rarityCharacters[
+    Math.floor(
+      Math.random() * rarityCharacters.length
+    )
   ];
 
 }
@@ -143,22 +145,24 @@ function getRandomCharacter() {
 // SPAWN ACTIVO
 let activeSpawn = null;
 
-// SLASH COMMANDS
+// COMANDOS
 const commands = [
   new SlashCommandBuilder()
     .setName('spawn')
     .setDescription('Spawnea un personaje')
-].map(cmd => cmd.toJSON());
+].map(command => command.toJSON());
 
 // REST
-const rest = new REST({ version: '10' }).setToken(TOKEN);
+const rest =
+  new REST({ version: '10' })
+    .setToken(TOKEN);
 
 // REGISTRAR COMMANDS
 (async () => {
 
   try {
 
-    console.log('⌛ Registrando Slash Commands...');
+    console.log('⌛ Registrando Commands...');
 
     await rest.put(
       Routes.applicationGuildCommands(
@@ -168,7 +172,7 @@ const rest = new REST({ version: '10' }).setToken(TOKEN);
       { body: commands }
     );
 
-    console.log('✅ Slash Commands registrados');
+    console.log('✅ Commands registrados');
 
   } catch (err) {
 
@@ -178,7 +182,7 @@ const rest = new REST({ version: '10' }).setToken(TOKEN);
 
 })();
 
-// READY
+// BOT READY
 client.once('ready', () => {
 
   console.log(`✅ Online como ${client.user.tag}`);
@@ -194,7 +198,7 @@ client.on('interactionCreate', async interaction => {
 
   try {
 
-    // YA HAY PERSONAJE
+    // YA HAY SPAWN
     if (activeSpawn) {
 
       return interaction.reply({
@@ -207,17 +211,28 @@ client.on('interactionCreate', async interaction => {
     // RANDOM
     const random = getRandomCharacter();
 
+    // GUARDAR
     activeSpawn = random;
 
     // PANEL
     const embed = new EmbedBuilder()
       .setTitle('✨ Un personaje ha aparecido')
       .setDescription(
-`🆔 Código: ${random.code} • ⭐ ${random.rarity}
+`🆔 Código: ${random.code}
+⭐ Rareza: ${random.rarity}
 
 💬 Responde con el nombre correcto para reclamarlo`
-      )
-      .setImage(random.image);
+      );
+
+    // IMAGEN
+    if (
+      random.image &&
+      random.image.startsWith('http')
+    ) {
+
+      embed.setImage(random.image);
+
+    }
 
     // RESPUESTA INVISIBLE
     await interaction.reply({
@@ -225,7 +240,7 @@ client.on('interactionCreate', async interaction => {
       ephemeral: true
     });
 
-    // PANEL DEL BOT
+    // MENSAJE DEL BOT
     await interaction.channel.send({
       embeds: [embed]
     });
@@ -245,7 +260,6 @@ client.on('messageCreate', async message => {
 
     if (message.author.bot) return;
 
-    // SI NO HAY SPAWN
     if (!activeSpawn) return;
 
     const userAnswer =
@@ -257,17 +271,17 @@ client.on('messageCreate', async message => {
     // RESPUESTA CORRECTA
     if (userAnswer === correctAnswer) {
 
-      // GUARDAR
-      const claimedCharacter = activeSpawn;
+      const claimedCharacter =
+        activeSpawn;
 
       // ELIMINAR SPAWN
       activeSpawn = null;
 
-      // MENSAJE
       await message.reply(
 `🏆 ${message.author.username} reclamó a ${claimedCharacter.name}
 
-🆔 Código: ${claimedCharacter.code}`
+🆔 Código: ${claimedCharacter.code}
+⭐ Rareza: ${claimedCharacter.rarity}`
       );
 
     }
