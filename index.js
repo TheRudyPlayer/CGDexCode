@@ -13,7 +13,13 @@ const http = require('http');
 const TOKEN = process.env.TOKEN;
 
 const CLIENT_ID = '1498803742391406633';
-const GUILD_ID = '1433246929588060432','1490431622930239691','1501669636700373002';
+
+// VARIOS SERVERS
+const GUILD_IDS = [
+  '1433246929588060432',
+  '1490431622930239691',
+  '1501669636700373002'
+];
 
 // TU ID
 const OWNER_ID = '1458910126168735806';
@@ -142,7 +148,7 @@ function getRandomCharacter() {
 
   }
 
-  // EVITAR REPETIDO
+  // EVITAR REPETIDOS
   filtered =
     filtered.filter(
       character =>
@@ -204,27 +210,32 @@ const rest =
 
   try {
 
-    // BORRAR VIEJOS
-    await rest.put(
-      Routes.applicationGuildCommands(
-        CLIENT_ID,
-        GUILD_ID
-      ),
-      { body: [] }
-    );
+    // RECORRER SERVERS
+    for (const guildId of GUILD_IDS) {
 
-    console.log('🗑️ Commands viejos borrados');
+      // BORRAR COMMANDS
+      await rest.put(
+        Routes.applicationGuildCommands(
+          CLIENT_ID,
+          guildId
+        ),
+        { body: [] }
+      );
 
-    // REGISTRAR NUEVOS
-    await rest.put(
-      Routes.applicationGuildCommands(
-        CLIENT_ID,
-        GUILD_ID
-      ),
-      { body: commands }
-    );
+      // REGISTRAR COMMANDS
+      await rest.put(
+        Routes.applicationGuildCommands(
+          CLIENT_ID,
+          guildId
+        ),
+        { body: commands }
+      );
 
-    console.log('✅ Commands registrados');
+      console.log(
+        `✅ Commands registrados en ${guildId}`
+      );
+
+    }
 
   } catch (err) {
 
