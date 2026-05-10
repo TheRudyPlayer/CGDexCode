@@ -33,7 +33,6 @@ const rarities = {
 
 // PERSONAJES
 const characters = [
-
   {
     code: '001',
     name: 'Rudy',
@@ -88,45 +87,43 @@ const characters = [
     rarity: 'Epic',
     image: 'https://i.postimg.cc/6qHf0tkJ/jrcrackicon.png'
   }
-
 ];
 
 // RANDOM POR RAREZA
 function getRandomCharacter() {
 
-  // RANDOM 1-100
-  const randomNumber =
-    Math.floor(Math.random() * 100) + 1;
+  const rarityList = [];
 
-  let raritySelected = 'Common';
-
-  let current = 0;
-
-  // ELEGIR RAREZA
+  // CREA LISTA SEGÚN %
   for (const rarity in rarities) {
 
-    current += rarities[rarity];
+    const amount = rarities[rarity];
 
-    if (randomNumber <= current) {
+    for (let i = 0; i < amount; i++) {
 
-      raritySelected = rarity;
-
-      break;
+      rarityList.push(rarity);
 
     }
 
   }
 
+  // RANDOM DE RAREZA
+  const selectedRarity =
+    rarityList[
+      Math.floor(Math.random() * rarityList.length)
+    ];
+
   // PERSONAJES DE ESA RAREZA
   const rarityCharacters =
     characters.filter(
       character =>
-        character.rarity === raritySelected
+        character.rarity === selectedRarity
     );
 
   // SI NO HAY PERSONAJES
   if (rarityCharacters.length === 0) {
 
+    // DEVUELVE CUALQUIERA
     return characters[
       Math.floor(Math.random() * characters.length)
     ];
@@ -162,8 +159,6 @@ const rest =
 
   try {
 
-    console.log('⌛ Registrando Commands...');
-
     await rest.put(
       Routes.applicationGuildCommands(
         CLIENT_ID,
@@ -182,7 +177,7 @@ const rest =
 
 })();
 
-// BOT READY
+// READY
 client.once('ready', () => {
 
   console.log(`✅ Online como ${client.user.tag}`);
@@ -240,7 +235,7 @@ client.on('interactionCreate', async interaction => {
       ephemeral: true
     });
 
-    // MENSAJE DEL BOT
+    // PANEL
     await interaction.channel.send({
       embeds: [embed]
     });
@@ -268,7 +263,7 @@ client.on('messageCreate', async message => {
     const correctAnswer =
       activeSpawn.name.toLowerCase();
 
-    // RESPUESTA CORRECTA
+    // CORRECTO
     if (userAnswer === correctAnswer) {
 
       const claimedCharacter =
