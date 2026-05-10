@@ -174,9 +174,21 @@ let activeSpawn = null;
 
 // COMANDOS
 const commands = [
+
   new SlashCommandBuilder()
     .setName('spawn')
-    .setDescription('Spawnea un personaje')
+    .setDescription('Spawnea un personaje random'),
+
+  new SlashCommandBuilder()
+    .setName('spawn_character')
+    .setDescription('Spawnea un personaje específico')
+    .addStringOption(option =>
+      option
+        .setName('codigo')
+        .setDescription('Código del personaje')
+        .setRequired(true)
+    )
+
 ].map(command => command.toJSON());
 
 // REST
@@ -218,6 +230,16 @@ client.once('ready', () => {
 client.on('interactionCreate', async interaction => {
 
   if (!interaction.isChatInputCommand()) return;
+  
+  // SOLO OWNER
+if (interaction.user.id !== OWNER_ID) {
+
+  return interaction.reply({
+    content: '❌ No puedes usar este comando.',
+    ephemeral: true
+  });
+
+}
 
   if (interaction.commandName !== 'spawn') return;
 
