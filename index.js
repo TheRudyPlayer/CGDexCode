@@ -117,7 +117,7 @@ const characters = [
     code: '014',
     name: 'CDN',
     rarity: 'Rare',
-    image: ''
+    image: 'https://i.postimg.cc/L88RgJLt/cdnicon.png'
   }
 ];
 
