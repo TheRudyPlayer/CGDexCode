@@ -230,7 +230,7 @@ client.once('ready', () => {
 client.on('interactionCreate', async interaction => {
 
   if (!interaction.isChatInputCommand()) return;
-  
+
   // SOLO OWNER
 if (interaction.user.id !== OWNER_ID) {
 
@@ -240,8 +240,6 @@ if (interaction.user.id !== OWNER_ID) {
   });
 
 }
-
-  if (interaction.commandName !== 'spawn') return;
 
   try {
 
@@ -255,30 +253,71 @@ if (interaction.user.id !== OWNER_ID) {
 
     }
 
-    // RANDOM
-    const random =
-      getRandomCharacter();
+    let selectedCharacter;
+
+    // /SPAWN
+    if (interaction.commandName === 'spawn') {
+
+      selectedCharacter =
+        getRandomCharacter();
+
+    }
+
+    // /SPAWN_CHARACTER
+    if (
+      interaction.commandName ===
+      'spawn_character'
+    ) {
+
+      const code =
+        interaction.options
+          .getString('codigo');
+
+      // BUSCAR PERSONAJE
+      const foundCharacter =
+        characters.find(
+          character =>
+            character.code === code
+        );
+
+      // NO EXISTE
+      if (!foundCharacter) {
+
+        return interaction.reply({
+          content: '❌ Personaje no encontrado.',
+          ephemeral: true
+        });
+
+      }
+
+      selectedCharacter =
+        foundCharacter;
+
+    }
 
     // GUARDAR
-    activeSpawn = random;
+    activeSpawn =
+      selectedCharacter;
 
     // PANEL
     const embed = new EmbedBuilder()
       .setTitle('✨ Un personaje ha aparecido')
       .setDescription(
-`🆔 Código: ${random.code}
-⭐ Rareza: ${random.rarity}
+`🆔 Código: ${selectedCharacter.code}
+⭐ Rareza: ${selectedCharacter.rarity}
 
 💬 Responde con el nombre correcto para reclamarlo`
       );
 
     // IMAGEN
     if (
-      random.image &&
-      random.image.startsWith('http')
+      selectedCharacter.image &&
+      selectedCharacter.image.startsWith('http')
     ) {
 
-      embed.setImage(random.image);
+      embed.setImage(
+        selectedCharacter.image
+      );
 
     }
 
