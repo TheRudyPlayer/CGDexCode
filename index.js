@@ -86,6 +86,12 @@ const characters = [
     name: 'JR Crack',
     rarity: 'Epic',
     image: 'https://i.postimg.cc/6qHf0tkJ/jrcrackicon.png'
+  },
+  {
+    code: '010',
+    name: 'Spy_Gaming150',
+    rarity: 'Rare',
+    image: 'https://i.postimg.cc/6pB7ZZvP/spygamingicon.png'
   }
 ];
 
