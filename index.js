@@ -94,6 +94,24 @@ const characters = [
     name: 'Spy_Gaming150',
     rarity: 'Rare',
     image: 'https://i.postimg.cc/6pB7ZZvP/spygamingicon.png'
+  },
+  {
+    code: '011',
+    name: 'Eitee',
+    rarity: 'Rare',
+    image: 'https://i.postimg.cc/6qdyykdg/eiteeicon.png'
+  },
+  {
+    code: '012',
+    name: 'Den19K',
+    rarity: 'Legendary',
+    image: ''
+  },
+  {
+    code: '013',
+    name: 'Funchik',
+    rarity: 'Rare',
+    image: 'https://i.postimg.cc/6pB7ZZvP/spygamingicon.png'
   }
 ];
 
