@@ -4,7 +4,8 @@ const {
   SlashCommandBuilder,
   REST,
   Routes,
-  EmbedBuilder
+  EmbedBuilder,
+  MessageFlags
 } = require('discord.js');
 
 const http = require('http');
@@ -250,7 +251,7 @@ client.on('interactionCreate', async interaction => {
 
     return interaction.reply({
       content: '❌ No puedes usar este comando.',
-      flags: 64
+      flags: MessageFlags.Ephemeral
     });
 
   }
@@ -262,7 +263,7 @@ client.on('interactionCreate', async interaction => {
 
       return interaction.reply({
         content: '❌ Ya hay un personaje activo.',
-        flags: 64
+        flags: MessageFlags.Ephemeral
       });
 
     }
@@ -298,7 +299,7 @@ client.on('interactionCreate', async interaction => {
 
         return interaction.reply({
           content: '❌ Personaje no encontrado.',
-          flags: 64
+          flags: MessageFlags.Ephemeral
         });
 
       }
@@ -337,7 +338,7 @@ client.on('interactionCreate', async interaction => {
     // RESPUESTA INVISIBLE
     await interaction.reply({
       content: '✅',
-      flags: 64
+      flags: MessageFlags.Ephemeral
     });
 
     // PANEL
