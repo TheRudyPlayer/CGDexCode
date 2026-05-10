@@ -25,10 +25,12 @@ const client = new Client({
 
 // RAREZAS
 const rarities = {
-  Common: 50,
-  Rare: 30,
-  Epic: 15,
-  Legendary: 5
+  Common: 30,
+  Rare: 25,
+  Epic: 18,
+  Legendary: 13,
+  God: 10,
+  Secret: 5
 };
 
 // PERSONAJES
