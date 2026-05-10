@@ -50,7 +50,7 @@ const characters = [
   {
     code: '003',
     name: 'Dragon Dude',
-    rarity: 'Rare',
+    rarity: 'Epic',
     image: 'https://i.postimg.cc/0Q7ymXsg/dragondudeiconlegacy.png'
   },
   {
@@ -74,7 +74,7 @@ const characters = [
   {
     code: '007',
     name: 'Diego Gormaz',
-    rarity: 'Epic',
+    rarity: 'Rare',
     image: 'https://i.postimg.cc/2S7PfZR0/diegogormazgamericon.png'
   },
   {
@@ -105,13 +105,19 @@ const characters = [
     code: '012',
     name: 'Den19K',
     rarity: 'Legendary',
-    image: ''
+    image: 'https://i.postimg.cc/jdtjMk66/den19kicon.png'
   },
   {
     code: '013',
     name: 'Funchik',
+    rarity: 'Epic',
+    image: 'https://i.postimg.cc/pXCL4YkJ/funchikicon.png'
+  },
+  {
+    code: '014',
+    name: 'CDN',
     rarity: 'Rare',
-    image: 'https://i.postimg.cc/6pB7ZZvP/spygamingicon.png'
+    image: ''
   }
 ];
 
