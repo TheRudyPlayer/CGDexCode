@@ -90,7 +90,7 @@ const characters = [
   {
     code: '010',
     name: 'Spy_Gaming150',
-    rarity: 'Rare',
+    rarity: 'Common',
     image: 'https://i.postimg.cc/6pB7ZZvP/spygamingicon.png'
   }
 ];
