@@ -23,16 +23,6 @@ const client = new Client({
   ]
 });
 
-// RAREZAS
-const rarities = {
-  Common: 30,
-  Rare: 25,
-  Epic: 18,
-  Legendary: 13,
-  God: 10,
-  Secret: 5
-};
-
 // PERSONAJES
 const characters = [
   {
@@ -100,81 +90,69 @@ const characters = [
 // ÚLTIMO PERSONAJE
 let lastCharacterCode = null;
 
-// RANDOM POR RAREZA
+// RANDOM BALANCEADO
 function getRandomCharacter() {
 
-  const rarityList = [];
+  // RANDOM DE RAREZA
+  const rarityRoll =
+    Math.floor(Math.random() * 100) + 1;
 
-  // CREA LISTA SEGÚN %
-  for (const rarity in rarities) {
+  let selectedRarity = 'Common';
 
-    const amount = rarities[rarity];
+  // PORCENTAJES
+  if (rarityRoll <= 5) {
 
-    for (let i = 0; i < amount; i++) {
+    selectedRarity = 'Legendary';
 
-      rarityList.push(rarity);
+  } else if (rarityRoll <= 20) {
 
-    }
+    selectedRarity = 'Epic';
 
-  }
+  } else if (rarityRoll <= 50) {
 
-  let selectedCharacter = null;
+    selectedRarity = 'Rare';
 
-  let tries = 0;
+  } else {
 
-  // EVITA REPETIDOS
-  while (!selectedCharacter && tries < 10) {
-
-    tries++;
-
-    // RANDOM RAREZA
-    const selectedRarity =
-      rarityList[
-        Math.floor(
-          Math.random() * rarityList.length
-        )
-      ];
-
-    // PERSONAJES DE ESA RAREZA
-    const rarityCharacters =
-      characters.filter(
-        character =>
-          character.rarity === selectedRarity
-      );
-
-    // SI NO HAY, CONTINÚA
-    if (rarityCharacters.length === 0) {
-      continue;
-    }
-
-    // RANDOM PERSONAJE
-    const randomCharacter =
-      rarityCharacters[
-        Math.floor(
-          Math.random() * rarityCharacters.length
-        )
-      ];
-
-    // EVITA REPETIR
-    if (
-      randomCharacter.code !== lastCharacterCode
-    ) {
-
-      selectedCharacter = randomCharacter;
-
-    }
+    selectedRarity = 'Common';
 
   }
 
-  // FALLBACK
-  if (!selectedCharacter) {
+  // FILTRAR POR RAREZA
+  let rarityCharacters =
+    characters.filter(
+      character =>
+        character.rarity === selectedRarity
+    );
 
-    selectedCharacter =
-      characters[
-        Math.floor(Math.random() * characters.length)
-      ];
+  // SI NO HAY PERSONAJES DE ESA RAREZA
+  if (rarityCharacters.length === 0) {
+
+    rarityCharacters = characters;
 
   }
+
+  // EVITAR REPETIDOS
+  let availableCharacters =
+    rarityCharacters.filter(
+      character =>
+        character.code !== lastCharacterCode
+    );
+
+  // SI SOLO HAY UNO
+  if (availableCharacters.length === 0) {
+
+    availableCharacters = rarityCharacters;
+
+  }
+
+  // RANDOM
+  const selectedCharacter =
+    availableCharacters[
+      Math.floor(
+        Math.random() * availableCharacters.length
+      )
+    ];
 
   // GUARDAR ÚLTIMO
   lastCharacterCode =
