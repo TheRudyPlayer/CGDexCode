@@ -248,7 +248,7 @@ if (interaction.user.id !== OWNER_ID) {
 
   return interaction.reply({
     content: '❌ No puedes usar este comando.',
-    ephemeral: true
+    flags: 64
   });
 
 }
@@ -260,7 +260,7 @@ if (interaction.user.id !== OWNER_ID) {
 
       return interaction.reply({
         content: '❌ Ya hay un personaje activo.',
-        ephemeral: true
+        flags: 64
       });
 
     }
@@ -297,7 +297,7 @@ if (interaction.user.id !== OWNER_ID) {
 
         return interaction.reply({
           content: '❌ Personaje no encontrado.',
-          ephemeral: true
+          flags: 64
         });
 
       }
@@ -336,7 +336,7 @@ if (interaction.user.id !== OWNER_ID) {
     // RESPUESTA INVISIBLE
     await interaction.reply({
       content: '✅',
-      ephemeral: true
+      flags: 64
     });
 
     // PANEL
