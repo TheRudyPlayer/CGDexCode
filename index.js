@@ -12,7 +12,7 @@ const http = require('http');
 const TOKEN = process.env.TOKEN;
 
 const CLIENT_ID = '1498803742391406633';
-const GUILD_ID = '1433246929588060432','1501669636700373002';
+const GUILD_ID = '1433246929588060432','1501669636700373002','1490431622930239691';
 
 // CLIENTE
 const client = new Client({
@@ -90,10 +90,13 @@ const characters = [
   {
     code: '010',
     name: 'Spy_Gaming150',
-    rarity: 'Common',
+    rarity: 'Rare',
     image: 'https://i.postimg.cc/6pB7ZZvP/spygamingicon.png'
   }
 ];
+
+// ÚLTIMO PERSONAJE
+let lastCharacterCode = null;
 
 // RANDOM POR RAREZA
 function getRandomCharacter() {
@@ -113,35 +116,69 @@ function getRandomCharacter() {
 
   }
 
-  // RANDOM DE RAREZA
-  const selectedRarity =
-    rarityList[
-      Math.floor(Math.random() * rarityList.length)
-    ];
+  let selectedCharacter = null;
 
-  // PERSONAJES DE ESA RAREZA
-  const rarityCharacters =
-    characters.filter(
-      character =>
-        character.rarity === selectedRarity
-    );
+  let tries = 0;
 
-  // SI NO HAY PERSONAJES
-  if (rarityCharacters.length === 0) {
+  // EVITA REPETIDOS
+  while (!selectedCharacter && tries < 10) {
 
-    // DEVUELVE CUALQUIERA
-    return characters[
-      Math.floor(Math.random() * characters.length)
-    ];
+    tries++;
+
+    // RANDOM RAREZA
+    const selectedRarity =
+      rarityList[
+        Math.floor(
+          Math.random() * rarityList.length
+        )
+      ];
+
+    // PERSONAJES DE ESA RAREZA
+    const rarityCharacters =
+      characters.filter(
+        character =>
+          character.rarity === selectedRarity
+      );
+
+    // SI NO HAY, CONTINÚA
+    if (rarityCharacters.length === 0) {
+      continue;
+    }
+
+    // RANDOM PERSONAJE
+    const randomCharacter =
+      rarityCharacters[
+        Math.floor(
+          Math.random() * rarityCharacters.length
+        )
+      ];
+
+    // EVITA REPETIR
+    if (
+      randomCharacter.code !== lastCharacterCode
+    ) {
+
+      selectedCharacter = randomCharacter;
+
+    }
 
   }
 
-  // RANDOM ENTRE ELLOS
-  return rarityCharacters[
-    Math.floor(
-      Math.random() * rarityCharacters.length
-    )
-  ];
+  // FALLBACK
+  if (!selectedCharacter) {
+
+    selectedCharacter =
+      characters[
+        Math.floor(Math.random() * characters.length)
+      ];
+
+  }
+
+  // GUARDAR ÚLTIMO
+  lastCharacterCode =
+    selectedCharacter.code;
+
+  return selectedCharacter;
 
 }
 
