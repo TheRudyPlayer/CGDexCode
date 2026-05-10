@@ -201,16 +201,28 @@ const rest =
 
   try {
 
-    await rest.put(
-      Routes.applicationGuildCommands(
-        CLIENT_ID,
-        GUILD_ID
-      ),
-      { body: commands }
-    );
+    // BORRAR COMMANDS VIEJOS
+await rest.put(
+  Routes.applicationGuildCommands(
+    CLIENT_ID,
+    GUILD_ID
+  ),
+  { body: [] }
+);
 
-    console.log('✅ Commands registrados');
+console.log('🗑️ Commands viejos borrados');
 
+// REGISTRAR NUEVOS
+await rest.put(
+  Routes.applicationGuildCommands(
+    CLIENT_ID,
+    GUILD_ID
+  ),
+  { body: commands }
+);
+
+console.log('✅ Commands nuevos registrados');
+    
   } catch (err) {
 
     console.error(err);
