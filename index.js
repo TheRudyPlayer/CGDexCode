@@ -11,8 +11,8 @@ const http = require('http');
 
 const TOKEN = process.env.TOKEN;
 
-const CLIENT_ID = '1498803742391406633';
-const GUILD_ID = '1433246929588060432','1501669636700373002','1490431622930239691';
+const CLIENT_ID = 'TU_CLIENT_ID';
+const GUILD_ID = 'TU_GUILD_ID';
 
 // CLIENTE
 const client = new Client({
@@ -90,67 +90,73 @@ const characters = [
 // ÚLTIMO PERSONAJE
 let lastCharacterCode = null;
 
-// RANDOM BALANCEADO
+// PROBABILIDADES
+const rarityChances = {
+  Common: 40,
+  Rare: 30,
+  Epic: 20,
+  Legendary: 10
+};
+
+// RANDOM SIMPLE
 function getRandomCharacter() {
 
-  // RANDOM DE RAREZA
-  const rarityRoll =
+  // RANDOM 1-100
+  const roll =
     Math.floor(Math.random() * 100) + 1;
+
+  let current = 0;
 
   let selectedRarity = 'Common';
 
-  // PORCENTAJES
-  if (rarityRoll <= 5) {
+  // ELEGIR RAREZA
+  for (const rarity in rarityChances) {
 
-    selectedRarity = 'Legendary';
+    current += rarityChances[rarity];
 
-  } else if (rarityRoll <= 20) {
+    if (roll <= current) {
 
-    selectedRarity = 'Epic';
+      selectedRarity = rarity;
 
-  } else if (rarityRoll <= 50) {
+      break;
 
-    selectedRarity = 'Rare';
-
-  } else {
-
-    selectedRarity = 'Common';
+    }
 
   }
 
-  // FILTRAR POR RAREZA
-  let rarityCharacters =
+  // FILTRAR PERSONAJES
+  let filtered =
     characters.filter(
       character =>
         character.rarity === selectedRarity
     );
 
-  // SI NO HAY PERSONAJES DE ESA RAREZA
-  if (rarityCharacters.length === 0) {
+  // SI NO HAY PERSONAJES
+  if (filtered.length === 0) {
 
-    rarityCharacters = characters;
+    filtered = characters;
 
   }
 
-  // EVITAR REPETIDOS
-  let availableCharacters =
-    rarityCharacters.filter(
+  // EVITAR REPETIDO
+  filtered =
+    filtered.filter(
       character =>
         character.code !== lastCharacterCode
     );
 
-  // SI SOLO HAY UNO
-  if (availableCharacters.length === 0) {
+  // SI NO QUEDA NADA
+  if (filtered.length === 0) {
 
-    availableCharacters = rarityCharacters;
+    filtered = characters;
 
   }
 
-  // RANDOM
+  // RANDOM FINAL
   const selectedCharacter =
-    availableCharacters[
+    filtered[
       Math.floor(
-        Math.random() * availableCharacters.length
+        Math.random() * filtered.length
       )
     ];
 
@@ -227,7 +233,8 @@ client.on('interactionCreate', async interaction => {
     }
 
     // RANDOM
-    const random = getRandomCharacter();
+    const random =
+      getRandomCharacter();
 
     // GUARDAR
     activeSpawn = random;
