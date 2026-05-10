@@ -12,7 +12,9 @@ const http = require('http');
 const TOKEN = process.env.TOKEN;
 
 const CLIENT_ID = '1498803742391406633';
-const GUILD_ID = '1433246929588060432','1501669636700373002','1490431622930239691';
+const GUILD_ID = '1433246929588060432','1490431622930239691','1501669636700373002';
+
+// TU ID
 const OWNER_ID = '1458910126168735806';
 
 // CLIENTE
@@ -99,7 +101,7 @@ const rarityChances = {
   Legendary: 10
 };
 
-// RANDOM SIMPLE
+// RANDOM
 function getRandomCharacter() {
 
   // RANDOM 1-100
@@ -125,14 +127,14 @@ function getRandomCharacter() {
 
   }
 
-  // FILTRAR PERSONAJES
+  // FILTRAR
   let filtered =
     characters.filter(
       character =>
         character.rarity === selectedRarity
     );
 
-  // SI NO HAY PERSONAJES
+  // SI NO HAY
   if (filtered.length === 0) {
 
     filtered = characters;
@@ -161,7 +163,7 @@ function getRandomCharacter() {
       )
     ];
 
-  // GUARDAR ÚLTIMO
+  // GUARDAR
   lastCharacterCode =
     selectedCharacter.code;
 
@@ -201,28 +203,28 @@ const rest =
 
   try {
 
-    // BORRAR COMMANDS VIEJOS
-await rest.put(
-  Routes.applicationGuildCommands(
-    CLIENT_ID,
-    GUILD_ID
-  ),
-  { body: [] }
-);
+    // BORRAR VIEJOS
+    await rest.put(
+      Routes.applicationGuildCommands(
+        CLIENT_ID,
+        GUILD_ID
+      ),
+      { body: [] }
+    );
 
-console.log('🗑️ Commands viejos borrados');
+    console.log('🗑️ Commands viejos borrados');
 
-// REGISTRAR NUEVOS
-await rest.put(
-  Routes.applicationGuildCommands(
-    CLIENT_ID,
-    GUILD_ID
-  ),
-  { body: commands }
-);
+    // REGISTRAR NUEVOS
+    await rest.put(
+      Routes.applicationGuildCommands(
+        CLIENT_ID,
+        GUILD_ID
+      ),
+      { body: commands }
+    );
 
-console.log('✅ Commands nuevos registrados');
-    
+    console.log('✅ Commands registrados');
+
   } catch (err) {
 
     console.error(err);
@@ -238,20 +240,20 @@ client.once('ready', () => {
 
 });
 
-// /SPAWN
+// INTERACCIONES
 client.on('interactionCreate', async interaction => {
 
   if (!interaction.isChatInputCommand()) return;
 
   // SOLO OWNER
-if (interaction.user.id !== OWNER_ID) {
+  if (interaction.user.id !== OWNER_ID) {
 
-  return interaction.reply({
-    content: '❌ No puedes usar este comando.',
-    flags: 64
-  });
+    return interaction.reply({
+      content: '❌ No puedes usar este comando.',
+      flags: 64
+    });
 
-}
+  }
 
   try {
 
@@ -282,10 +284,9 @@ if (interaction.user.id !== OWNER_ID) {
     ) {
 
       const code =
-        interaction.options
-          .getString('codigo');
+        interaction.options.getString('codigo');
 
-      // BUSCAR PERSONAJE
+      // BUSCAR
       const foundCharacter =
         characters.find(
           character =>
@@ -396,7 +397,7 @@ client.on('messageCreate', async message => {
 // LOGIN
 client.login(TOKEN);
 
-// PORT PARA RENDER
+// PORT
 http.createServer((req, res) => {
 
   res.write('CGDex Online');
