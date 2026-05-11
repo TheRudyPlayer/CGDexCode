@@ -63,7 +63,7 @@ const characters = [
     code: '005',
     name: 'MirtHD',
     rarity: 'Common',
-    image: 'https://i.postimg.cc/8PrskpyV/mirthdicon.png'
+    image: 'https://i.postimg.cc/hPvhnps0/mirticon.png'
   },
   {
     code: '006',
@@ -136,6 +136,12 @@ const characters = [
     name: 'Gallin',
     rarity: 'Rare',
     image: 'https://i.postimg.cc/BvxgJqpm/gallinicon.png'
+  },
+  {
+    code: '018',
+    name: 'ElKiwis',
+    rarity: 'Rare',
+    image: 'https://i.postimg.cc/DwWWrBbS/elkiwisicon.png'
   }
 ];
 
