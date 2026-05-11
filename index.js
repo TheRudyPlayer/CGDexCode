@@ -86,7 +86,7 @@ const characters = [
   {
     code: '009',
     name: 'JR Crack',
-    rarity: 'Epic',
+    rarity: 'Legendary',
     image: 'https://i.postimg.cc/6qHf0tkJ/jrcrackicon.png'
   },
   {
@@ -118,6 +118,24 @@ const characters = [
     name: 'CDN',
     rarity: 'Rare',
     image: 'https://i.postimg.cc/L88RgJLt/cdnicon.png'
+  },
+  {
+    code: '015',
+    name: 'Pau Gamer',
+    rarity: 'Epic',
+    image: 'https://i.postimg.cc/0ySGC8L3/paugamericon.png'
+  },
+  {
+    code: '016',
+    name: 'Pizezo',
+    rarity: 'Rare',
+    image: 'https://i.postimg.cc/j5MyjC7H/pizezoicon.png'
+  },
+  {
+    code: '017',
+    name: 'Gallin',
+    rarity: 'Rare',
+    image: 'https://i.postimg.cc/BvxgJqpm/gallinicon.png'
   }
 ];
 
