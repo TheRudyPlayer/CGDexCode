@@ -166,7 +166,7 @@ const characters = [
     code: '022',
     name: 'Rudy Roblox',
     rarity: 'Common',
-    image: ''
+    image: 'https://i.postimg.cc/g03hBLfS/rudyrobloxicon.png'
   },
   {
     code: '023',
