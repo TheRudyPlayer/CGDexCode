@@ -161,6 +161,18 @@ const characters = [
     name: 'Pedroguimarães90K',
     rarity: 'Admin',
     image: 'https://i.postimg.cc/0yP1JT9q/pedroguimaraes90kicon.png'
+  },
+  {
+    code: '022',
+    name: 'Rudy Roblox',
+    rarity: 'Common',
+    image: ''
+  },
+  {
+    code: '023',
+    name: 'Rudy Plush',
+    rarity: 'Rare',
+    image: ''
   }
 ];
 
