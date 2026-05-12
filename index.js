@@ -172,7 +172,7 @@ const characters = [
     code: '023',
     name: 'Rudy Plush',
     rarity: 'Rare',
-    image: ''
+    image: 'https://i.postimg.cc/KYYztkmv/rudyplushicon.png'
   }
 ];
 
