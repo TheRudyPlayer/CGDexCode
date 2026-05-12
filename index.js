@@ -155,6 +155,12 @@ const characters = [
     name: 'Khooni Player',
     rarity: 'Rare',
     image: 'https://i.postimg.cc/mkJKDn8Z/khooniplayericon.png'
+  },
+  {
+    code: '021',
+    name: 'Pedroguimarães90K',
+    rarity: 'Admin',
+    image: 'https://i.postimg.cc/0yP1JT9q/pedroguimaraes90kicon.png'
   }
 ];
 
@@ -166,7 +172,8 @@ const rarityChances = {
   Common: 40,
   Rare: 30,
   Epic: 20,
-  Legendary: 10
+  Legendary: 10,
+  Admin: 0
 };
 
 // RANDOM
