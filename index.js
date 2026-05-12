@@ -143,6 +143,18 @@ const characters = [
     name: 'ElKiwis',
     rarity: 'Rare',
     image: 'https://i.postimg.cc/DwWWrBbS/elkiwisicon.png'
+  },
+  {
+    code: '019',
+    name: 'Dun Dun Dun',
+    rarity: 'Epic',
+    image: 'https://i.postimg.cc/Gtt19GRF/dundundunicon.png'
+  },
+  {
+    code: '020',
+    name: 'Khooni Player',
+    rarity: 'Rare',
+    image: 'https://i.postimg.cc/mkJKDn8Z/khooniplayericon.png'
   }
 ];
 
