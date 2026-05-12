@@ -52,7 +52,7 @@ const characters = [
     code: '003',
     name: 'Dragon Dude',
     rarity: 'Epic',
-    image: 'https://i.postimg.cc/0Q7ymXsg/dragondudeiconlegacy.png'
+    image: 'https://i.postimg.cc/85KLhQ2n/dragondudeicon.png'
   },
   {
     code: '004',
@@ -173,6 +173,12 @@ const characters = [
     name: 'Rudy Plush',
     rarity: 'Rare',
     image: 'https://i.postimg.cc/KYYztkmv/rudyplushicon.png'
+  },
+  {
+    code: '024',
+    name: 'GunGun',
+    rarity: 'Epic',
+    image: 'https://i.postimg.cc/7662Pt5K/gungunicon.png'
   }
 ];
 
