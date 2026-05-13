@@ -179,6 +179,30 @@ const characters = [
     name: 'GunGun',
     rarity: 'Epic',
     image: 'https://i.postimg.cc/7662Pt5K/gungunicon.png'
+  },
+  {
+    code: '025',
+    name: 'Vip Gurita',
+    rarity: 'Legendary',
+    image: 'https://i.postimg.cc/9MDkmZKJ/vipguritaicon.png'
+  },
+  {
+    code: '026',
+    name: 'Pickle Gameplay',
+    rarity: 'Common',
+    image: 'https://i.postimg.cc/3rsqhL7N/picklegameplayicon.png'
+  },
+  {
+    code: '027',
+    name: 'Fessrepanzel',
+    rarity: 'Epic',
+    image: 'https://i.postimg.cc/vZJTtwdG/fessrepanzelicon.png'
+  },
+  {
+    code: '028',
+    name: 'Zombie',
+    rarity: 'Admin',
+    image: ''
   }
 ];
 
