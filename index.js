@@ -203,6 +203,12 @@ const characters = [
     name: 'Zombie',
     rarity: 'Admin',
     image: ''
+  },
+  {
+    code: '029',
+    name: 'Cerdito Verde',
+    rarity: 'Epic',
+    image: 'https://i.postimg.cc/J0vbYbnp/cerditoverdeiconlegacy.png'
   }
 ];
 
