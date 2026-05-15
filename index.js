@@ -374,14 +374,17 @@ client.on('interactionCreate', async interaction => {
   if (!interaction.isChatInputCommand()) return;
 
   // SOLO OWNER
-  if (interaction.user.id !== OWNER_ID) {
+if (
+  interaction.commandName === 'spawn_character' &&
+  interaction.user.id !== OWNER_ID
+) {
 
-    return interaction.reply({
-      content: '❌ No puedes usar este comando.',
-      flags: MessageFlags.Ephemeral
-    });
+  return interaction.reply({
+    content: '❌ No puedes usar este comando.',
+    flags: MessageFlags.Ephemeral
+  });
 
-  }
+}
 
   try {
 
