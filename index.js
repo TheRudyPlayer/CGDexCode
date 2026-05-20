@@ -40,174 +40,203 @@ const characters = [
     code: '001',
     name: 'Rudy',
     rarity: 'Common',
+    language: 'Global',
     image: 'https://i.postimg.cc/vB49MTQv/rudyicon.png'
   },
   {
     code: '002',
     name: 'ChaloApps',
     rarity: 'Common',
+    language: 'Russian',
     image: 'https://i.postimg.cc/pT594SZJ/chaloappsicon.png'
   },
   {
     code: '003',
     name: 'Dragon Dude',
     rarity: 'Epic',
+    language: 'English',
     image: 'https://i.postimg.cc/85KLhQ2n/dragondudeicon.png'
   },
   {
     code: '004',
     name: 'Mr Meow',
     rarity: 'Rare',
+    language: 'LATAM',
     image: 'https://i.postimg.cc/nrrjGqYM/mrmeowicon.png'
   },
   {
     code: '005',
     name: 'MirtHD',
     rarity: 'Common',
+    language: 'LATAM',
     image: 'https://i.postimg.cc/hPvhnps0/mirticon.png'
   },
   {
     code: '006',
     name: 'TheRudyPlayer',
     rarity: 'Common',
+    language: 'LATAM',
     image: 'https://i.postimg.cc/cJdJcQ02/therudyplayericon.png'
   },
   {
     code: '007',
     name: 'Diego Gormaz',
     rarity: 'Rare',
+    language: 'LATAM',
     image: 'https://i.postimg.cc/2S7PfZR0/diegogormazgamericon.png'
   },
   {
     code: '008',
     name: 'Stiff LXR',
     rarity: 'Epic',
+    language: 'LATAM',
     image: 'https://i.postimg.cc/TY7tjJxy/stifflxricon.png'
   },
   {
     code: '009',
     name: 'JR Crack',
     rarity: 'Legendary',
+    language: 'LATAM',
     image: 'https://i.postimg.cc/6qHf0tkJ/jrcrackicon.png'
   },
   {
     code: '010',
     name: 'Spy_Gaming150',
     rarity: 'Rare',
+    language: 'LATAM',
     image: 'https://i.postimg.cc/6pB7ZZvP/spygamingicon.png'
   },
   {
     code: '011',
     name: 'Eitee',
     rarity: 'Rare',
+    language: 'LATAM',
     image: 'https://i.postimg.cc/6qdyykdg/eiteeicon.png'
   },
   {
     code: '012',
     name: 'Den19K',
     rarity: 'Legendary',
+    language: 'Russian',
     image: 'https://i.postimg.cc/jdtjMk66/den19kicon.png'
   },
   {
     code: '013',
     name: 'Funchik',
     rarity: 'Epic',
+    language: 'English',
     image: 'https://i.postimg.cc/pXCL4YkJ/funchikicon.png'
   },
   {
     code: '014',
     name: 'CDN',
     rarity: 'Rare',
+    language: 'LATAM',
     image: 'https://i.postimg.cc/L88RgJLt/cdnicon.png'
   },
   {
     code: '015',
     name: 'Pau Gamer',
     rarity: 'Epic',
+    language: 'LATAM',
     image: 'https://i.postimg.cc/0ySGC8L3/paugamericon.png'
   },
   {
     code: '016',
     name: 'Pizezo',
     rarity: 'Rare',
+    language: 'LATAM',
     image: 'https://i.postimg.cc/j5MyjC7H/pizezoicon.png'
   },
   {
     code: '017',
     name: 'Gallin',
     rarity: 'Rare',
+    language: 'LATAM',
     image: 'https://i.postimg.cc/BvxgJqpm/gallinicon.png'
   },
   {
     code: '018',
     name: 'ElKiwis',
     rarity: 'Rare',
+    language: 'LATAM',
     image: 'https://i.postimg.cc/DwWWrBbS/elkiwisicon.png'
   },
   {
     code: '019',
     name: 'Dun Dun Dun',
     rarity: 'Epic',
+    language: 'Global',
     image: 'https://i.postimg.cc/Gtt19GRF/dundundunicon.png'
   },
   {
     code: '020',
     name: 'Khooni Player',
     rarity: 'Rare',
+    language: 'English',
     image: 'https://i.postimg.cc/mkJKDn8Z/khooniplayericon.png'
   },
   {
     code: '021',
     name: 'Pedroguimarães90K',
     rarity: 'Admin',
+    language: 'Portuguese',
     image: 'https://i.postimg.cc/0yP1JT9q/pedroguimaraes90kicon.png'
   },
   {
     code: '022',
     name: 'Rudy Roblox',
     rarity: 'Common',
+    language: 'Global',
     image: 'https://i.postimg.cc/g03hBLfS/rudyrobloxicon.png'
   },
   {
     code: '023',
     name: 'Rudy Plush',
     rarity: 'Rare',
+    language: 'Global',
     image: 'https://i.postimg.cc/KYYztkmv/rudyplushicon.png'
   },
   {
     code: '024',
     name: 'GunGun',
     rarity: 'Epic',
+    language: 'English',
     image: 'https://i.postimg.cc/7662Pt5K/gungunicon.png'
   },
   {
     code: '025',
     name: 'Vip Gurita',
     rarity: 'Legendary',
+    language: 'English',
     image: 'https://i.postimg.cc/9MDkmZKJ/vipguritaicon.png'
   },
   {
     code: '026',
     name: 'Pickle Gameplay',
     rarity: 'Common',
+    language: 'LATAM',
     image: 'https://i.postimg.cc/3rsqhL7N/picklegameplayicon.png'
   },
   {
     code: '027',
     name: 'Fessrepanzel',
     rarity: 'Epic',
+    language: 'LATAM',
     image: 'https://i.postimg.cc/vZJTtwdG/fessrepanzelicon.png'
   },
   {
     code: '028',
     name: 'Zombie',
     rarity: 'Admin',
+    language: 'Global',
     image: ''
   },
   {
     code: '029',
     name: 'Cerdito Verde',
     rarity: 'Epic',
+    language: 'LATAM',
     image: 'https://i.postimg.cc/J0vbYbnp/cerditoverdeiconlegacy.png'
   }
 ];
