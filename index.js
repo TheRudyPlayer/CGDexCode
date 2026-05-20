@@ -341,7 +341,11 @@ const commands = [
         .setName('codigo')
         .setDescription('Código del personaje')
         .setRequired(true)
-    )
+    ),
+
+  new SlashCommandBuilder()
+    .setName('data_character')
+    .setDescription('Muestra información del personaje activo')
 
 ].map(command => command.toJSON());
 
