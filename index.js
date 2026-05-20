@@ -406,9 +406,12 @@ client.on('interactionCreate', async interaction => {
 
   if (!interaction.isChatInputCommand()) return;
 
-  // SOLO OWNER
+  // SOLO OWNER EN COMANDOS PRIVADOS
 if (
-  interaction.commandName === 'spawn_character' &&
+  (
+    interaction.commandName === 'spawn_character' ||
+    interaction.commandName === 'data_character'
+  ) &&
   interaction.user.id !== OWNER_ID
 ) {
 
