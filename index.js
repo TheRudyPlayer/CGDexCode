@@ -12,18 +12,15 @@ const http = require('http');
 
 const TOKEN = process.env.TOKEN;
 
-const CLIENT_ID = '1498803742391406633';
+const CLIENT_ID = 'TU_CLIENT_ID';
 
-// VARIOS SERVERS
+// SERVERS
 const GUILD_IDS = [
-  '1433246929588060432',
-  '1490431622930239691',
-  '1501669636700373002',
-  '1311142612555661402'
+  '1433246929588060432'
 ];
 
 // TU ID
-const OWNER_ID = '1458910126168735806';
+const OWNER_ID = 'TU_USER_ID';
 
 // CLIENTE
 const client = new Client({
@@ -238,25 +235,26 @@ const characters = [
     rarity: 'Epic',
     language: 'LATAM',
     image: 'https://i.postimg.cc/J0vbYbnp/cerditoverdeiconlegacy.png'
-  }
+    }
 ];
 
 // ÚLTIMO PERSONAJE
 let lastCharacterCode = null;
+
+// PERSONAJE ACTIVO
+let activeSpawn = null;
 
 // PROBABILIDADES
 const rarityChances = {
   Common: 40,
   Rare: 30,
   Epic: 20,
-  Legendary: 10,
-  Admin: 0
+  Legendary: 10
 };
 
 // RANDOM
 function getRandomCharacter() {
 
-  // RANDOM 1-100
   const roll =
     Math.floor(Math.random() * 100) + 1;
 
@@ -323,9 +321,6 @@ function getRandomCharacter() {
 
 }
 
-// SPAWN ACTIVO
-let activeSpawn = null;
-
 // COMANDOS
 const commands = [
 
@@ -345,7 +340,7 @@ const commands = [
 
   new SlashCommandBuilder()
     .setName('data_character')
-    .setDescription('Muestra información del personaje activo')
+    .setDescription('Muestra datos del personaje activo')
 
 ].map(command => command.toJSON());
 
@@ -359,10 +354,9 @@ const rest =
 
   try {
 
-    // RECORRER SERVERS
     for (const guildId of GUILD_IDS) {
 
-      // BORRAR COMMANDS
+      // BORRAR
       await rest.put(
         Routes.applicationGuildCommands(
           CLIENT_ID,
@@ -371,7 +365,7 @@ const rest =
         { body: [] }
       );
 
-      // REGISTRAR COMMANDS
+      // REGISTRAR
       await rest.put(
         Routes.applicationGuildCommands(
           CLIENT_ID,
@@ -397,7 +391,9 @@ const rest =
 // READY
 client.once('ready', () => {
 
-  console.log(`✅ Online como ${client.user.tag}`);
+  console.log(
+    `✅ Online como ${client.user.tag}`
+  );
 
 });
 
@@ -406,23 +402,71 @@ client.on('interactionCreate', async interaction => {
 
   if (!interaction.isChatInputCommand()) return;
 
-  // SOLO OWNER EN COMANDOS PRIVADOS
-if (
-  (
-    interaction.commandName === 'spawn_character' ||
-    interaction.commandName === 'data_character'
-  ) &&
-  interaction.user.id !== OWNER_ID
-) {
+  // SOLO OWNER
+  if (
+    (
+      interaction.commandName ===
+      'spawn_character' ||
 
-  return interaction.reply({
-    content: '❌ No puedes usar este comando.',
-    flags: MessageFlags.Ephemeral
-  });
+      interaction.commandName ===
+      'data_character'
+    ) &&
+    interaction.user.id !== OWNER_ID
+  ) {
 
-}
+    return interaction.reply({
+      content: '❌ No puedes usar este comando.',
+      flags: MessageFlags.Ephemeral
+    });
+
+  }
 
   try {
+
+    // DATA CHARACTER
+    if (
+      interaction.commandName ===
+      'data_character'
+    ) {
+
+      // NO HAY PERSONAJE
+      if (!activeSpawn) {
+
+        return interaction.reply({
+          content: '❌ No hay personaje activo.',
+          flags: MessageFlags.Ephemeral
+        });
+
+      }
+
+      const embed =
+        new EmbedBuilder()
+          .setTitle('📖 Datos del Personaje')
+          .setDescription(
+`🆔 Código: ${activeSpawn.code}
+👤 Nombre: ${activeSpawn.name}
+⭐ Rareza: ${activeSpawn.rarity}
+🌎 Idioma: ${activeSpawn.language}`
+          );
+
+      // IMAGEN
+      if (
+        activeSpawn.image &&
+        activeSpawn.image.startsWith('http')
+      ) {
+
+        embed.setImage(
+          activeSpawn.image
+        );
+
+      }
+
+      return interaction.reply({
+        embeds: [embed],
+        flags: MessageFlags.Ephemeral
+      });
+
+    }
 
     // YA HAY SPAWN
     if (activeSpawn) {
@@ -436,24 +480,28 @@ if (
 
     let selectedCharacter;
 
-    // /SPAWN
-    if (interaction.commandName === 'spawn') {
+    // SPAWN RANDOM
+    if (
+      interaction.commandName ===
+      'spawn'
+    ) {
 
       selectedCharacter =
         getRandomCharacter();
 
     }
 
-    // /SPAWN_CHARACTER
+    // SPAWN CHARACTER
     if (
       interaction.commandName ===
       'spawn_character'
     ) {
 
       const code =
-        interaction.options.getString('codigo');
+        interaction.options.getString(
+          'codigo'
+        );
 
-      // BUSCAR
       const foundCharacter =
         characters.find(
           character =>
@@ -479,15 +527,19 @@ if (
     activeSpawn =
       selectedCharacter;
 
-    // PANEL
-    const embed = new EmbedBuilder()
-      .setTitle('✨ Un personaje ha aparecido')
-      .setDescription(
+    // EMBED
+    const embed =
+      new EmbedBuilder()
+        .setTitle(
+          '✨ Un personaje ha aparecido'
+        )
+        .setDescription(
 `🆔 Código: ${selectedCharacter.code}
 ⭐ Rareza: ${selectedCharacter.rarity}
+🌎 Idioma: ${selectedCharacter.language}
 
 💬 Responde con el nombre correcto para reclamarlo`
-      );
+        );
 
     // IMAGEN
     if (
@@ -501,13 +553,13 @@ if (
 
     }
 
-    // RESPUESTA INVISIBLE
+    // RESPUESTA
     await interaction.reply({
       content: '✅',
       flags: MessageFlags.Ephemeral
     });
 
-    // PANEL
+    // ENVIAR PANEL
     await interaction.channel.send({
       embeds: [embed]
     });
@@ -541,14 +593,15 @@ client.on('messageCreate', async message => {
       const claimedCharacter =
         activeSpawn;
 
-      // ELIMINAR SPAWN
+      // ELIMINAR
       activeSpawn = null;
 
       await message.reply(
 `🏆 ${message.author.username} reclamó a ${claimedCharacter.name}
 
 🆔 Código: ${claimedCharacter.code}
-⭐ Rareza: ${claimedCharacter.rarity}`
+⭐ Rareza: ${claimedCharacter.rarity}
+🌎 Idioma: ${claimedCharacter.language}`
       );
 
     }
