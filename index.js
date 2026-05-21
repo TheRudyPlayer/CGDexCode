@@ -418,7 +418,7 @@ client.on('interactionCreate', async interaction => {
   ) {
 
     return interaction.reply({
-      content: '❌ No puedes usar este comando.',
+      content: '❌ You cannot use this command.',
       flags: MessageFlags.Ephemeral
     });
 
@@ -436,7 +436,7 @@ client.on('interactionCreate', async interaction => {
       if (!activeSpawn) {
 
         return interaction.reply({
-          content: '❌ No hay personaje activo.',
+          content: '❌ There is no active character.',
           flags: MessageFlags.Ephemeral
         });
 
@@ -446,10 +446,10 @@ client.on('interactionCreate', async interaction => {
         new EmbedBuilder()
           .setTitle('📖 Datos del Personaje')
           .setDescription(
-`🆔 Código: ${activeSpawn.code}
-👤 Nombre: ${activeSpawn.name}
-⭐ Rareza: ${activeSpawn.rarity}
-🌎 Idioma: ${activeSpawn.language}`
+`🆔 Code: ${activeSpawn.code}
+👤 Name: ${activeSpawn.name}
+⭐ Rarity: ${activeSpawn.rarity}
+🌎 Language: ${activeSpawn.language}`
           );
 
       // IMAGEN
@@ -475,7 +475,7 @@ client.on('interactionCreate', async interaction => {
     if (activeSpawn) {
 
       return interaction.reply({
-        content: '❌ Ya hay un personaje activo.',
+        content: '❌ There is already an active character.',
         flags: MessageFlags.Ephemeral
       });
 
@@ -537,11 +537,11 @@ client.on('interactionCreate', async interaction => {
           '✨ Un personaje ha aparecido'
         )
         .setDescription(
-`🆔 Código: ${selectedCharacter.code}
-⭐ Rareza: ${selectedCharacter.rarity}
-🌎 Idioma: ${selectedCharacter.language}
+`🆔 Code: ${selectedCharacter.code}
+⭐ Rarity: ${selectedCharacter.rarity}
+🌎 Language: ${selectedCharacter.language}
 
-💬 Responde con el nombre correcto para reclamarlo`
+💬 Reply with the correct name to claim it`
         );
 
     // IMAGEN
@@ -602,9 +602,9 @@ client.on('messageCreate', async message => {
       await message.reply(
 `🏆 ${message.author.username} reclamó a ${claimedCharacter.name}
 
-🆔 Código: ${claimedCharacter.code}
-⭐ Rareza: ${claimedCharacter.rarity}
-🌎 Idioma: ${claimedCharacter.language}`
+🆔 Code: ${claimedCharacter.code}
+⭐ Rarity: ${claimedCharacter.rarity}
+🌎 Language: ${claimedCharacter.language}`
       );
 
     }
