@@ -12,15 +12,18 @@ const http = require('http');
 
 const TOKEN = process.env.TOKEN;
 
-const CLIENT_ID = 'TU_CLIENT_ID';
+const CLIENT_ID = '1498803742391406633';
 
 // SERVERS
 const GUILD_IDS = [
-  '1433246929588060432'
+  '1433246929588060432',
+  '1490431622930239691',
+  '1501669636700373002',
+  '1311142612555661402'
 ];
 
 // OWNER
-const OWNER_ID = 'TU_USER_ID';
+const OWNER_ID = '1458910126168735806';
 
 // CLIENTE
 const client = new Client({
