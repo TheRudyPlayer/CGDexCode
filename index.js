@@ -530,14 +530,13 @@ client.on('interactionCreate', async interaction => {
 🌎 Language: ${activeSpawn.language}`
           );
 
-      if (selectedCharacter.image) {
+      if (activeSpawn.image) {
 
   embed.setImage(
-    selectedCharacter.image.trim()
+    activeSpawn.image.trim()
   );
 
       }
-
       return interaction.reply({
         embeds: [embed],
         flags: MessageFlags.Ephemeral
@@ -613,14 +612,11 @@ client.on('interactionCreate', async interaction => {
 ${t.guess}`
         );
 
-    if (
-      selectedCharacter.image &&
-      selectedCharacter.image.startsWith('http')
-    ) {
+    if (selectedCharacter.image) {
 
-      embed.setImage(
-        selectedCharacter.image
-      );
+  embed.setImage(
+    selectedCharacter.image.trim()
+  );
 
     }
 
