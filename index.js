@@ -530,14 +530,11 @@ client.on('interactionCreate', async interaction => {
 🌎 Language: ${activeSpawn.language}`
           );
 
-      if (
-        activeSpawn.image &&
-        activeSpawn.image.startsWith('http')
-      ) {
+      if (selectedCharacter.image) {
 
-        embed.setImage(
-          activeSpawn.image
-        );
+  embed.setImage(
+    selectedCharacter.image.trim()
+  );
 
       }
 
