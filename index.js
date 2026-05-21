@@ -12,18 +12,15 @@ const http = require('http');
 
 const TOKEN = process.env.TOKEN;
 
-const CLIENT_ID = '1498803742391406633';
+const CLIENT_ID = 'TU_CLIENT_ID';
 
 // SERVERS
 const GUILD_IDS = [
-  '1433246929588060432',
-  '1490431622930239691',
-  '1501669636700373002',
-  '1311142612555661402'
+  '1433246929588060432'
 ];
 
-// TU ID
-const OWNER_ID = '1458910126168735806';
+// OWNER
+const OWNER_ID = 'TU_USER_ID';
 
 // CLIENTE
 const client = new Client({
@@ -33,6 +30,62 @@ const client = new Client({
     GatewayIntentBits.MessageContent
   ]
 });
+
+// LANGUAGE
+let botLanguage = 'English';
+
+// TEXTOS
+const texts = {
+
+  English: {
+    spawned: '✨ A character has appeared',
+    guess: '💬 Reply with the correct name to claim it',
+    active: '❌ There is already an active character.',
+    noPermission: '❌ You cannot use this command.',
+    notFound: '❌ Character not found.',
+    noCharacter: '❌ There is no active character.',
+    claimed: 'claimed',
+    data: '📖 Character Data',
+    languageChanged: '✅ Language changed to English'
+  },
+
+  Spanish: {
+    spawned: '✨ Un personaje ha aparecido',
+    guess: '💬 Responde con el nombre correcto para reclamarlo',
+    active: '❌ Ya hay un personaje activo.',
+    noPermission: '❌ No puedes usar este comando.',
+    notFound: '❌ Personaje no encontrado.',
+    noCharacter: '❌ No hay personaje activo.',
+    claimed: 'reclamó a',
+    data: '📖 Datos del Personaje',
+    languageChanged: '✅ Idioma cambiado a Español'
+  },
+
+  Portuguese: {
+    spawned: '✨ Um personagem apareceu',
+    guess: '💬 Responda com o nome correto para reivindicá-lo',
+    active: '❌ Já existe um personagem ativo.',
+    noPermission: '❌ Você não pode usar este comando.',
+    notFound: '❌ Personagem não encontrado.',
+    noCharacter: '❌ Não há personagem ativo.',
+    claimed: 'reivindicou',
+    data: '📖 Dados do Personagem',
+    languageChanged: '✅ Idioma alterado para Português'
+  },
+
+  Russian: {
+    spawned: '✨ Появился персонаж',
+    guess: '💬 Ответьте правильным именем, чтобы получить его',
+    active: '❌ Уже есть активный персонаж.',
+    noPermission: '❌ Вы не можете использовать эту команду.',
+    notFound: '❌ Персонаж не найден.',
+    noCharacter: '❌ Нет активного персонажа.',
+    claimed: 'получил',
+    data: '📖 Информация о персонаже',
+    languageChanged: '✅ Язык изменен на русский'
+  }
+
+};
 
 // PERSONAJES
 const characters = [
@@ -120,7 +173,7 @@ const characters = [
     language: 'Russian',
     image: 'https://i.postimg.cc/jdtjMk66/den19kicon.png'
   },
-  {
+    {
     code: '013',
     name: 'Funchik',
     rarity: 'Epic',
@@ -238,16 +291,16 @@ const characters = [
     rarity: 'Epic',
     language: 'LATAM',
     image: 'https://i.postimg.cc/J0vbYbnp/cerditoverdeiconlegacy.png'
-    }
+  }
 ];
 
-// ÚLTIMO PERSONAJE
+// ÚLTIMO
 let lastCharacterCode = null;
 
-// PERSONAJE ACTIVO
+// ACTIVO
 let activeSpawn = null;
 
-// PROBABILIDADES
+// RAREZAS
 const rarityChances = {
   Common: 40,
   Rare: 30,
@@ -265,7 +318,6 @@ function getRandomCharacter() {
 
   let selectedRarity = 'Common';
 
-  // ELEGIR RAREZA
   for (const rarity in rarityChances) {
 
     current += rarityChances[rarity];
@@ -273,42 +325,36 @@ function getRandomCharacter() {
     if (roll <= current) {
 
       selectedRarity = rarity;
-
       break;
 
     }
 
   }
 
-  // FILTRAR
   let filtered =
     characters.filter(
       character =>
         character.rarity === selectedRarity
     );
 
-  // SI NO HAY
   if (filtered.length === 0) {
 
     filtered = characters;
 
   }
 
-  // EVITAR REPETIDOS
   filtered =
     filtered.filter(
       character =>
         character.code !== lastCharacterCode
     );
 
-  // SI NO QUEDA NADA
   if (filtered.length === 0) {
 
     filtered = characters;
 
   }
 
-  // RANDOM FINAL
   const selectedCharacter =
     filtered[
       Math.floor(
@@ -316,7 +362,6 @@ function getRandomCharacter() {
       )
     ];
 
-  // GUARDAR
   lastCharacterCode =
     selectedCharacter.code;
 
@@ -324,26 +369,42 @@ function getRandomCharacter() {
 
 }
 
-// COMANDOS
+// COMMANDS
 const commands = [
 
   new SlashCommandBuilder()
     .setName('spawn')
-    .setDescription('Spawnea un personaje random'),
+    .setDescription('Spawn random character'),
 
   new SlashCommandBuilder()
     .setName('spawn_character')
-    .setDescription('Spawnea un personaje específico')
+    .setDescription('Spawn specific character')
     .addStringOption(option =>
       option
         .setName('codigo')
-        .setDescription('Código del personaje')
+        .setDescription('Character code')
         .setRequired(true)
     ),
 
   new SlashCommandBuilder()
     .setName('data_character')
-    .setDescription('Muestra datos del personaje activo')
+    .setDescription('Character data'),
+
+  new SlashCommandBuilder()
+    .setName('language')
+    .setDescription('Change bot language')
+    .addStringOption(option =>
+      option
+        .setName('idioma')
+        .setDescription('Language')
+        .setRequired(true)
+        .addChoices(
+          { name: 'English', value: 'English' },
+          { name: 'Spanish', value: 'Spanish' },
+          { name: 'Portuguese', value: 'Portuguese' },
+          { name: 'Russian', value: 'Russian' }
+        )
+    )
 
 ].map(command => command.toJSON());
 
@@ -352,14 +413,13 @@ const rest =
   new REST({ version: '10' })
     .setToken(TOKEN);
 
-// REGISTRAR COMMANDS
+// REGISTER
 (async () => {
 
   try {
 
     for (const guildId of GUILD_IDS) {
 
-      // BORRAR
       await rest.put(
         Routes.applicationGuildCommands(
           CLIENT_ID,
@@ -368,7 +428,6 @@ const rest =
         { body: [] }
       );
 
-      // REGISTRAR
       await rest.put(
         Routes.applicationGuildCommands(
           CLIENT_ID,
@@ -377,11 +436,9 @@ const rest =
         { body: commands }
       );
 
-      console.log(
-        `✅ Commands registrados en ${guildId}`
-      );
-
     }
+
+    console.log('✅ Commands registered');
 
   } catch (err) {
 
@@ -395,30 +452,29 @@ const rest =
 client.once('ready', () => {
 
   console.log(
-    `✅ Online como ${client.user.tag}`
+    `✅ Online as ${client.user.tag}`
   );
 
 });
 
-// INTERACCIONES
+// INTERACTION
 client.on('interactionCreate', async interaction => {
 
   if (!interaction.isChatInputCommand()) return;
 
-  // SOLO OWNER
+  const t = texts[botLanguage];
+
+  // OWNER
   if (
     (
-      interaction.commandName ===
-      'spawn_character' ||
-
-      interaction.commandName ===
-      'data_character'
+      interaction.commandName === 'spawn_character' ||
+      interaction.commandName === 'data_character'
     ) &&
     interaction.user.id !== OWNER_ID
   ) {
 
     return interaction.reply({
-      content: '❌ You cannot use this command.',
+      content: t.noPermission,
       flags: MessageFlags.Ephemeral
     });
 
@@ -426,17 +482,36 @@ client.on('interactionCreate', async interaction => {
 
   try {
 
-    // DATA CHARACTER
+    // LANGUAGE
+    if (
+      interaction.commandName ===
+      'language'
+    ) {
+
+      botLanguage =
+        interaction.options.getString(
+          'idioma'
+        );
+
+      return interaction.reply({
+        content:
+          texts[botLanguage]
+            .languageChanged,
+        flags: MessageFlags.Ephemeral
+      });
+
+    }
+
+    // DATA
     if (
       interaction.commandName ===
       'data_character'
     ) {
 
-      // NO HAY PERSONAJE
       if (!activeSpawn) {
 
         return interaction.reply({
-          content: '❌ There is no active character.',
+          content: t.noCharacter,
           flags: MessageFlags.Ephemeral
         });
 
@@ -444,7 +519,7 @@ client.on('interactionCreate', async interaction => {
 
       const embed =
         new EmbedBuilder()
-          .setTitle('📖 Datos del Personaje')
+          .setTitle(t.data)
           .setDescription(
 `🆔 Code: ${activeSpawn.code}
 👤 Name: ${activeSpawn.name}
@@ -452,7 +527,6 @@ client.on('interactionCreate', async interaction => {
 🌎 Language: ${activeSpawn.language}`
           );
 
-      // IMAGEN
       if (
         activeSpawn.image &&
         activeSpawn.image.startsWith('http')
@@ -471,11 +545,11 @@ client.on('interactionCreate', async interaction => {
 
     }
 
-    // YA HAY SPAWN
+    // ACTIVE
     if (activeSpawn) {
 
       return interaction.reply({
-        content: '❌ There is already an active character.',
+        content: t.active,
         flags: MessageFlags.Ephemeral
       });
 
@@ -483,7 +557,7 @@ client.on('interactionCreate', async interaction => {
 
     let selectedCharacter;
 
-    // SPAWN RANDOM
+    // SPAWN
     if (
       interaction.commandName ===
       'spawn'
@@ -511,11 +585,10 @@ client.on('interactionCreate', async interaction => {
             character.code === code
         );
 
-      // NO EXISTE
       if (!foundCharacter) {
 
         return interaction.reply({
-          content: '❌ Personaje no encontrado.',
+          content: t.notFound,
           flags: MessageFlags.Ephemeral
         });
 
@@ -526,25 +599,20 @@ client.on('interactionCreate', async interaction => {
 
     }
 
-    // GUARDAR
     activeSpawn =
       selectedCharacter;
 
-    // EMBED
     const embed =
       new EmbedBuilder()
-        .setTitle(
-          '✨ Un personaje ha aparecido'
-        )
+        .setTitle(t.spawned)
         .setDescription(
 `🆔 Code: ${selectedCharacter.code}
 ⭐ Rarity: ${selectedCharacter.rarity}
 🌎 Language: ${selectedCharacter.language}
 
-💬 Reply with the correct name to claim it`
+${t.guess}`
         );
 
-    // IMAGEN
     if (
       selectedCharacter.image &&
       selectedCharacter.image.startsWith('http')
@@ -556,13 +624,11 @@ client.on('interactionCreate', async interaction => {
 
     }
 
-    // RESPUESTA
     await interaction.reply({
       content: '✅',
       flags: MessageFlags.Ephemeral
     });
 
-    // ENVIAR PANEL
     await interaction.channel.send({
       embeds: [embed]
     });
@@ -575,7 +641,7 @@ client.on('interactionCreate', async interaction => {
 
 });
 
-// RECLAMAR
+// CLAIM
 client.on('messageCreate', async message => {
 
   try {
@@ -584,23 +650,23 @@ client.on('messageCreate', async message => {
 
     if (!activeSpawn) return;
 
+    const t = texts[botLanguage];
+
     const userAnswer =
       message.content.toLowerCase().trim();
 
     const correctAnswer =
       activeSpawn.name.toLowerCase();
 
-    // CORRECTO
     if (userAnswer === correctAnswer) {
 
       const claimedCharacter =
         activeSpawn;
 
-      // ELIMINAR
       activeSpawn = null;
 
       await message.reply(
-`🏆 ${message.author.username} reclamó a ${claimedCharacter.name}
+`🏆 ${message.author.username} ${t.claimed} ${claimedCharacter.name}
 
 🆔 Code: ${claimedCharacter.code}
 ⭐ Rarity: ${claimedCharacter.rarity}
