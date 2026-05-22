@@ -5,24 +5,20 @@ const {
   REST,
   Routes,
   EmbedBuilder,
-  AttachmentBuilder,
   MessageFlags
 } = require('discord.js');
 
 const http = require('http');
 
 const TOKEN = process.env.TOKEN;
-const CLIENT_ID = '1498803742391406633';
+const CLIENT_ID = 'TU_CLIENT_ID';
 
-// SERVERS
+// Servidor(es)
 const GUILD_IDS = [
-  '1433246929588060432',
-  '1490431622930239691',
-  '1501669636700373002',
-  '1311142612555661402'
+  '1433246929588060432'
 ];
 
-const OWNER_ID = '1458910126168735806';
+const OWNER_ID = 'TU_USER_ID';
 
 const client = new Client({
   intents: [
@@ -308,9 +304,9 @@ const rarityChances = {
   Legendary: 10
 };
 
-const activeSpawns = new Map();      // guildId -> character
+const activeSpawns = new Map();       // guildId -> character
 const lastCharacterCodes = new Map(); // guildId -> last code
-const guildLanguages = new Map();     // guildId -> English / Spanish / Portuguese / Russian
+const guildLanguages = new Map();     // guildId -> language
 
 function getGuildLanguage(guildId) {
   return guildLanguages.get(guildId) || 'English';
@@ -386,53 +382,47 @@ function getRandomCharacter(guildId) {
     available[Math.floor(Math.random() * available.length)];
 
   setLastCharacterCode(guildId, selectedCharacter.code);
-
   return selectedCharacter;
 }
 
-async function buildCharacterPayload(character, title, description, fileBaseName) {
+function buildSpawnEmbed(character, language) {
+  const t = texts[language] || texts.English;
+
   const embed = new EmbedBuilder()
-    .setTitle(title)
-    .setDescription(description);
+    .setTitle(t.spawnedTitle)
+    .setDescription(
+      `🆔 ${t.codeLabel}: ${character.code}\n` +
+      `⭐ ${t.rarityLabel}: ${character.rarity}\n` +
+      `🌎 ${t.languageLabel}: ${character.language}\n\n` +
+      `${t.guessText}`
+    );
 
   const imageUrl = normalizeImage(character.image);
-
   if (imageUrl) {
-    try {
-      const response = await fetch(imageUrl);
-
-      if (response.ok) {
-        const contentType = response.headers.get('content-type') || '';
-
-        if (contentType.startsWith('image/')) {
-          const buffer = Buffer.from(await response.arrayBuffer());
-
-          let extension = 'png';
-          if (contentType.includes('jpeg') || contentType.includes('jpg')) extension = 'jpg';
-          if (contentType.includes('webp')) extension = 'webp';
-          if (contentType.includes('gif')) extension = 'gif';
-
-          const fileName = `${fileBaseName}.${extension}`;
-          const attachment = new AttachmentBuilder(buffer, { name: fileName });
-
-          embed.setImage(`attachment://${fileName}`);
-
-          return {
-            embeds: [embed],
-            files: [attachment]
-          };
-        }
-      }
-    } catch (error) {
-      console.log('Image fetch failed, using direct URL fallback:', error.message);
-    }
-
     embed.setImage(imageUrl);
   }
 
-  return {
-    embeds: [embed]
-  };
+  return embed;
+}
+
+function buildDataEmbed(character, language) {
+  const t = texts[language] || texts.English;
+
+  const embed = new EmbedBuilder()
+    .setTitle(t.dataTitle)
+    .setDescription(
+      `🆔 ${t.codeLabel}: ${character.code}\n` +
+      `👤 ${t.nameLabel}: ${character.name}\n` +
+      `⭐ ${t.rarityLabel}: ${character.rarity}\n` +
+      `🌎 ${t.languageLabel}: ${character.language}`
+    );
+
+  const imageUrl = normalizeImage(character.image);
+  if (imageUrl) {
+    embed.setImage(imageUrl);
+  }
+
+  return embed;
 }
 
 const commands = [
@@ -536,18 +526,10 @@ client.on('interactionCreate', async interaction => {
         });
       }
 
-      const payload = await buildCharacterPayload(
-        activeSpawn,
-        t.dataTitle,
-        `🆔 ${t.codeLabel}: ${activeSpawn.code}\n` +
-        `👤 ${t.nameLabel}: ${activeSpawn.name}\n` +
-        `⭐ ${t.rarityLabel}: ${activeSpawn.rarity}\n` +
-        `🌎 ${t.languageLabel}: ${activeSpawn.language}`,
-        `data_${activeSpawn.code}`
-      );
+      const embed = buildDataEmbed(activeSpawn, language);
 
       return interaction.reply({
-        ...payload,
+        embeds: [embed],
         flags: MessageFlags.Ephemeral
       });
     }
@@ -585,22 +567,16 @@ client.on('interactionCreate', async interaction => {
 
     setActiveSpawn(interaction.guildId, selectedCharacter);
 
-    const payload = await buildCharacterPayload(
-      selectedCharacter,
-      t.spawnedTitle,
-      `🆔 ${t.codeLabel}: ${selectedCharacter.code}\n` +
-      `⭐ ${t.rarityLabel}: ${selectedCharacter.rarity}\n` +
-      `🌎 ${t.languageLabel}: ${selectedCharacter.language}\n\n` +
-      `${t.guessText}`,
-      `spawn_${selectedCharacter.code}`
-    );
+    const embed = buildSpawnEmbed(selectedCharacter, language);
 
     await interaction.reply({
       content: '✅',
       flags: MessageFlags.Ephemeral
     });
 
-    await interaction.channel.send(payload);
+    await interaction.channel.send({
+      embeds: [embed]
+    });
   } catch (err) {
     console.error(err);
   }
