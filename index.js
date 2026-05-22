@@ -4,28 +4,21 @@ const {
   SlashCommandBuilder,
   REST,
   Routes,
-  EmbedBuilder,
-  MessageFlags
+  EmbedBuilder
 } = require('discord.js');
 
 const http = require('http');
 
 const TOKEN = process.env.TOKEN;
+const CLIENT_ID = 'TU_CLIENT_ID';
 
-const CLIENT_ID = '1498803742391406633';
-
-// SERVERS
+// Si después quieres más servers, añade sus IDs aquí.
 const GUILD_IDS = [
-  '1433246929588060432',
-  '1490431622930239691',
-  '1501669636700373002',
-  '1311142612555661402'
+  '1433246929588060432'
 ];
 
-// OWNER
-const OWNER_ID = '1458910126168735806';
+const OWNER_ID = 'TU_USER_ID';
 
-// CLIENTE
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -34,63 +27,53 @@ const client = new Client({
   ]
 });
 
-// LANGUAGE
-let botLanguage = 'English';
-
-// TEXTOS
 const texts = {
-
   English: {
-    spawned: '✨ A character has appeared',
-    guess: '💬 Reply with the correct name to claim it',
-    active: '❌ There is already an active character.',
-    noPermission: '❌ You cannot use this command.',
+    commandBlocked: '❌ You cannot use this command.',
+    activeCharacter: '❌ There is already an active character.',
     notFound: '❌ Character not found.',
     noCharacter: '❌ There is no active character.',
-    claimed: 'claimed',
-    data: '📖 Character Data',
-    languageChanged: '✅ Language changed to English'
+    spawnedTitle: '✨ A character has appeared',
+    guessText: '💬 Reply with the correct name to claim it',
+    dataTitle: '📖 Character Data',
+    languageChanged: '✅ Language changed to English',
+    claimed: 'claimed'
   },
-
   Spanish: {
-    spawned: '✨ Un personaje ha aparecido',
-    guess: '💬 Responde con el nombre correcto para reclamarlo',
-    active: '❌ Ya hay un personaje activo.',
-    noPermission: '❌ No puedes usar este comando.',
+    commandBlocked: '❌ No puedes usar este comando.',
+    activeCharacter: '❌ Ya hay un personaje activo.',
     notFound: '❌ Personaje no encontrado.',
     noCharacter: '❌ No hay personaje activo.',
-    claimed: 'reclamó a',
-    data: '📖 Datos del Personaje',
-    languageChanged: '✅ Idioma cambiado a Español'
+    spawnedTitle: '✨ Un personaje ha aparecido',
+    guessText: '💬 Responde con el nombre correcto para reclamarlo',
+    dataTitle: '📖 Datos del Personaje',
+    languageChanged: '✅ Idioma cambiado a Español',
+    claimed: 'reclamó a'
   },
-
   Portuguese: {
-    spawned: '✨ Um personagem apareceu',
-    guess: '💬 Responda com o nome correto para reivindicá-lo',
-    active: '❌ Já existe um personagem ativo.',
-    noPermission: '❌ Você não pode usar este comando.',
+    commandBlocked: '❌ Você não pode usar este comando.',
+    activeCharacter: '❌ Já existe um personagem ativo.',
     notFound: '❌ Personagem não encontrado.',
     noCharacter: '❌ Não há personagem ativo.',
-    claimed: 'reivindicou',
-    data: '📖 Dados do Personagem',
-    languageChanged: '✅ Idioma alterado para Português'
+    spawnedTitle: '✨ Um personagem apareceu',
+    guessText: '💬 Responda com o nome correto para reivindicá-lo',
+    dataTitle: '📖 Dados do Personagem',
+    languageChanged: '✅ Idioma alterado para Português',
+    claimed: 'reivindicou'
   },
-
   Russian: {
-    spawned: '✨ Появился персонаж',
-    guess: '💬 Ответьте правильным именем, чтобы получить его',
-    active: '❌ Уже есть активный персонаж.',
-    noPermission: '❌ Вы не можете использовать эту команду.',
+    commandBlocked: '❌ Вы не можете использовать эту команду.',
+    activeCharacter: '❌ Уже есть активный персонаж.',
     notFound: '❌ Персонаж не найден.',
     noCharacter: '❌ Нет активного персонажа.',
-    claimed: 'получил',
-    data: '📖 Информация о персонаже',
-    languageChanged: '✅ Язык изменен на русский'
+    spawnedTitle: '✨ Появился персонаж',
+    guessText: '💬 Ответьте правильным именем, чтобы получить его',
+    dataTitle: '📖 Информация о персонаже',
+    languageChanged: '✅ Язык изменен на Russian',
+    claimed: 'получил'
   }
-
 };
 
-// PERSONAJES
 const characters = [
   {
     code: '001',
@@ -176,7 +159,7 @@ const characters = [
     language: 'Russian',
     image: 'https://i.postimg.cc/jdtjMk66/den19kicon.png'
   },
-    {
+      {
     code: '013',
     name: 'Funchik',
     rarity: 'Epic',
@@ -297,13 +280,6 @@ const characters = [
   }
 ];
 
-// ÚLTIMO
-let lastCharacterCode = null;
-
-// ACTIVO
-let activeSpawn = null;
-
-// RAREZAS
 const rarityChances = {
   Common: 40,
   Rare: 30,
@@ -311,77 +287,137 @@ const rarityChances = {
   Legendary: 10
 };
 
-// RANDOM
-function getRandomCharacter() {
+const activeSpawns = new Map();      // guildId -> character
+const lastCharacterCodes = new Map(); // guildId -> last code
+const guildLanguages = new Map();     // guildId -> English / Spanish / Portuguese / Russian
 
-  const roll =
-    Math.floor(Math.random() * 100) + 1;
+function getGuildLanguage(guildId) {
+  return guildLanguages.get(guildId) || 'English';
+}
+
+function setGuildLanguage(guildId, language) {
+  guildLanguages.set(guildId, language);
+}
+
+function getActiveSpawn(guildId) {
+  return activeSpawns.get(guildId) || null;
+}
+
+function setActiveSpawn(guildId, character) {
+  activeSpawns.set(guildId, character);
+}
+
+function clearActiveSpawn(guildId) {
+  activeSpawns.delete(guildId);
+}
+
+function getLastCharacterCode(guildId) {
+  return lastCharacterCodes.get(guildId) || null;
+}
+
+function setLastCharacterCode(guildId, code) {
+  lastCharacterCodes.set(guildId, code);
+}
+
+function normalizeImage(url) {
+  if (typeof url !== 'string') return '';
+  return url.trim();
+}
+
+function getRandomCharacter(guildId) {
+  const roll = Math.floor(Math.random() * 100) + 1;
 
   let current = 0;
-
   let selectedRarity = 'Common';
 
   for (const rarity in rarityChances) {
-
     current += rarityChances[rarity];
-
     if (roll <= current) {
-
       selectedRarity = rarity;
       break;
-
     }
-
   }
 
-  let filtered =
-    characters.filter(
-      character =>
-        character.rarity === selectedRarity
-    );
+  let filtered = characters.filter(
+    character => character.rarity === selectedRarity
+  );
 
   if (filtered.length === 0) {
-
     filtered = characters;
-
   }
 
-  filtered =
-    filtered.filter(
-      character =>
-        character.code !== lastCharacterCode
+  const lastCode = getLastCharacterCode(guildId);
+
+  let available = filtered.filter(
+    character => character.code !== lastCode
+  );
+
+  if (available.length === 0) {
+    available = characters.filter(
+      character => character.code !== lastCode
     );
+  }
 
-  if (filtered.length === 0) {
-
-    filtered = characters;
-
+  if (available.length === 0) {
+    available = characters;
   }
 
   const selectedCharacter =
-    filtered[
-      Math.floor(
-        Math.random() * filtered.length
-      )
-    ];
+    available[Math.floor(Math.random() * available.length)];
 
-  lastCharacterCode =
-    selectedCharacter.code;
+  setLastCharacterCode(guildId, selectedCharacter.code);
 
   return selectedCharacter;
-
 }
 
-// COMMANDS
-const commands = [
+function buildSpawnEmbed(character, language) {
+  const t = texts[language] || texts.English;
 
+  const embed = new EmbedBuilder()
+    .setTitle(t.spawnedTitle)
+    .setDescription(
+      `🆔 Code: ${character.code}\n` +
+      `⭐ Rarity: ${character.rarity}\n` +
+      `🌎 Language: ${character.language}\n\n` +
+      `${t.guessText}`
+    );
+
+  const img = normalizeImage(character.image);
+  if (img) {
+    embed.setImage(img);
+  }
+
+  return embed;
+}
+
+function buildDataEmbed(character, language) {
+  const t = texts[language] || texts.English;
+
+  const embed = new EmbedBuilder()
+    .setTitle(t.dataTitle)
+    .setDescription(
+      `🆔 Code: ${character.code}\n` +
+      `👤 Name: ${character.name}\n` +
+      `⭐ Rarity: ${character.rarity}\n` +
+      `🌎 Language: ${character.language}`
+    );
+
+  const img = normalizeImage(character.image);
+  if (img) {
+    embed.setImage(img);
+  }
+
+  return embed;
+}
+
+const commands = [
   new SlashCommandBuilder()
     .setName('spawn')
-    .setDescription('Spawn random character'),
+    .setDescription('Spawn a random character'),
 
   new SlashCommandBuilder()
     .setName('spawn_character')
-    .setDescription('Spawn specific character')
+    .setDescription('Spawn a specific character')
     .addStringOption(option =>
       option
         .setName('codigo')
@@ -391,11 +427,11 @@ const commands = [
 
   new SlashCommandBuilder()
     .setName('data_character')
-    .setDescription('Character data'),
+    .setDescription('Show the active character data'),
 
   new SlashCommandBuilder()
     .setName('language')
-    .setDescription('Change bot language')
+    .setDescription('Change the bot language')
     .addStringOption(option =>
       option
         .setName('idioma')
@@ -408,284 +444,170 @@ const commands = [
           { name: 'Russian', value: 'Russian' }
         )
     )
-
 ].map(command => command.toJSON());
 
-// REST
-const rest =
-  new REST({ version: '10' })
-    .setToken(TOKEN);
+const rest = new REST({ version: '10' }).setToken(TOKEN);
 
-// REGISTER
 (async () => {
-
   try {
-
     for (const guildId of GUILD_IDS) {
-
       await rest.put(
-        Routes.applicationGuildCommands(
-          CLIENT_ID,
-          guildId
-        ),
+        Routes.applicationGuildCommands(CLIENT_ID, guildId),
         { body: [] }
       );
 
       await rest.put(
-        Routes.applicationGuildCommands(
-          CLIENT_ID,
-          guildId
-        ),
+        Routes.applicationGuildCommands(CLIENT_ID, guildId),
         { body: commands }
       );
 
+      console.log(`✅ Commands registered in ${guildId}`);
     }
-
-    console.log('✅ Commands registered');
-
   } catch (err) {
-
     console.error(err);
-
   }
-
 })();
 
-// READY
 client.once('ready', () => {
-
-  console.log(
-    `✅ Online as ${client.user.tag}`
-  );
-
+  console.log(`✅ Online as ${client.user.tag}`);
 });
 
-// INTERACTION
 client.on('interactionCreate', async interaction => {
-
   if (!interaction.isChatInputCommand()) return;
 
-  const t = texts[botLanguage];
+  const guildId = interaction.guildId;
+  if (!guildId) return;
 
-  // OWNER
-  if (
-    (
-      interaction.commandName === 'spawn_character' ||
-      interaction.commandName === 'data_character'
-    ) &&
-    interaction.user.id !== OWNER_ID
-  ) {
-
-    return interaction.reply({
-      content: t.noPermission,
-      flags: MessageFlags.Ephemeral
-    });
-
-  }
+  const language = getGuildLanguage(guildId);
+  const t = texts[language] || texts.English;
 
   try {
-
-    // LANGUAGE
-    if (
-      interaction.commandName ===
-      'language'
-    ) {
-
-      botLanguage =
-        interaction.options.getString(
-          'idioma'
-        );
+    if (interaction.commandName === 'language') {
+      const newLanguage = interaction.options.getString('idioma');
+      setGuildLanguage(guildId, newLanguage);
 
       return interaction.reply({
-        content:
-          texts[botLanguage]
-            .languageChanged,
-        flags: MessageFlags.Ephemeral
+        content: texts[newLanguage].languageChanged,
+        ephemeral: true
       });
-
     }
 
-    // DATA
     if (
-      interaction.commandName ===
-      'data_character'
+      (interaction.commandName === 'spawn_character' ||
+       interaction.commandName === 'data_character') &&
+      interaction.user.id !== OWNER_ID
     ) {
+      return interaction.reply({
+        content: t.commandBlocked,
+        ephemeral: true
+      });
+    }
+
+    if (interaction.commandName === 'data_character') {
+      const activeSpawn = getActiveSpawn(guildId);
 
       if (!activeSpawn) {
-
         return interaction.reply({
           content: t.noCharacter,
-          flags: MessageFlags.Ephemeral
+          ephemeral: true
         });
-
       }
 
-      const embed =
-        new EmbedBuilder()
-          .setTitle(t.data)
-          .setDescription(
-`🆔 Code: ${activeSpawn.code}
-👤 Name: ${activeSpawn.name}
-⭐ Rarity: ${activeSpawn.rarity}
-🌎 Language: ${activeSpawn.language}`
-          );
+      const embed = buildDataEmbed(activeSpawn, language);
 
-      if (activeSpawn.image) {
-
-  embed.setImage(
-    activeSpawn.image.trim()
-  );
-
-      }
       return interaction.reply({
         embeds: [embed],
-        flags: MessageFlags.Ephemeral
+        ephemeral: true
       });
-
     }
 
-    // ACTIVE
-    if (activeSpawn) {
+    if (interaction.commandName === 'spawn' || interaction.commandName === 'spawn_character') {
+      const activeSpawn = getActiveSpawn(guildId);
 
-      return interaction.reply({
-        content: t.active,
-        flags: MessageFlags.Ephemeral
-      });
-
-    }
-
-    let selectedCharacter;
-
-    // SPAWN
-    if (
-      interaction.commandName ===
-      'spawn'
-    ) {
-
-      selectedCharacter =
-        getRandomCharacter();
-
-    }
-
-    // SPAWN CHARACTER
-    if (
-      interaction.commandName ===
-      'spawn_character'
-    ) {
-
-      const code =
-        interaction.options.getString(
-          'codigo'
-        );
-
-      const foundCharacter =
-        characters.find(
-          character =>
-            character.code === code
-        );
-
-      if (!foundCharacter) {
-
+      if (activeSpawn) {
         return interaction.reply({
-          content: t.notFound,
-          flags: MessageFlags.Ephemeral
+          content: t.activeCharacter,
+          ephemeral: true
         });
-
       }
 
-      selectedCharacter =
-        foundCharacter;
+      let selectedCharacter = null;
 
-    }
+      if (interaction.commandName === 'spawn') {
+        selectedCharacter = getRandomCharacter(guildId);
+      }
 
-    activeSpawn =
-      selectedCharacter;
+      if (interaction.commandName === 'spawn_character') {
+        const code = interaction.options.getString('codigo');
 
-    const embed =
-      new EmbedBuilder()
-        .setTitle(t.spawned)
-        .setDescription(
-`🆔 Code: ${selectedCharacter.code}
-⭐ Rarity: ${selectedCharacter.rarity}
-🌎 Language: ${selectedCharacter.language}
-
-${t.guess}`
+        const foundCharacter = characters.find(
+          character => character.code === code
         );
 
-    if (selectedCharacter.image) {
+        if (!foundCharacter) {
+          return interaction.reply({
+            content: t.notFound,
+            ephemeral: true
+          });
+        }
 
-  embed.setImage(
-    selectedCharacter.image.trim()
-  );
+        selectedCharacter = foundCharacter;
+        setLastCharacterCode(guildId, selectedCharacter.code);
+      }
 
+      setActiveSpawn(guildId, selectedCharacter);
+
+      const embed = buildSpawnEmbed(selectedCharacter, language);
+
+      await interaction.reply({
+        content: '✅',
+        ephemeral: true
+      });
+
+      await interaction.channel.send({
+        embeds: [embed]
+      });
+
+      return;
     }
-
-    await interaction.reply({
-      content: '✅',
-      flags: MessageFlags.Ephemeral
-    });
-
-    await interaction.channel.send({
-      embeds: [embed]
-    });
-
   } catch (err) {
-
     console.error(err);
-
   }
-
 });
 
-// CLAIM
 client.on('messageCreate', async message => {
-
   try {
-
     if (message.author.bot) return;
+    if (!message.guildId) return;
 
+    const activeSpawn = getActiveSpawn(message.guildId);
     if (!activeSpawn) return;
 
-    const t = texts[botLanguage];
-
-    const userAnswer =
-      message.content.toLowerCase().trim();
-
-    const correctAnswer =
-      activeSpawn.name.toLowerCase();
+    const userAnswer = message.content.toLowerCase().trim();
+    const correctAnswer = activeSpawn.name.toLowerCase().trim();
 
     if (userAnswer === correctAnswer) {
+      const claimedCharacter = activeSpawn;
+      clearActiveSpawn(message.guildId);
 
-      const claimedCharacter =
-        activeSpawn;
-
-      activeSpawn = null;
+      const language = getGuildLanguage(message.guildId);
+      const t = texts[language] || texts.English;
 
       await message.reply(
-`🏆 ${message.author.username} ${t.claimed} ${claimedCharacter.name}
-
-🆔 Code: ${claimedCharacter.code}
-⭐ Rarity: ${claimedCharacter.rarity}
-🌎 Language: ${claimedCharacter.language}`
+        `🏆 ${message.author.username} ${t.claimed} ${claimedCharacter.name}\n\n` +
+        `🆔 Code: ${claimedCharacter.code}\n` +
+        `⭐ Rarity: ${claimedCharacter.rarity}\n` +
+        `🌎 Language: ${claimedCharacter.language}`
       );
-
     }
-
   } catch (err) {
-
     console.error(err);
-
   }
-
 });
 
-// LOGIN
 client.login(TOKEN);
 
-// PORT
 http.createServer((req, res) => {
-
   res.write('CGDex Online');
   res.end();
-
 }).listen(process.env.PORT || 3000);
