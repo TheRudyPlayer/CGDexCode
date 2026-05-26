@@ -4,23 +4,27 @@ const {
   SlashCommandBuilder,
   REST,
   Routes,
-  EmbedBuilder
+  EmbedBuilder,
+  MessageFlags
 } = require('discord.js');
 
 const http = require('http');
 
 const TOKEN = process.env.TOKEN;
+
 const CLIENT_ID = '1498803742391406633';
 
+// VARIOS SERVERS
 const GUILD_IDS = [
   '1433246929588060432',
   '1490431622930239691',
-  '1501669636700373002',
-  '1311142612555661402'
+  '1501669636700373002'
 ];
 
+// TU ID
 const OWNER_ID = '1458910126168735806';
 
+// CLIENTE
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -29,180 +33,428 @@ const client = new Client({
   ]
 });
 
-/* =========================
-   TEXTOS
-========================= */
-
-const texts = {
-  English: {
-    spawn: "✨ A character has appeared",
-    claim: "claimed",
-    noActive: "No active character",
-    blocked: "Not allowed",
-    already: "Already active character"
-  },
-  Spanish: {
-    spawn: "✨ ¡Un personaje apareció!",
-    claim: "reclamó a",
-    noActive: "No hay personaje activo",
-    blocked: "No permitido",
-    already: "Ya hay un personaje activo"
-  }
-};
-
-/* =========================
-   PERSONAJES (NO TOCAR)
-========================= */
-
+// PERSONAJES
 const characters = [
   {
-    code: "001",
-    name: "Rudy",
-    rarity: "Common",
-    image: "https://i.postimg.cc/vB49MTQv/rudyicon.png"
+    code: '001',
+    name: 'Rudy',
+    rarity: 'Common',
+    image: 'https://i.postimg.cc/vB49MTQv/rudyicon.png'
   },
   {
-    code: "002",
-    name: "Dragon Dude",
-    rarity: "Epic",
-    image: "https://i.postimg.cc/85KLhQ2n/dragondudeicon.png"
+    code: '002',
+    name: 'ChaloApps',
+    rarity: 'Common',
+    image: 'https://i.postimg.cc/pT594SZJ/chaloappsicon.png'
   },
   {
-    code: "003",
-    name: "Spy Gaming",
-    rarity: "Rare",
-    image: "https://i.postimg.cc/6pB7ZZvP/spygamingicon.png"
+    code: '003',
+    name: 'Dragon Dude',
+    rarity: 'Epic',
+    image: 'https://i.postimg.cc/0Q7ymXsg/dragondudeiconlegacy.png'
+  },
+  {
+    code: '004',
+    name: 'Mr Meow',
+    rarity: 'Rare',
+    image: 'https://i.postimg.cc/nrrjGqYM/mrmeowicon.png'
+  },
+  {
+    code: '005',
+    name: 'MirtHD',
+    rarity: 'Common',
+    image: 'https://i.postimg.cc/8PrskpyV/mirthdicon.png'
+  },
+  {
+    code: '006',
+    name: 'TheRudyPlayer',
+    rarity: 'Common',
+    image: 'https://i.postimg.cc/cJdJcQ02/therudyplayericon.png'
+  },
+  {
+    code: '007',
+    name: 'Diego Gormaz',
+    rarity: 'Rare',
+    image: 'https://i.postimg.cc/2S7PfZR0/diegogormazgamericon.png'
+  },
+  {
+    code: '008',
+    name: 'Stiff LXR',
+    rarity: 'Epic',
+    image: 'https://i.postimg.cc/TY7tjJxy/stifflxricon.png'
+  },
+  {
+    code: '009',
+    name: 'JR Crack',
+    rarity: 'Legendary',
+    image: 'https://i.postimg.cc/6qHf0tkJ/jrcrackicon.png'
+  },
+  {
+    code: '010',
+    name: 'Spy_Gaming150',
+    rarity: 'Rare',
+    image: 'https://i.postimg.cc/6pB7ZZvP/spygamingicon.png'
+  },
+  {
+    code: '011',
+    name: 'Eitee',
+    rarity: 'Rare',
+    image: 'https://i.postimg.cc/6qdyykdg/eiteeicon.png'
+  },
+  {
+    code: '012',
+    name: 'Den19K',
+    rarity: 'Legendary',
+    image: 'https://i.postimg.cc/jdtjMk66/den19kicon.png'
+  },
+  {
+    code: '013',
+    name: 'Funchik',
+    rarity: 'Epic',
+    image: 'https://i.postimg.cc/pXCL4YkJ/funchikicon.png'
+  },
+  {
+    code: '014',
+    name: 'CDN',
+    rarity: 'Rare',
+    image: 'https://i.postimg.cc/L88RgJLt/cdnicon.png'
+  },
+  {
+    code: '015',
+    name: 'Pau Gamer',
+    rarity: 'Epic',
+    image: 'https://i.postimg.cc/0ySGC8L3/paugamericon.png'
+  },
+  {
+    code: '016',
+    name: 'Pizezo',
+    rarity: 'Rare',
+    image: 'https://i.postimg.cc/j5MyjC7H/pizezoicon.png'
+  },
+  {
+    code: '017',
+    name: 'Gallin',
+    rarity: 'Rare',
+    image: 'https://i.postimg.cc/BvxgJqpm/gallinicon.png'
   }
 ];
 
-/* =========================
-   SISTEMA
-========================= */
+// ÚLTIMO PERSONAJE
+let lastCharacterCode = null;
 
-const active = new Map();
-const lang = new Map();
+// PROBABILIDADES
+const rarityChances = {
+  Common: 40,
+  Rare: 30,
+  Epic: 20,
+  Legendary: 10
+};
 
-/* =========================
-   HELPERS
-========================= */
+// RANDOM
+function getRandomCharacter() {
 
-function getLang(gid) {
-  return lang.get(gid) || "English";
-}
+  // RANDOM 1-100
+  const roll =
+    Math.floor(Math.random() * 100) + 1;
 
-function getActive(gid) {
-  return active.get(gid);
-}
+  let current = 0;
 
-function setActive(gid, c) {
-  active.set(gid, c);
-}
+  let selectedRarity = 'Common';
 
-function clearActive(gid) {
-  active.delete(gid);
-}
+  // ELEGIR RAREZA
+  for (const rarity in rarityChances) {
 
-function randomChar() {
-  return characters[Math.floor(Math.random() * characters.length)];
-}
+    current += rarityChances[rarity];
 
-/* =========================
-   🔥 FIX IMAGEN DEFINITIVO
-========================= */
+    if (roll <= current) {
 
-function safeImage(url) {
-  if (!url) return null;
+      selectedRarity = rarity;
 
-  try {
-    const clean = String(url).trim();
+      break;
 
-    // valida básico
-    if (!clean.startsWith("http")) return null;
-
-    // FIX real para Discord CDN rendering
-    return clean.replaceAll(" ", "%20");
-  } catch {
-    return null;
-  }
-}
-
-/* =========================
-   EMBED
-========================= */
-
-function spawnEmbed(c, l) {
-  const t = texts[l] || texts.English;
-
-  const img = safeImage(c.image);
-
-  const embed = new EmbedBuilder()
-    .setColor(0x00ffcc)
-    .setTitle(t.spawn)
-    .setDescription(
-      `🆔 ${c.code}\n⭐ ${c.rarity}\n\n💬 type name to claim`
-    );
-
-  if (img) {
-    embed.setImage(img);
-  }
-
-  return embed;
-}
-
-/* =========================
-   COMMANDS
-========================= */
-
-const commands = [
-  new SlashCommandBuilder()
-    .setName("spawn")
-    .setDescription("Spawn character"),
-
-  new SlashCommandBuilder()
-    .setName("data_character")
-    .setDescription("Owner data")
-].map(c => c.toJSON());
-
-const rest = new REST({ version: "10" }).setToken(TOKEN);
-
-(async () => {
-  for (const g of GUILD_IDS) {
-    await rest.put(Routes.applicationGuildCommands(CLIENT_ID, g), {
-      body: commands
-    });
-  }
-})();
-
-/* =========================
-   BOT READY
-========================= */
-
-client.once("ready", () => {
-  console.log("Bot online FIXED IMAGE version");
-});
-
-/* =========================
-   COMMANDS
-========================= */
-
-client.on("interactionCreate", async i => {
-  if (!i.isChatInputCommand()) return;
-
-  const l = getLang(i.guildId);
-
-  if (i.commandName === "spawn") {
-    if (getActive(i.guildId)) {
-      return i.reply({ content: texts[l].already, flags: 64 });
     }
 
-    const c = randomChar();
-    setActive(i.guildId, c);
-
-    return i.reply({
-      embeds: [spawnEmbed(c, l)]
-    });
   }
 
-  if (i.commandName === "data_character") {
-    if (i.user.id !== OWNER_ID) {
-      return i.reply
+  // FILTRAR
+  let filtered =
+    characters.filter(
+      character =>
+        character.rarity === selectedRarity
+    );
+
+  // SI NO HAY
+  if (filtered.length === 0) {
+
+    filtered = characters;
+
+  }
+
+  // EVITAR REPETIDOS
+  filtered =
+    filtered.filter(
+      character =>
+        character.code !== lastCharacterCode
+    );
+
+  // SI NO QUEDA NADA
+  if (filtered.length === 0) {
+
+    filtered = characters;
+
+  }
+
+  // RANDOM FINAL
+  const selectedCharacter =
+    filtered[
+      Math.floor(
+        Math.random() * filtered.length
+      )
+    ];
+
+  // GUARDAR
+  lastCharacterCode =
+    selectedCharacter.code;
+
+  return selectedCharacter;
+
+}
+
+// SPAWN ACTIVO
+let activeSpawn = null;
+
+// COMANDOS
+const commands = [
+
+  new SlashCommandBuilder()
+    .setName('spawn')
+    .setDescription('Spawnea un personaje random'),
+
+  new SlashCommandBuilder()
+    .setName('spawn_character')
+    .setDescription('Spawnea un personaje específico')
+    .addStringOption(option =>
+      option
+        .setName('codigo')
+        .setDescription('Código del personaje')
+        .setRequired(true)
+    )
+
+].map(command => command.toJSON());
+
+// REST
+const rest =
+  new REST({ version: '10' })
+    .setToken(TOKEN);
+
+// REGISTRAR COMMANDS
+(async () => {
+
+  try {
+
+    // RECORRER SERVERS
+    for (const guildId of GUILD_IDS) {
+
+      // BORRAR COMMANDS
+      await rest.put(
+        Routes.applicationGuildCommands(
+          CLIENT_ID,
+          guildId
+        ),
+        { body: [] }
+      );
+
+      // REGISTRAR COMMANDS
+      await rest.put(
+        Routes.applicationGuildCommands(
+          CLIENT_ID,
+          guildId
+        ),
+        { body: commands }
+      );
+
+      console.log(
+        `✅ Commands registrados en ${guildId}`
+      );
+
+    }
+
+  } catch (err) {
+
+    console.error(err);
+
+  }
+
+})();
+
+// READY
+client.once('ready', () => {
+
+  console.log(`✅ Online como ${client.user.tag}`);
+
+});
+
+// INTERACCIONES
+client.on('interactionCreate', async interaction => {
+
+  if (!interaction.isChatInputCommand()) return;
+
+  // SOLO OWNER
+  if (interaction.user.id !== OWNER_ID) {
+
+    return interaction.reply({
+      content: '❌ No puedes usar este comando.',
+      flags: MessageFlags.Ephemeral
+    });
+
+  }
+
+  try {
+
+    // YA HAY SPAWN
+    if (activeSpawn) {
+
+      return interaction.reply({
+        content: '❌ Ya hay un personaje activo.',
+        flags: MessageFlags.Ephemeral
+      });
+
+    }
+
+    let selectedCharacter;
+
+    // /SPAWN
+    if (interaction.commandName === 'spawn') {
+
+      selectedCharacter =
+        getRandomCharacter();
+
+    }
+
+    // /SPAWN_CHARACTER
+    if (
+      interaction.commandName ===
+      'spawn_character'
+    ) {
+
+      const code =
+        interaction.options.getString('codigo');
+
+      // BUSCAR
+      const foundCharacter =
+        characters.find(
+          character =>
+            character.code === code
+        );
+
+      // NO EXISTE
+      if (!foundCharacter) {
+
+        return interaction.reply({
+          content: '❌ Personaje no encontrado.',
+          flags: MessageFlags.Ephemeral
+        });
+
+      }
+
+      selectedCharacter =
+        foundCharacter;
+
+    }
+
+    // GUARDAR
+    activeSpawn =
+      selectedCharacter;
+
+    // PANEL
+    const embed = new EmbedBuilder()
+      .setTitle('✨ Un personaje ha aparecido')
+      .setDescription(
+`🆔 Código: ${selectedCharacter.code}
+⭐ Rareza: ${selectedCharacter.rarity}
+
+💬 Responde con el nombre correcto para reclamarlo`
+      );
+
+    // IMAGEN
+    if (
+      selectedCharacter.image &&
+      selectedCharacter.image.startsWith('http')
+    ) {
+
+      embed.setImage(
+        selectedCharacter.image
+      );
+
+    }
+
+    // RESPUESTA INVISIBLE
+    await interaction.reply({
+      content: '✅',
+      flags: MessageFlags.Ephemeral
+    });
+
+    // PANEL
+    await interaction.channel.send({
+      embeds: [embed]
+    });
+
+  } catch (err) {
+
+    console.error(err);
+
+  }
+
+});
+
+// RECLAMAR
+client.on('messageCreate', async message => {
+
+  try {
+
+    if (message.author.bot) return;
+
+    if (!activeSpawn) return;
+
+    const userAnswer =
+      message.content.toLowerCase().trim();
+
+    const correctAnswer =
+      activeSpawn.name.toLowerCase();
+
+    // CORRECTO
+    if (userAnswer === correctAnswer) {
+
+      const claimedCharacter =
+        activeSpawn;
+
+      // ELIMINAR SPAWN
+      activeSpawn = null;
+
+      await message.reply(
+`🏆 ${message.author.username} reclamó a ${claimedCharacter.name}
+
+🆔 Código: ${claimedCharacter.code}
+⭐ Rareza: ${claimedCharacter.rarity}`
+      );
+
+    }
+
+  } catch (err) {
+
+    console.error(err);
+
+  }
+
+});
+
+// LOGIN
+client.login(TOKEN);
+
+// PORT
+http.createServer((req, res) => {
+
+  res.write('CGDex Online');
+  res.end();
+
+}).listen(process.env.PORT || 3000);
