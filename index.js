@@ -37,15 +37,9 @@ let activeSpawn = null;
 let lastCode = null;
 
 /* =========================
-   PERSONAJES (ASSETS)
+   PERSONAJES
 ========================= */
 const characters = [
-  {
-    code: '001',
-    name: 'Rudy',
-    rarity: 'Common',
-    image: 'rudyicon.png'
-  },
   {
     code: '006',
     name: 'TheRudyPlayer',
@@ -53,10 +47,10 @@ const characters = [
     image: 'therudyplayericon.png'
   },
   {
-    code: '010',
-    name: 'Spy_Gaming150',
-    rarity: 'Rare',
-    image: 'spygamingicon.png'
+    code: '001',
+    name: 'Rudy',
+    rarity: 'Common',
+    image: 'rudyicon.png'
   }
 ];
 
@@ -71,14 +65,16 @@ function getRandomCharacter() {
 }
 
 /* =========================
-   🔥 IMAGEN SEGURA (FIX REAL)
+   🔥 FIX DEFINITIVO DE RUTA
 ========================= */
 function getImage(character) {
-  const filePath = path.join(process.cwd(), 'assets', character.image);
+  // 👇 ESTE ES EL FIX CLAVE
+  const filePath = path.join(__dirname, 'assets', character.image);
 
-  // ❌ si no existe NO rompe nada
+  console.log("📍 IMAGE PATH:", filePath);
+
   if (!fs.existsSync(filePath)) {
-    console.log(`⚠ Image missing: ${character.image}`);
+    console.log("❌ IMAGE NOT FOUND:", character.image);
     return null;
   }
 
@@ -88,7 +84,7 @@ function getImage(character) {
 }
 
 /* =========================
-   EMBED BUILDER
+   EMBED
 ========================= */
 function buildEmbed(character) {
   const embed = new EmbedBuilder()
@@ -102,7 +98,7 @@ function buildEmbed(character) {
 
   const file = getImage(character);
 
-  // ✔ solo agrega imagen si existe
+  // 💥 SOLO si existe imagen
   if (file) {
     embed.setImage(`attachment://${character.image}`);
   }
@@ -167,7 +163,6 @@ client.on('interactionCreate', async i => {
 
   const payload = { embeds: [embed] };
 
-  // 💥 SOLO SI EXISTE
   if (file) {
     payload.files = [file];
   }
@@ -186,10 +181,10 @@ client.on('interactionCreate', async i => {
 client.on('messageCreate', async message => {
   if (message.author.bot || !activeSpawn) return;
 
-  const norm = (t) =>
+  const normalize = (t) =>
     t.toLowerCase().trim().replace(/[^a-z0-9]/gi, '');
 
-  if (norm(message.content) === norm(activeSpawn.name)) {
+  if (normalize(message.content) === normalize(activeSpawn.name)) {
     const c = activeSpawn;
     activeSpawn = null;
 
