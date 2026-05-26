@@ -28,68 +28,38 @@ const client = new Client({
 });
 
 /* =========================
-   ESTADO
+   RUDY
+========================= */
+const rudy = {
+  code: '006',
+  name: 'Rudy',
+  rarity: 'Common',
+  image: 'https://i.postimg.cc/cJdJcQ02/therudyplayericon.png'
+};
+
+/* =========================
+   ACTIVE SPAWN
 ========================= */
 let activeSpawn = null;
-let lastCode = null;
 
 /* =========================
-   BASE RAW GITHUB
+   EMBED BUILDER + CONSOLE
 ========================= */
-const RAW_BASE =
-  'https://raw.githubusercontent.com/TheRudyPlayer/CGDexCode/main/assets/';
+function buildEmbed() {
 
-/* =========================
-   PERSONAJES
-========================= */
-const characters = [
-  {
-    code: '001',
-    name: 'Rudy',
-    rarity: 'Common',
-    image: 'https://raw.githubusercontent.com/TheRudyPlayer/CGDexCode/main/assets/rudyicon.png'
-  },
-  {
-    code: '006',
-    name: 'TheRudyPlayer',
-    rarity: 'Common',
-    image: 'therudyplayericon.png'
-  },
-  {
-    code: '010',
-    name: 'Spy_Gaming150',
-    rarity: 'Rare',
-    image: 'spygamingicon.png'
-  }
-];
-
-/* =========================
-   RANDOM
-========================= */
-function getRandomCharacter() {
-  const pool = characters.filter(c => c.code !== lastCode);
-  const pick = pool[Math.floor(Math.random() * pool.length)];
-  lastCode = pick.code;
-  return pick;
-}
-
-/* =========================
-   EMBED
-========================= */
-function buildEmbed(character) {
-
-  const imageURL = RAW_BASE + character.image;
+  console.log("🧪 IMAGE URL RAW:", rudy.image);
 
   const embed = new EmbedBuilder()
     .setColor(0x00ffcc)
-    .setTitle("✨ A wild character appeared!")
+    .setTitle("✨ Un personaje ha aparecido")
     .setDescription(
-      `🆔 Code: ${character.code}\n` +
-      `⭐ Rarity: ${character.rarity}\n\n` +
-      `💬 Guess the name!`
+      `🆔 Código: ${rudy.code}\n` +
+      `⭐ Rareza: ${rudy.rarity}\n\n` +
+      `💬 Adivina el nombre`
     )
-    .setImage(imageURL)
-    .setFooter({ text: "CGDex System" });
+    .setImage(rudy.image);
+
+  console.log("🧪 EMBED IMAGE OBJECT:", embed.data.image);
 
   return embed;
 }
@@ -100,21 +70,9 @@ function buildEmbed(character) {
 const commands = [
   new SlashCommandBuilder()
     .setName('spawn')
-    .setDescription('Spawn character'),
-
-  new SlashCommandBuilder()
-    .setName('spawn_character')
-    .setDescription('Spawn specific character')
-    .addStringOption(o =>
-      o.setName('codigo')
-        .setDescription('Character code')
-        .setRequired(true)
-    )
+    .setDescription('Spawnea a Rudy')
 ].map(c => c.toJSON());
 
-/* =========================
-   REGISTER
-========================= */
 const rest = new REST({ version: '10' }).setToken(TOKEN);
 
 (async () => {
@@ -126,37 +84,35 @@ const rest = new REST({ version: '10' }).setToken(TOKEN);
 })();
 
 /* =========================
+   READY
+========================= */
+client.once('ready', () => {
+  console.log(`✅ Online como ${client.user.tag}`);
+});
+
+/* =========================
    INTERACTION
 ========================= */
-client.on('interactionCreate', async i => {
-  if (!i.isChatInputCommand()) return;
+client.on('interactionCreate', async interaction => {
+  if (!interaction.isChatInputCommand()) return;
 
-  if (activeSpawn) {
-    return i.reply({
-      content: "❌ Already active",
+  try {
+    activeSpawn = rudy;
+
+    const embed = buildEmbed();
+
+    await interaction.reply({
+      content: "✅ Spawned",
       flags: MessageFlags.Ephemeral
     });
+
+    await interaction.channel.send({
+      embeds: [embed]
+    });
+
+  } catch (err) {
+    console.error("❌ ERROR SPAWN:", err);
   }
-
-  if (i.commandName === 'spawn') {
-    activeSpawn = getRandomCharacter();
-  }
-
-  if (i.commandName === 'spawn_character') {
-    const code = i.options.getString('codigo');
-    activeSpawn = characters.find(c => c.code === code);
-  }
-
-  const embed = buildEmbed(activeSpawn);
-
-  await i.reply({
-    content: "✅ Spawned",
-    flags: MessageFlags.Ephemeral
-  });
-
-  await i.channel.send({
-    embeds: [embed]
-  });
 });
 
 /* =========================
@@ -165,18 +121,18 @@ client.on('interactionCreate', async i => {
 client.on('messageCreate', async message => {
   if (message.author.bot || !activeSpawn) return;
 
-  const normalize = (t) =>
-    t.toLowerCase().trim().replace(/[^a-z0-9]/gi, '');
+  const input = message.content.toLowerCase().trim();
+  const target = rudy.name.toLowerCase();
 
-  if (normalize(message.content) === normalize(activeSpawn.name)) {
+  if (input === target) {
 
     const c = activeSpawn;
     activeSpawn = null;
 
     await message.reply(
-      `🏆 ${message.author.username} claimed **${c.name}**\n` +
-      `🆔 Code: ${c.code}\n` +
-      `⭐ Rarity: ${c.rarity}`
+      `🏆 ${message.author.username} reclamó a **${c.name}**\n` +
+      `🆔 Código: ${c.code}\n` +
+      `⭐ Rareza: ${c.rarity}`
     );
   }
 });
@@ -186,6 +142,9 @@ client.on('messageCreate', async message => {
 ========================= */
 client.login(TOKEN);
 
+/* =========================
+   SERVER
+========================= */
 http.createServer((req, res) => {
   res.end("CGDex Online");
 }).listen(process.env.PORT || 3000);
