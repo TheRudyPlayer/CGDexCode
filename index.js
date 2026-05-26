@@ -11,6 +11,7 @@ const {
 
 const http = require('http');
 const path = require('path');
+const fs = require('fs');
 
 const TOKEN = process.env.TOKEN;
 const CLIENT_ID = '1498803742391406633';
@@ -20,8 +21,6 @@ const GUILD_IDS = [
   '1490431622930239691',
   '1501669636700373002'
 ];
-
-const OWNER_ID = '1458910126168735806';
 
 const client = new Client({
   intents: [
@@ -37,42 +36,22 @@ const client = new Client({
 const guildLang = new Map();
 
 const texts = {
-  English: {
-    spawn: "✨ A wild character appeared!",
-    claim: "claimed",
-    noActive: "No active character",
-    already: "Already active character"
-  },
-  Spanish: {
-    spawn: "✨ ¡Apareció un personaje salvaje!",
-    claim: "reclamó a",
-    noActive: "No hay personaje activo",
-    already: "Ya hay un personaje activo"
-  },
-  Portuguese: {
-    spawn: "✨ Um personagem apareceu!",
-    claim: "reivindicou",
-    noActive: "Nenhum personagem ativo",
-    already: "Já existe um personagem ativo"
-  },
-  Russian: {
-    spawn: "✨ Появился персонаж!",
-    claim: "получил",
-    noActive: "Нет активного персонажа",
-    already: "Уже есть активный персонаж"
-  }
+  English: { spawn: "✨ A wild character appeared!", claim: "claimed", already: "Already active" },
+  Spanish: { spawn: "✨ ¡Apareció un personaje!", claim: "reclamó a", already: "Ya hay uno activo" },
+  Portuguese: { spawn: "✨ Um personagem apareceu!", claim: "reivindicou", already: "Já existe ativo" },
+  Russian: { spawn: "✨ Появился персонаж!", claim: "получил", already: "Ya activo" }
 };
 
-function getLang(gid) {
-  return guildLang.get(gid) || 'English';
+function getLang(g) {
+  return guildLang.get(g) || 'English';
 }
 
-function setLang(gid, lang) {
-  guildLang.set(gid, lang);
+function setLang(g, l) {
+  guildLang.set(g, l);
 }
 
 /* =========================
-   PERSONAJES (SIN CAMBIOS)
+   PERSONAJES
 ========================= */
 const characters = [
   { code: '001', name: 'Rudy', rarity: 'Common', image: 'rudyicon.png' },
@@ -85,42 +64,57 @@ const characters = [
    ESTADO
 ========================= */
 let activeSpawn = null;
-let lastCharacterCode = null;
+let lastCode = null;
 
 /* =========================
-   RANDOM (igual lógica)
+   RANDOM
 ========================= */
 function getRandomCharacter() {
-  const list = characters.filter(c => c.code !== lastCharacterCode);
-  const pick = list[Math.floor(Math.random() * list.length)];
-  lastCharacterCode = pick.code;
+  const pool = characters.filter(c => c.code !== lastCode);
+  const pick = pool[Math.floor(Math.random() * pool.length)];
+  lastCode = pick.code;
   return pick;
 }
 
 /* =========================
-   EMBED BONITO
+   IMAGEN FIX 100%
 ========================= */
-async function buildEmbed(character, lang) {
+function getImage(character) {
+  const filePath = path.resolve(process.cwd(), 'assets', character.image);
+
+  if (!fs.existsSync(filePath)) {
+    return { files: [], image: null };
+  }
+
+  const file = new AttachmentBuilder(filePath);
+
+  return {
+    files: [file],
+    image: `attachment://${character.image}`
+  };
+}
+
+/* =========================
+   EMBED (SIN NOMBRE)
+========================= */
+function buildEmbed(character, lang) {
   const t = texts[lang] || texts.English;
+
+  const img = getImage(character);
 
   const embed = new EmbedBuilder()
     .setColor(0x00ffcc)
     .setTitle(t.spawn)
     .setDescription(
-      `🎮 **${character.name}**\n` +
       `🆔 Code: ${character.code}\n` +
       `⭐ Rarity: ${character.rarity}\n\n` +
-      `💬 Type the name to claim it`
+      `💬 Guess the character name!`
     )
     .setFooter({ text: "CGDex System" });
 
-  const filePath = path.join(__dirname, 'assets', character.image);
+  if (img.image) embed.setImage(img.image);
 
-  const file = new AttachmentBuilder(filePath);
-
-  embed.setImage(`attachment://${character.image}`);
-
-  return { embed, file };
+  return { embed, files: img.files };
 }
 
 /* =========================
@@ -131,17 +125,16 @@ const commands = [
 
   new SlashCommandBuilder()
     .setName('spawn_character')
-    .setDescription('Spawn specific character')
+    .setDescription('Spawn specific')
     .addStringOption(o =>
-      o.setName('codigo').setDescription('Code').setRequired(true)
+      o.setName('codigo').setRequired(true)
     ),
 
   new SlashCommandBuilder()
     .setName('language')
-    .setDescription('Set language')
+    .setDescription('Language')
     .addStringOption(o =>
       o.setName('lang')
-        .setDescription('Language')
         .setRequired(true)
         .addChoices(
           { name: 'English', value: 'English' },
@@ -166,13 +159,6 @@ const rest = new REST({ version: '10' }).setToken(TOKEN);
 })();
 
 /* =========================
-   READY
-========================= */
-client.once('ready', () => {
-  console.log(`✅ Online as ${client.user.tag}`);
-});
-
-/* =========================
    INTERACTION
 ========================= */
 client.on('interactionCreate', async i => {
@@ -182,11 +168,10 @@ client.on('interactionCreate', async i => {
   const t = texts[lang];
 
   if (i.commandName === 'language') {
-    const l = i.options.getString('lang');
-    setLang(i.guildId, l);
+    setLang(i.guildId, i.options.getString('lang'));
 
     return i.reply({
-      content: `🌍 Language set to ${l}`,
+      content: "🌍 OK",
       flags: MessageFlags.Ephemeral
     });
   }
@@ -207,13 +192,13 @@ client.on('interactionCreate', async i => {
     activeSpawn = characters.find(c => c.code === code);
   }
 
-  const { embed, file } = await buildEmbed(activeSpawn, lang);
+  const { embed, files } = buildEmbed(activeSpawn, lang);
 
-  await i.reply({ content: "🎯 Spawned!", flags: MessageFlags.Ephemeral });
+  await i.reply({ content: "✅", flags: MessageFlags.Ephemeral });
 
   await i.channel.send({
     embeds: [embed],
-    files: [file]
+    files
   });
 });
 
@@ -221,8 +206,7 @@ client.on('interactionCreate', async i => {
    CLAIM
 ========================= */
 client.on('messageCreate', async m => {
-  if (m.author.bot) return;
-  if (!activeSpawn) return;
+  if (m.author.bot || !activeSpawn) return;
 
   if (m.content.toLowerCase() === activeSpawn.name.toLowerCase()) {
     const t = texts[getLang(m.guildId)];
@@ -231,14 +215,13 @@ client.on('messageCreate', async m => {
     activeSpawn = null;
 
     await m.reply(
-      `🏆 **${m.author.username}** ${t.claim} **${c.name}**\n` +
-      `⭐ ${c.rarity}`
+      `🏆 ${m.author.username} ${t.claim} ${c.name}`
     );
   }
 });
 
 /* =========================
-   SERVER
+   LOGIN
 ========================= */
 client.login(TOKEN);
 
