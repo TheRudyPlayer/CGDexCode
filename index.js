@@ -5,13 +5,10 @@ const {
   REST,
   Routes,
   EmbedBuilder,
-  AttachmentBuilder,
   MessageFlags
 } = require('discord.js');
 
 const http = require('http');
-const path = require('path');
-const fs = require('fs');
 
 const TOKEN = process.env.TOKEN;
 const CLIENT_ID = '1498803742391406633';
@@ -37,9 +34,21 @@ let activeSpawn = null;
 let lastCode = null;
 
 /* =========================
+   BASE RAW GITHUB
+========================= */
+const RAW_BASE =
+  'https://raw.githubusercontent.com/TheRudyPlayer/CGDexCode/main/assets/';
+
+/* =========================
    PERSONAJES
 ========================= */
 const characters = [
+  {
+    code: '001',
+    name: 'Rudy',
+    rarity: 'Common',
+    image: 'rudyicon.png'
+  },
   {
     code: '006',
     name: 'TheRudyPlayer',
@@ -47,10 +56,10 @@ const characters = [
     image: 'therudyplayericon.png'
   },
   {
-    code: '001',
-    name: 'Rudy',
-    rarity: 'Common',
-    image: 'rudyicon.png'
+    code: '010',
+    name: 'Spy_Gaming150',
+    rarity: 'Rare',
+    image: 'spygamingicon.png'
   }
 ];
 
@@ -65,28 +74,12 @@ function getRandomCharacter() {
 }
 
 /* =========================
-   🔥 FIX DEFINITIVO DE RUTA
-========================= */
-function getImage(character) {
-  // 👇 ESTE ES EL FIX CLAVE
-  const filePath = path.join(__dirname, 'assets', character.image);
-
-  console.log("📍 IMAGE PATH:", filePath);
-
-  if (!fs.existsSync(filePath)) {
-    console.log("❌ IMAGE NOT FOUND:", character.image);
-    return null;
-  }
-
-  return new AttachmentBuilder(filePath, {
-    name: character.image
-  });
-}
-
-/* =========================
    EMBED
 ========================= */
 function buildEmbed(character) {
+
+  const imageURL = RAW_BASE + character.image;
+
   const embed = new EmbedBuilder()
     .setColor(0x00ffcc)
     .setTitle("✨ A wild character appeared!")
@@ -94,16 +87,11 @@ function buildEmbed(character) {
       `🆔 Code: ${character.code}\n` +
       `⭐ Rarity: ${character.rarity}\n\n` +
       `💬 Guess the name!`
-    );
+    )
+    .setImage(imageURL)
+    .setFooter({ text: "CGDex System" });
 
-  const file = getImage(character);
-
-  // 💥 SOLO si existe imagen
-  if (file) {
-    embed.setImage(`attachment://${character.image}`);
-  }
-
-  return { embed, file };
+  return embed;
 }
 
 /* =========================
@@ -159,24 +147,20 @@ client.on('interactionCreate', async i => {
     activeSpawn = characters.find(c => c.code === code);
   }
 
-  const { embed, file } = buildEmbed(activeSpawn);
-
-  const payload = { embeds: [embed] };
-
-  if (file) {
-    payload.files = [file];
-  }
+  const embed = buildEmbed(activeSpawn);
 
   await i.reply({
     content: "✅ Spawned",
     flags: MessageFlags.Ephemeral
   });
 
-  await i.channel.send(payload);
+  await i.channel.send({
+    embeds: [embed]
+  });
 });
 
 /* =========================
-   CLAIM
+   CLAIM SYSTEM
 ========================= */
 client.on('messageCreate', async message => {
   if (message.author.bot || !activeSpawn) return;
@@ -185,6 +169,7 @@ client.on('messageCreate', async message => {
     t.toLowerCase().trim().replace(/[^a-z0-9]/gi, '');
 
   if (normalize(message.content) === normalize(activeSpawn.name)) {
+
     const c = activeSpawn;
     activeSpawn = null;
 
