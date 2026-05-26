@@ -30,28 +30,28 @@ const client = new Client({
 });
 
 /* =========================
-   SISTEMA SIMPLE DE TEXTOS
+   TEXTOS
 ========================= */
 
 const texts = {
   English: {
-    spawn: "✨ A wild character appeared!",
+    spawn: "✨ A character has appeared",
     claim: "claimed",
-    noActive: "❌ No active character.",
-    blocked: "❌ Not allowed.",
-    already: "❌ Already active character exists."
+    noActive: "No active character",
+    blocked: "Not allowed",
+    already: "Already active character"
   },
   Spanish: {
     spawn: "✨ ¡Un personaje apareció!",
     claim: "reclamó a",
-    noActive: "❌ No hay personaje activo.",
-    blocked: "❌ No permitido.",
-    already: "❌ Ya hay un personaje activo."
+    noActive: "No hay personaje activo",
+    blocked: "No permitido",
+    already: "Ya hay un personaje activo"
   }
 };
 
 /* =========================
-   PERSONAJES (BASE LIMPIA)
+   PERSONAJES (NO TOCAR)
 ========================= */
 
 const characters = [
@@ -76,7 +76,7 @@ const characters = [
 ];
 
 /* =========================
-   ESTADO DEL JUEGO
+   SISTEMA
 ========================= */
 
 const active = new Map();
@@ -88,10 +88,6 @@ const lang = new Map();
 
 function getLang(gid) {
   return lang.get(gid) || "English";
-}
-
-function setLang(gid, l) {
-  lang.set(gid, l);
 }
 
 function getActive(gid) {
@@ -106,26 +102,51 @@ function clearActive(gid) {
   active.delete(gid);
 }
 
-function randomCharacter() {
+function randomChar() {
   return characters[Math.floor(Math.random() * characters.length)];
 }
 
 /* =========================
-   EMBED SYSTEM FIX FINAL
+   🔥 FIX IMAGEN DEFINITIVO
+========================= */
+
+function safeImage(url) {
+  if (!url) return null;
+
+  try {
+    const clean = String(url).trim();
+
+    // valida básico
+    if (!clean.startsWith("http")) return null;
+
+    // FIX real para Discord CDN rendering
+    return clean.replaceAll(" ", "%20");
+  } catch {
+    return null;
+  }
+}
+
+/* =========================
+   EMBED
 ========================= */
 
 function spawnEmbed(c, l) {
   const t = texts[l] || texts.English;
 
-  return new EmbedBuilder()
+  const img = safeImage(c.image);
+
+  const embed = new EmbedBuilder()
     .setColor(0x00ffcc)
     .setTitle(t.spawn)
     .setDescription(
-      `🆔 ${c.code}\n` +
-      `⭐ ${c.rarity}\n\n` +
-      `💬 Type the name to claim`
-    )
-    .setImage(c.image ? encodeURI(c.image) : null);
+      `🆔 ${c.code}\n⭐ ${c.rarity}\n\n💬 type name to claim`
+    );
+
+  if (img) {
+    embed.setImage(img);
+  }
+
+  return embed;
 }
 
 /* =========================
@@ -133,8 +154,13 @@ function spawnEmbed(c, l) {
 ========================= */
 
 const commands = [
-  new SlashCommandBuilder().setName("spawn").setDescription("Spawn character"),
-  new SlashCommandBuilder().setName("data_character").setDescription("Owner info")
+  new SlashCommandBuilder()
+    .setName("spawn")
+    .setDescription("Spawn character"),
+
+  new SlashCommandBuilder()
+    .setName("data_character")
+    .setDescription("Owner data")
 ].map(c => c.toJSON());
 
 const rest = new REST({ version: "10" }).setToken(TOKEN);
@@ -152,11 +178,11 @@ const rest = new REST({ version: "10" }).setToken(TOKEN);
 ========================= */
 
 client.once("ready", () => {
-  console.log("Bot online clean version");
+  console.log("Bot online FIXED IMAGE version");
 });
 
 /* =========================
-   COMMANDS LOGIC
+   COMMANDS
 ========================= */
 
 client.on("interactionCreate", async i => {
@@ -164,63 +190,19 @@ client.on("interactionCreate", async i => {
 
   const l = getLang(i.guildId);
 
-  /* SPAWN */
   if (i.commandName === "spawn") {
     if (getActive(i.guildId)) {
       return i.reply({ content: texts[l].already, flags: 64 });
     }
 
-    const c = randomCharacter();
+    const c = randomChar();
     setActive(i.guildId, c);
 
-    return i.reply({ embeds: [spawnEmbed(c, l)] });
-  }
-
-  /* DATA OWNER */
-  if (i.commandName === "data_character") {
-    if (i.user.id !== OWNER_ID) {
-      return i.reply({ content: texts[l].blocked, flags: 64 });
-    }
-
-    const c = getActive(i.guildId);
-
-    if (!c) {
-      return i.reply({ content: texts[l].noActive, flags: 64 });
-    }
-
     return i.reply({
-      content: `CODE: ${c.code}\nNAME: ${c.name}\nRARITY: ${c.rarity}`,
-      flags: 64
+      embeds: [spawnEmbed(c, l)]
     });
   }
-});
 
-/* =========================
-   CLAIM SYSTEM
-========================= */
-
-client.on("messageCreate", async m => {
-  if (m.author.bot) return;
-
-  const c = getActive(m.guildId);
-  if (!c) return;
-
-  if (m.content.toLowerCase().trim() === c.name.toLowerCase()) {
-    clearActive(m.guildId);
-
-    const l = getLang(m.guildId);
-    const t = texts[l] || texts.English;
-
-    await m.reply(`🏆 ${m.author.username} ${t.claim} ${c.name}`);
-  }
-});
-
-/* =========================
-   LOGIN + SERVER
-========================= */
-
-client.login(TOKEN);
-
-http.createServer((req, res) => {
-  res.end("OK");
-}).listen(process.env.PORT || 3000);
+  if (i.commandName === "data_character") {
+    if (i.user.id !== OWNER_ID) {
+      return i.reply
