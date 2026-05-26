@@ -56,16 +56,23 @@ function getRandomCharacter() {
 }
 
 /* =========================
-   IMAGEN FIX (SEGURO)
+   🔥 IMAGEN 100% ESTABLE (FIX REAL)
 ========================= */
-function getImage(character) {
-  const filePath = path.resolve(process.cwd(), 'assets', character.image);
+function getImagePayload(character) {
+  const filePath = path.join(process.cwd(), 'assets', character.image);
 
-  if (!fs.existsSync(filePath)) return null;
+  if (!fs.existsSync(filePath)) {
+    console.log("❌ Missing image:", filePath);
+    return { embedImage: null, file: null };
+  }
+
+  const file = new AttachmentBuilder(filePath, {
+    name: character.image
+  });
 
   return {
-    file: new AttachmentBuilder(filePath),
-    name: character.image
+    embedImage: 'attachment://' + character.image,
+    file
   };
 }
 
@@ -73,7 +80,7 @@ function getImage(character) {
    EMBED
 ========================= */
 function buildEmbed(character) {
-  const img = getImage(character);
+  const img = getImagePayload(character);
 
   const embed = new EmbedBuilder()
     .setColor(0x00ffcc)
@@ -84,15 +91,15 @@ function buildEmbed(character) {
       `💬 Guess the name!`
     );
 
-  if (img) {
-    embed.setImage(`attachment://${img.name}`);
+  if (img.embedImage) {
+    embed.setImage(img.embedImage);
   }
 
-  return { embed, img };
+  return { embed, file: img.file };
 }
 
 /* =========================
-   COMMANDS (FIX OK)
+   COMMANDS
 ========================= */
 const commands = [
   new SlashCommandBuilder()
@@ -101,10 +108,9 @@ const commands = [
 
   new SlashCommandBuilder()
     .setName('spawn_character')
-    .setDescription('Spawn specific')
-    .addStringOption(option =>
-      option
-        .setName('codigo')
+    .setDescription('Spawn specific character')
+    .addStringOption(o =>
+      o.setName('codigo')
         .setDescription('Character code')
         .setRequired(true)
     )
@@ -145,12 +151,14 @@ client.on('interactionCreate', async i => {
     activeSpawn = characters.find(c => c.code === code);
   }
 
-  const { embed, img } = buildEmbed(activeSpawn);
+  const { embed, file } = buildEmbed(activeSpawn);
 
-  const payload = { embeds: [embed] };
+  const payload = {
+    embeds: [embed]
+  };
 
-  if (img) {
-    payload.files = [img.file];
+  if (file) {
+    payload.files = [file];
   }
 
   await i.reply({
@@ -162,29 +170,25 @@ client.on('interactionCreate', async i => {
 });
 
 /* =========================
-   CLAIM FIX (ESTO ES LO IMPORTANTE)
+   CLAIM FIX
 ========================= */
 client.on('messageCreate', async message => {
   if (message.author.bot) return;
   if (!activeSpawn) return;
 
-  const normalize = (text) =>
-    text
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9 ]/gi, '');
+  const normalize = (t) =>
+    t.toLowerCase().trim().replace(/[^a-z0-9]/gi, '');
 
-  const user = normalize(message.content);
-  const correct = normalize(activeSpawn.name);
-
-  if (user === correct) {
-    const claimed = activeSpawn;
+  if (
+    normalize(message.content) === normalize(activeSpawn.name)
+  ) {
+    const c = activeSpawn;
     activeSpawn = null;
 
     await message.reply(
-      `🏆 ${message.author.username} reclamó a **${claimed.name}**\n` +
-      `🆔 Code: ${claimed.code}\n` +
-      `⭐ Rarity: ${claimed.rarity}`
+      `🏆 ${message.author.username} reclamó a **${c.name}**\n` +
+      `🆔 Code: ${c.code}\n` +
+      `⭐ Rarity: ${c.rarity}`
     );
   }
 });
