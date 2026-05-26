@@ -30,148 +30,102 @@ const client = new Client({
 });
 
 /* =========================
-   TEXTOS
+   SISTEMA SIMPLE DE TEXTOS
 ========================= */
 
 const texts = {
   English: {
-    spawnedTitle: '✨ A character has appeared',
-    guessText: '💬 Reply with the correct name to claim it',
-    dataTitle: '📖 Character Data',
-    claimed: 'claimed',
-    code: 'Code',
-    name: 'Name',
-    rarity: 'Rarity',
-    language: 'Language',
-    blocked: '❌ You cannot use this command.',
-    noActive: '❌ No active character.',
-    notFound: '❌ Character not found.',
-    activeExists: '❌ There is already an active character.',
-    languageChanged: '✅ Language changed to English'
+    spawn: "✨ A wild character appeared!",
+    claim: "claimed",
+    noActive: "❌ No active character.",
+    blocked: "❌ Not allowed.",
+    already: "❌ Already active character exists."
   },
   Spanish: {
-    spawnedTitle: '✨ Un personaje ha aparecido',
-    guessText: '💬 Responde con el nombre correcto para reclamarlo',
-    dataTitle: '📖 Datos del Personaje',
-    claimed: 'reclamó a',
-    code: 'Código',
-    name: 'Nombre',
-    rarity: 'Rareza',
-    language: 'Idioma',
-    blocked: '❌ No puedes usar este comando.',
-    noActive: '❌ No hay personaje activo.',
-    notFound: '❌ Personaje no encontrado.',
-    activeExists: '❌ Ya hay un personaje activo.',
-    languageChanged: '✅ Idioma cambiado a Español'
+    spawn: "✨ ¡Un personaje apareció!",
+    claim: "reclamó a",
+    noActive: "❌ No hay personaje activo.",
+    blocked: "❌ No permitido.",
+    already: "❌ Ya hay un personaje activo."
   }
 };
 
 /* =========================
-   PERSONAJES (NO TOCADO)
+   PERSONAJES (BASE LIMPIA)
 ========================= */
 
 const characters = [
   {
-    code: '001',
-    name: 'Rudy',
-    rarity: 'Common',
-    language: 'Global',
-    image: 'https://i.postimg.cc/vB49MTQv/rudyicon.png'
+    code: "001",
+    name: "Rudy",
+    rarity: "Common",
+    image: "https://i.postimg.cc/vB49MTQv/rudyicon.png"
   },
   {
-    code: '002',
-    name: 'ChaloApps',
-    rarity: 'Common',
-    language: 'Russian',
-    image: 'https://i.postimg.cc/pT594SZJ/chaloappsicon.png'
+    code: "002",
+    name: "Dragon Dude",
+    rarity: "Epic",
+    image: "https://i.postimg.cc/85KLhQ2n/dragondudeicon.png"
   },
   {
-    code: '003',
-    name: 'Dragon Dude',
-    rarity: 'Epic',
-    language: 'English',
-    image: 'https://i.postimg.cc/85KLhQ2n/dragondudeicon.png'
+    code: "003",
+    name: "Spy Gaming",
+    rarity: "Rare",
+    image: "https://i.postimg.cc/6pB7ZZvP/spygamingicon.png"
   }
-  // 🔥 TU LISTA ORIGINAL SIGUE IGUAL
 ];
 
 /* =========================
-   RAREZAS (NO TOCADO)
+   ESTADO DEL JUEGO
 ========================= */
 
-const rarityChances = {
-  Common: 40,
-  Rare: 30,
-  Epic: 20,
-  Legendary: 10
-};
-
-/* =========================
-   SISTEMA
-========================= */
-
-const activeSpawns = new Map();
-const guildLanguages = new Map();
+const active = new Map();
+const lang = new Map();
 
 /* =========================
    HELPERS
 ========================= */
 
-function getLang(guildId) {
-  return guildLanguages.get(guildId) || 'English';
+function getLang(gid) {
+  return lang.get(gid) || "English";
 }
 
-function setLang(guildId, lang) {
-  guildLanguages.set(guildId, lang);
+function setLang(gid, l) {
+  lang.set(gid, l);
 }
 
-function getSpawn(guildId) {
-  return activeSpawns.get(guildId);
+function getActive(gid) {
+  return active.get(gid);
 }
 
-function setSpawn(guildId, char) {
-  activeSpawns.set(guildId, structuredClone(char));
+function setActive(gid, c) {
+  active.set(gid, c);
 }
 
-function clearSpawn(guildId) {
-  activeSpawns.delete(guildId);
+function clearActive(gid) {
+  active.delete(gid);
 }
 
-function getRandomCharacter() {
-  const list = Object.values(characters);
-  return list[Math.floor(Math.random() * list.length)];
+function randomCharacter() {
+  return characters[Math.floor(Math.random() * characters.length)];
 }
 
 /* =========================
-   EMBEDS (FIX IMAGEN 100%)
+   EMBED SYSTEM FIX FINAL
 ========================= */
 
-function buildSpawnEmbed(character, lang) {
-  const t = texts[lang] || texts.English;
+function spawnEmbed(c, l) {
+  const t = texts[l] || texts.English;
 
   return new EmbedBuilder()
-    .setTitle(t.spawnedTitle)
+    .setColor(0x00ffcc)
+    .setTitle(t.spawn)
     .setDescription(
-      `🆔 ${t.code}: ${character.code}\n` +
-      `⭐ ${t.rarity}: ${character.rarity}\n` +
-      `🌎 ${t.language}: ${character.language}\n\n` +
-      `${t.guessText}`
+      `🆔 ${c.code}\n` +
+      `⭐ ${c.rarity}\n\n` +
+      `💬 Type the name to claim`
     )
-    .setImage(character.image ? character.image.replace(/ /g, '%20') : null);
-}
-
-function buildDataEmbed(character, lang) {
-  const t = texts[lang] || texts.English;
-
-  return new EmbedBuilder()
-    .setTitle(t.dataTitle)
-    .setDescription(
-      `🆔 ${t.code}: ${character.code}\n` +
-      `👤 ${t.name}: ${character.name}\n` +
-      `⭐ ${t.rarity}: ${character.rarity}\n` +
-      `🌎 ${t.language}: ${character.language}`
-    )
-    .setImage(character.image ? character.image.replace(/ /g, '%20') : null);
+    .setImage(c.image ? encodeURI(c.image) : null);
 }
 
 /* =========================
@@ -179,13 +133,11 @@ function buildDataEmbed(character, lang) {
 ========================= */
 
 const commands = [
-  new SlashCommandBuilder().setName('spawn').setDescription('Spawn character'),
-  new SlashCommandBuilder()
-    .setName('data_character')
-    .setDescription('Character info (owner only)')
+  new SlashCommandBuilder().setName("spawn").setDescription("Spawn character"),
+  new SlashCommandBuilder().setName("data_character").setDescription("Owner info")
 ].map(c => c.toJSON());
 
-const rest = new REST({ version: '10' }).setToken(TOKEN);
+const rest = new REST({ version: "10" }).setToken(TOKEN);
 
 (async () => {
   for (const g of GUILD_IDS) {
@@ -199,66 +151,47 @@ const rest = new REST({ version: '10' }).setToken(TOKEN);
    BOT READY
 ========================= */
 
-client.once('ready', () => {
-  console.log('Bot online');
+client.once("ready", () => {
+  console.log("Bot online clean version");
 });
 
 /* =========================
-   INTERACTIONS
+   COMMANDS LOGIC
 ========================= */
 
-client.on('interactionCreate', async interaction => {
-  if (!interaction.isChatInputCommand()) return;
+client.on("interactionCreate", async i => {
+  if (!i.isChatInputCommand()) return;
 
-  const lang = getLang(interaction.guildId);
+  const l = getLang(i.guildId);
 
-  try {
-    /* OWNER ONLY */
-    if (
-      interaction.commandName === 'data_character' &&
-      interaction.user.id !== OWNER_ID
-    ) {
-      return interaction.reply({
-        content: texts[lang].blocked,
-        flags: 64
-      });
+  /* SPAWN */
+  if (i.commandName === "spawn") {
+    if (getActive(i.guildId)) {
+      return i.reply({ content: texts[l].already, flags: 64 });
     }
 
-    /* SPAWN */
-    if (interaction.commandName === 'spawn') {
-      if (getSpawn(interaction.guildId)) {
-        return interaction.reply({
-          content: texts[lang].activeExists,
-          flags: 64
-        });
-      }
+    const c = randomCharacter();
+    setActive(i.guildId, c);
 
-      const char = getRandomCharacter();
-      setSpawn(interaction.guildId, char);
+    return i.reply({ embeds: [spawnEmbed(c, l)] });
+  }
 
-      return interaction.reply({
-        embeds: [buildSpawnEmbed(char, lang)]
-      });
+  /* DATA OWNER */
+  if (i.commandName === "data_character") {
+    if (i.user.id !== OWNER_ID) {
+      return i.reply({ content: texts[l].blocked, flags: 64 });
     }
 
-    /* DATA */
-    if (interaction.commandName === 'data_character') {
-      const spawn = getSpawn(interaction.guildId);
+    const c = getActive(i.guildId);
 
-      if (!spawn) {
-        return interaction.reply({
-          content: texts[lang].noActive,
-          flags: 64
-        });
-      }
-
-      return interaction.reply({
-        embeds: [buildDataEmbed(spawn, lang)],
-        flags: 64
-      });
+    if (!c) {
+      return i.reply({ content: texts[l].noActive, flags: 64 });
     }
-  } catch (e) {
-    console.log(e);
+
+    return i.reply({
+      content: `CODE: ${c.code}\nNAME: ${c.name}\nRARITY: ${c.rarity}`,
+      flags: 64
+    });
   }
 });
 
@@ -266,37 +199,28 @@ client.on('interactionCreate', async interaction => {
    CLAIM SYSTEM
 ========================= */
 
-client.on('messageCreate', async message => {
-  if (message.author.bot) return;
+client.on("messageCreate", async m => {
+  if (m.author.bot) return;
 
-  const spawn = getSpawn(message.guildId);
-  if (!spawn) return;
+  const c = getActive(m.guildId);
+  if (!c) return;
 
-  if (
-    message.content.toLowerCase().trim() ===
-    spawn.name.toLowerCase().trim()
-  ) {
-    clearSpawn(message.guildId);
+  if (m.content.toLowerCase().trim() === c.name.toLowerCase()) {
+    clearActive(m.guildId);
 
-    await message.reply(
-      `🏆 ${message.author.username} claimed ${spawn.name}\n` +
-      `🆔 ${spawn.code} | ⭐ ${spawn.rarity}`
-    );
+    const l = getLang(m.guildId);
+    const t = texts[l] || texts.English;
+
+    await m.reply(`🏆 ${m.author.username} ${t.claim} ${c.name}`);
   }
 });
 
 /* =========================
-   LOGIN
+   LOGIN + SERVER
 ========================= */
 
 client.login(TOKEN);
 
-/* =========================
-   SERVER
-========================= */
-
-http
-  .createServer((req, res) => {
-    res.end('OK');
-  })
-  .listen(process.env.PORT || 3000);
+http.createServer((req, res) => {
+  res.end("OK");
+}).listen(process.env.PORT || 3000);
