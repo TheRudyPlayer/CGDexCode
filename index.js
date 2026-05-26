@@ -47,7 +47,7 @@ const characters = [
     code: '001',
     name: 'Rudy',
     rarity: 'Common',
-    image: 'rudyicon.png'
+    image: 'https://raw.githubusercontent.com/TheRudyPlayer/CGDexCode/main/assets/rudyicon.png'
   },
   {
     code: '006',
