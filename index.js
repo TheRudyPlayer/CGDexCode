@@ -11,13 +11,11 @@ const {
 const http = require('http');
 
 const TOKEN = process.env.TOKEN;
-const CLIENT_ID = '1498803742391406633';
+const CLIENT_ID = 'TU_CLIENT_ID';
 
-const GUILD_IDS = [
-  '1433246929588060432',
-  '1490431622930239691',
-  '1501669636700373002'
-];
+const GUILD_IDS = ['TU_SERVER_ID'];
+
+const OWNER_ID = 'TU_OWNER_ID';
 
 const client = new Client({
   intents: [
@@ -28,40 +26,80 @@ const client = new Client({
 });
 
 /* =========================
-   RUDY
+   IDIOMAS
 ========================= */
-const rudy = {
-  code: '006',
-  name: 'Rudy',
-  rarity: 'Common',
-  image: 'https://i.postimg.cc/cJdJcQ02/therudyplayericon.png'
+const texts = {
+  English: {
+    spawned: "✨ A character has appeared",
+    guess: "💬 Guess the name",
+    claimed: "claimed",
+    noActive: "❌ No active character",
+    blocked: "❌ No permission",
+    dataTitle: "📖 Character Data",
+    languageChanged: "✅ Language set to English"
+  },
+  Spanish: {
+    spawned: "✨ Un personaje ha aparecido",
+    guess: "💬 Adivina el nombre",
+    claimed: "reclamó a",
+    noActive: "❌ No hay personaje activo",
+    blocked: "❌ Sin permiso",
+    dataTitle: "📖 Datos del personaje",
+    languageChanged: "✅ Idioma cambiado a Español"
+  }
 };
 
+let guildLang = new Map();
+
 /* =========================
-   ACTIVE SPAWN
+   PERSONAJES
 ========================= */
+const characters = [
+  {
+    code: '001',
+    name: 'Rudy',
+    rarity: 'Common',
+    language: 'Spanish',
+    image: 'https://i.postimg.cc/vB49MTQv/rudyicon.png'
+  },
+  {
+    code: '006',
+    name: 'TheRudyPlayer',
+    rarity: 'Common',
+    language: 'English',
+    image: 'https://i.postimg.cc/cJdJcQ02/therudyplayericon.png'
+  }
+];
+
 let activeSpawn = null;
 
 /* =========================
-   EMBED BUILDER + CONSOLE
+   UTIL
 ========================= */
-function buildEmbed() {
+function getLang(guildId) {
+  return guildLang.get(guildId) || 'English';
+}
 
-  console.log("🧪 IMAGE URL RAW:", rudy.image);
+function setLang(guildId, lang) {
+  guildLang.set(guildId, lang);
+}
 
-  const embed = new EmbedBuilder()
+/* =========================
+   EMBED
+========================= */
+function buildEmbed(character, lang) {
+  const t = texts[lang];
+
+  return new EmbedBuilder()
     .setColor(0x00ffcc)
-    .setTitle("✨ Un personaje ha aparecido")
+    .setTitle(t.spawned)
     .setDescription(
-      `🆔 Código: ${rudy.code}\n` +
-      `⭐ Rareza: ${rudy.rarity}\n\n` +
-      `💬 Adivina el nombre`
+      `🆔 Code: ${character.code}\n` +
+      `⭐ Rarity: ${character.rarity}\n` +
+      `🌍 Language: ${character.language}\n\n` +
+      t.guess
     )
-    .setImage(rudy.image);
-
-  console.log("🧪 EMBED IMAGE OBJECT:", embed.data.image);
-
-  return embed;
+    .setImage(character.image);
 }
 
 /* =========================
@@ -70,11 +108,36 @@ function buildEmbed() {
 const commands = [
   new SlashCommandBuilder()
     .setName('spawn')
-    .setDescription('Spawnea a Rudy')
+    .setDescription('Spawn character'),
+
+  new SlashCommandBuilder()
+    .setName('spawn_character')
+    .setDescription('Spawn specific character')
+    .addStringOption(o =>
+      o.setName('code')
+        .setDescription('Character code')
+        .setRequired(true)
+    ),
+
+  new SlashCommandBuilder()
+    .setName('data_character')
+    .setDescription('Show active character data'),
+
+  new SlashCommandBuilder()
+    .setName('language')
+    .setDescription('Change language')
+    .addStringOption(o =>
+      o.setName('lang')
+        .setDescription('English or Spanish')
+        .setRequired(true)
+    )
 ].map(c => c.toJSON());
 
 const rest = new REST({ version: '10' }).setToken(TOKEN);
 
+/* =========================
+   REGISTER
+========================= */
 (async () => {
   for (const g of GUILD_IDS) {
     await rest.put(Routes.applicationGuildCommands(CLIENT_ID, g), {
@@ -87,31 +150,101 @@ const rest = new REST({ version: '10' }).setToken(TOKEN);
    READY
 ========================= */
 client.once('ready', () => {
-  console.log(`✅ Online como ${client.user.tag}`);
+  console.log(`✅ CGDex Online como ${client.user.tag}`);
 });
 
 /* =========================
-   INTERACTION
+   INTERACTIONS
 ========================= */
-client.on('interactionCreate', async interaction => {
-  if (!interaction.isChatInputCommand()) return;
+client.on('interactionCreate', async i => {
+  if (!i.isChatInputCommand()) return;
 
-  try {
-    activeSpawn = rudy;
+  const lang = getLang(i.guildId);
+  const t = texts[lang];
 
-    const embed = buildEmbed();
+  /* LANGUAGE */
+  if (i.commandName === 'language') {
+    const newLang = i.options.getString('lang');
+    setLang(i.guildId, newLang);
 
-    await interaction.reply({
+    return i.reply({
+      content: texts[newLang].languageChanged,
+      flags: MessageFlags.Ephemeral
+    });
+  }
+
+  /* OWNER ONLY */
+  if (i.commandName === 'data_character' && i.user.id !== OWNER_ID) {
+    return i.reply({
+      content: t.blocked,
+      flags: MessageFlags.Ephemeral
+    });
+  }
+
+  /* DATA CHARACTER */
+  if (i.commandName === 'data_character') {
+    if (!activeSpawn) {
+      return i.reply({
+        content: t.noActive,
+        flags: MessageFlags.Ephemeral
+      });
+    }
+
+    const c = activeSpawn;
+
+    const embed = new EmbedBuilder()
+      .setTitle(t.dataTitle)
+      .setDescription(
+        `🆔 Code: ${c.code}\n` +
+        `👤 Name: ${c.name}\n` +
+        `⭐ Rarity: ${c.rarity}\n` +
+        `🌍 Language: ${c.language}`
+      )
+      .setImage(c.image);
+
+    return i.reply({
+      embeds: [embed],
+      flags: MessageFlags.Ephemeral
+    });
+  }
+
+  /* SPAWN */
+  if (i.commandName === 'spawn') {
+    activeSpawn = characters[Math.floor(Math.random() * characters.length)];
+
+    const embed = buildEmbed(activeSpawn, lang);
+
+    await i.reply({
       content: "✅ Spawned",
       flags: MessageFlags.Ephemeral
     });
 
-    await interaction.channel.send({
-      embeds: [embed]
+    return i.channel.send({ embeds: [embed] });
+  }
+
+  /* SPAWN CHARACTER */
+  if (i.commandName === 'spawn_character') {
+    const code = i.options.getString('code');
+
+    const found = characters.find(c => c.code === code);
+
+    if (!found) {
+      return i.reply({
+        content: "❌ Not found",
+        flags: MessageFlags.Ephemeral
+      });
+    }
+
+    activeSpawn = found;
+
+    const embed = buildEmbed(found, lang);
+
+    await i.reply({
+      content: "✅ Spawned",
+      flags: MessageFlags.Ephemeral
     });
 
-  } catch (err) {
-    console.error("❌ ERROR SPAWN:", err);
+    return i.channel.send({ embeds: [embed] });
   }
 });
 
@@ -122,17 +255,16 @@ client.on('messageCreate', async message => {
   if (message.author.bot || !activeSpawn) return;
 
   const input = message.content.toLowerCase().trim();
-  const target = rudy.name.toLowerCase();
+  const target = activeSpawn.name.toLowerCase();
 
   if (input === target) {
-
     const c = activeSpawn;
     activeSpawn = null;
 
     await message.reply(
-      `🏆 ${message.author.username} reclamó a **${c.name}**\n` +
-      `🆔 Código: ${c.code}\n` +
-      `⭐ Rareza: ${c.rarity}`
+      `🏆 ${message.author.username} ${texts['English'].claimed} ${c.name}\n` +
+      `🆔 Code: ${c.code}\n` +
+      `⭐ Rarity: ${c.rarity}`
     );
   }
 });
@@ -143,7 +275,7 @@ client.on('messageCreate', async message => {
 client.login(TOKEN);
 
 /* =========================
-   SERVER
+   KEEP ALIVE
 ========================= */
 http.createServer((req, res) => {
   res.end("CGDex Online");
