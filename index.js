@@ -37,12 +37,27 @@ let activeSpawn = null;
 let lastCode = null;
 
 /* =========================
-   PERSONAJES
+   PERSONAJES (ASSETS)
 ========================= */
 const characters = [
-  { code: '001', name: 'Rudy', rarity: 'Common', image: 'rudyicon.png' },
-  { code: '006', name: 'TheRudyPlayer', rarity: 'Common', image: 'therudyplayericon.png' },
-  { code: '010', name: 'Spy_Gaming150', rarity: 'Rare', image: 'spygamingicon.png' }
+  {
+    code: '001',
+    name: 'Rudy',
+    rarity: 'Common',
+    image: 'rudyicon.png'
+  },
+  {
+    code: '006',
+    name: 'TheRudyPlayer',
+    rarity: 'Common',
+    image: 'therudyplayericon.png'
+  },
+  {
+    code: '010',
+    name: 'Spy_Gaming150',
+    rarity: 'Rare',
+    image: 'spygamingicon.png'
+  }
 ];
 
 /* =========================
@@ -56,32 +71,26 @@ function getRandomCharacter() {
 }
 
 /* =========================
-   🔥 IMAGEN 100% ESTABLE (FIX REAL)
+   🔥 IMAGEN SEGURA (FIX REAL)
 ========================= */
-function getImagePayload(character) {
+function getImage(character) {
   const filePath = path.join(process.cwd(), 'assets', character.image);
 
+  // ❌ si no existe NO rompe nada
   if (!fs.existsSync(filePath)) {
-    console.log("❌ Missing image:", filePath);
-    return { embedImage: null, file: null };
+    console.log(`⚠ Image missing: ${character.image}`);
+    return null;
   }
 
-  const file = new AttachmentBuilder(filePath, {
+  return new AttachmentBuilder(filePath, {
     name: character.image
   });
-
-  return {
-    embedImage: 'attachment://' + character.image,
-    file
-  };
 }
 
 /* =========================
-   EMBED
+   EMBED BUILDER
 ========================= */
 function buildEmbed(character) {
-  const img = getImagePayload(character);
-
   const embed = new EmbedBuilder()
     .setColor(0x00ffcc)
     .setTitle("✨ A wild character appeared!")
@@ -91,11 +100,14 @@ function buildEmbed(character) {
       `💬 Guess the name!`
     );
 
-  if (img.embedImage) {
-    embed.setImage(img.embedImage);
+  const file = getImage(character);
+
+  // ✔ solo agrega imagen si existe
+  if (file) {
+    embed.setImage(`attachment://${character.image}`);
   }
 
-  return { embed, file: img.file };
+  return { embed, file };
 }
 
 /* =========================
@@ -137,7 +149,7 @@ client.on('interactionCreate', async i => {
 
   if (activeSpawn) {
     return i.reply({
-      content: "Already active",
+      content: "❌ Already active",
       flags: MessageFlags.Ephemeral
     });
   }
@@ -153,16 +165,15 @@ client.on('interactionCreate', async i => {
 
   const { embed, file } = buildEmbed(activeSpawn);
 
-  const payload = {
-    embeds: [embed]
-  };
+  const payload = { embeds: [embed] };
 
+  // 💥 SOLO SI EXISTE
   if (file) {
     payload.files = [file];
   }
 
   await i.reply({
-    content: "✅",
+    content: "✅ Spawned",
     flags: MessageFlags.Ephemeral
   });
 
@@ -170,23 +181,20 @@ client.on('interactionCreate', async i => {
 });
 
 /* =========================
-   CLAIM FIX
+   CLAIM
 ========================= */
 client.on('messageCreate', async message => {
-  if (message.author.bot) return;
-  if (!activeSpawn) return;
+  if (message.author.bot || !activeSpawn) return;
 
-  const normalize = (t) =>
+  const norm = (t) =>
     t.toLowerCase().trim().replace(/[^a-z0-9]/gi, '');
 
-  if (
-    normalize(message.content) === normalize(activeSpawn.name)
-  ) {
+  if (norm(message.content) === norm(activeSpawn.name)) {
     const c = activeSpawn;
     activeSpawn = null;
 
     await message.reply(
-      `🏆 ${message.author.username} reclamó a **${c.name}**\n` +
+      `🏆 ${message.author.username} claimed **${c.name}**\n` +
       `🆔 Code: ${c.code}\n` +
       `⭐ Rarity: ${c.rarity}`
     );
