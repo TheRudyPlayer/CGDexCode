@@ -72,7 +72,7 @@ const characters = [
     name: 'Rudy',
     rarity: 'Common',
     language: 'Spanish',
-    image: 'https://i.postimg.cc/vB49MTQv/rudyicon.png'
+    image: 'https://i.postimg.cc/TwxJ164Q/rudyicon.png'
   },
   {
     code: '006',
