@@ -5,7 +5,6 @@ const {
   REST,
   Routes,
   EmbedBuilder,
-  AttachmentBuilder,
   MessageFlags
 } = require('discord.js');
 
@@ -307,9 +306,9 @@ const rarityChances = {
   Legendary: 10
 };
 
-const activeSpawns = new Map();       // guildId -> character
-const lastCharacterCodes = new Map(); // guildId -> last character code
-const guildLanguages = new Map();      // guildId -> language
+const activeSpawns = new Map();
+const lastCharacterCodes = new Map();
+const guildLanguages = new Map();
 
 function getGuildLanguage(guildId) {
   return guildLanguages.get(guildId) || 'English';
@@ -389,37 +388,6 @@ function getRandomCharacter(guildId) {
   return structuredClone(selectedCharacter);
 }
 
-async function imageToAttachment(url, baseName) {
-  const imageUrl = normalizeImage(url);
-  if (!imageUrl) return null;
-
-  try {
-    const response = await fetch(imageUrl, { redirect: 'follow' });
-    if (!response.ok) return null;
-
-    const contentType = response.headers.get('content-type') || '';
-    if (!contentType.startsWith('image/')) return null;
-
-    const buffer = Buffer.from(await response.arrayBuffer());
-
-    let ext = 'png';
-    if (contentType.includes('jpeg') || contentType.includes('jpg')) ext = 'jpg';
-    if (contentType.includes('webp')) ext = 'webp';
-    if (contentType.includes('gif')) ext = 'gif';
-
-    const fileName = `${baseName}.${ext}`;
-    const attachment = new AttachmentBuilder(buffer, { name: fileName });
-
-    return {
-      attachment,
-      imageRef: `attachment://${fileName}`
-    };
-  } catch (error) {
-    console.log('Image attachment failed:', error?.message || error);
-    return null;
-  }
-}
-
 async function buildSpawnPayload(character, language) {
   const t = texts[language] || texts.English;
 
@@ -432,19 +400,10 @@ async function buildSpawnPayload(character, language) {
       `${t.guessText}`
     );
 
-  const imageUrl = normalizeImage(character.image);
+  const img = normalizeImage(character.image);
 
-  if (imageUrl) {
-    const attachmentData = await imageToAttachment(imageUrl, `spawn_${character.code}`);
-    if (attachmentData) {
-      embed.setImage(attachmentData.imageRef);
-      return {
-        embeds: [embed],
-        files: [attachmentData.attachment]
-      };
-    }
-
-    embed.setImage(imageUrl);
+  if (img) {
+    embed.setImage(encodeURI(img));
   }
 
   return { embeds: [embed] };
@@ -462,19 +421,10 @@ async function buildDataPayload(character, language) {
       `🌎 ${t.language}: ${character.language}`
     );
 
-  const imageUrl = normalizeImage(character.image);
+  const img = normalizeImage(character.image);
 
-  if (imageUrl) {
-    const attachmentData = await imageToAttachment(imageUrl, `data_${character.code}`);
-    if (attachmentData) {
-      embed.setImage(attachmentData.imageRef);
-      return {
-        embeds: [embed],
-        files: [attachmentData.attachment]
-      };
-    }
-
-    embed.setImage(imageUrl);
+  if (img) {
+    embed.setImage(encodeURI(img));
   }
 
   return { embeds: [embed] };
