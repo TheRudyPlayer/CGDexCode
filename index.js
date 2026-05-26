@@ -35,13 +35,6 @@ const client = new Client({
 ========================= */
 const guildLang = new Map();
 
-const texts = {
-  English: { spawn: "✨ A wild character appeared!", claim: "claimed", already: "Already active" },
-  Spanish: { spawn: "✨ ¡Apareció un personaje!", claim: "reclamó a", already: "Ya hay uno activo" },
-  Portuguese: { spawn: "✨ Um personagem apareceu!", claim: "reivindicou", already: "Já existe ativo" },
-  Russian: { spawn: "✨ Появился персонаж!", claim: "получил", already: "Ya activo" }
-};
-
 function getLang(g) {
   return guildLang.get(g) || 'English';
 }
@@ -49,6 +42,16 @@ function getLang(g) {
 function setLang(g, l) {
   guildLang.set(g, l);
 }
+
+/* =========================
+   TEXTOS
+========================= */
+const texts = {
+  English: { spawn: "✨ A wild character appeared!", claim: "claimed", already: "Already active" },
+  Spanish: { spawn: "✨ ¡Apareció un personaje!", claim: "reclamó a", already: "Ya hay uno activo" },
+  Portuguese: { spawn: "✨ Um personagem apareceu!", claim: "reivindicou", already: "Já existe ativo" },
+  Russian: { spawn: "✨ Появился персонаж!", claim: "получил", already: "Ya activo" }
+};
 
 /* =========================
    PERSONAJES
@@ -77,12 +80,13 @@ function getRandomCharacter() {
 }
 
 /* =========================
-   IMAGEN FIX 100%
+   IMAGEN FIX
 ========================= */
 function getImage(character) {
   const filePath = path.resolve(process.cwd(), 'assets', character.image);
 
   if (!fs.existsSync(filePath)) {
+    console.log("❌ Missing image:", filePath);
     return { files: [], image: null };
   }
 
@@ -118,23 +122,30 @@ function buildEmbed(character, lang) {
 }
 
 /* =========================
-   COMMANDS
+   COMMANDS (FIX ERROR VALIDATOR)
 ========================= */
 const commands = [
-  new SlashCommandBuilder().setName('spawn').setDescription('Spawn character'),
+  new SlashCommandBuilder()
+    .setName('spawn')
+    .setDescription('Spawn a random character'),
 
   new SlashCommandBuilder()
     .setName('spawn_character')
-    .setDescription('Spawn specific')
-    .addStringOption(o =>
-      o.setName('codigo').setRequired(true)
+    .setDescription('Spawn specific character')
+    .addStringOption(option =>
+      option
+        .setName('codigo')
+        .setDescription('Character code') // ✔ FIX CLAVE
+        .setRequired(true)
     ),
 
   new SlashCommandBuilder()
     .setName('language')
-    .setDescription('Language')
-    .addStringOption(o =>
-      o.setName('lang')
+    .setDescription('Change language')
+    .addStringOption(option =>
+      option
+        .setName('lang')
+        .setDescription('Language') // ✔ FIX CLAVE
         .setRequired(true)
         .addChoices(
           { name: 'English', value: 'English' },
@@ -146,7 +157,7 @@ const commands = [
 ].map(c => c.toJSON());
 
 /* =========================
-   REGISTER
+   REGISTER COMMANDS
 ========================= */
 const rest = new REST({ version: '10' }).setToken(TOKEN);
 
@@ -159,6 +170,13 @@ const rest = new REST({ version: '10' }).setToken(TOKEN);
 })();
 
 /* =========================
+   READY
+========================= */
+client.once('ready', () => {
+  console.log(`✅ Online ${client.user.tag}`);
+});
+
+/* =========================
    INTERACTION
 ========================= */
 client.on('interactionCreate', async i => {
@@ -166,15 +184,6 @@ client.on('interactionCreate', async i => {
 
   const lang = getLang(i.guildId);
   const t = texts[lang];
-
-  if (i.commandName === 'language') {
-    setLang(i.guildId, i.options.getString('lang'));
-
-    return i.reply({
-      content: "🌍 OK",
-      flags: MessageFlags.Ephemeral
-    });
-  }
 
   if (activeSpawn) {
     return i.reply({
@@ -203,7 +212,7 @@ client.on('interactionCreate', async i => {
 });
 
 /* =========================
-   CLAIM
+   CLAIM SYSTEM
 ========================= */
 client.on('messageCreate', async m => {
   if (m.author.bot || !activeSpawn) return;
@@ -221,7 +230,7 @@ client.on('messageCreate', async m => {
 });
 
 /* =========================
-   LOGIN
+   SERVER
 ========================= */
 client.login(TOKEN);
 
