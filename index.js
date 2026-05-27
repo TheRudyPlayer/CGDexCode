@@ -136,7 +136,7 @@ const characters = [
   },
   {
     code: '007',
-    name: 'Diego Gormaz',
+    name: 'Diego Gormaz Gamer',
     rarity: 'Rare',
     language: 'LATAM',
     image: 'https://i.postimg.cc/2S7PfZR0/diegogormazgamericon.png'
@@ -146,7 +146,7 @@ const characters = [
     name: 'Stiff LXR',
     rarity: 'Epic',
     language: 'LATAM',
-    image: 'https://i.postimg.cc/TY7tjJxy/stifflxricon.png'
+    image: 'https://i.postimg.cc/dtw9XRYD/stifflxricon.png'
   },
   {
     code: '009',
@@ -157,10 +157,10 @@ const characters = [
   },
   {
     code: '010',
-    name: 'Spy_Gaming150',
+    name: 'Zhura24K',
     rarity: 'Rare',
-    language: 'LATAM',
-    image: 'https://i.postimg.cc/6pB7ZZvP/spygamingicon.png'
+    language: 'Ukrainian',
+    image: 'https://i.postimg.cc/4d0rP8Mq/zhura24kicon.png'
   },
   {
     code: '011',
@@ -173,7 +173,7 @@ const characters = [
     code: '012',
     name: 'Den19K',
     rarity: 'Legendary',
-    language: 'Russian',
+    language: 'Ukrainian',
     image: 'https://i.postimg.cc/jdtjMk66/den19kicon.png'
   },
     {
@@ -294,7 +294,21 @@ const characters = [
     rarity: 'Epic',
     language: 'LATAM',
     image: 'https://i.postimg.cc/J0vbYbnp/cerditoverdeiconlegacy.png'
-  }
+  },
+  {
+    code: '030',
+    name: 'Spy_Gaming150',
+    rarity: 'Admim',
+    language: 'LATAM',
+    image: 'https://i.postimg.cc/6pB7ZZvP/spygamingicon.png'
+  },
+  {
+    code: '031',
+    name: 'Lary Hacker',
+    rarity: 'Epic',
+    language: 'Global',
+    image: 'https://i.postimg.cc/brWpGYpS/laryhackericon.webp'
+  },
 ];
 
 // ÚLTIMO
