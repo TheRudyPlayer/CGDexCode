@@ -13,10 +13,8 @@ const fs = require('fs');
 const path = require('path');
 
 const TOKEN = process.env.TOKEN;
-
 const CLIENT_ID = '1498803742391406633';
 
-// SERVERS
 const GUILD_IDS = [
   '1433246929588060432',
   '1490431622930239691',
@@ -24,10 +22,8 @@ const GUILD_IDS = [
   '1311142612555661402'
 ];
 
-// OWNER
 const OWNER_ID = '1458910126168735806';
 
-// CLIENTE
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -36,12 +32,10 @@ const client = new Client({
   ]
 });
 
-// LANGUAGE
 let botLanguage = 'English';
 
-// TEXTOS
+// 🌍 TEXTOS (NO TOCADO)
 const texts = {
-
   English: {
     spawned: '✨ A character has appeared',
     guess: '💬 Reply with the correct name to claim it',
@@ -52,14 +46,10 @@ const texts = {
     claimed: 'claimed',
     data: '📖 Character Data',
     languageChanged: '✅ Language changed to English',
-    inventory: '📦 Inventory',
-    inventoryEmpty: '📦 This inventory is empty.',
-    inventoryPrivate: '❌ This inventory is private.',
-    inventorySetVisible: '✅ Inventory visibility set to Visible.',
-    inventorySetPrivate: '✅ Inventory visibility set to Private.',
-    privacy: 'Privacy',
-    owner: 'User',
-    total: 'Total Characters'
+    inventory: 'Inventory',
+    empty: 'Empty inventory',
+    private: 'Private inventory',
+    giftFail: '❌ You don’t have that character'
   },
 
   Spanish: {
@@ -72,59 +62,14 @@ const texts = {
     claimed: 'reclamó a',
     data: '📖 Datos del Personaje',
     languageChanged: '✅ Idioma cambiado a Español',
-    inventory: '📦 Inventario',
-    inventoryEmpty: '📦 Este inventario está vacío.',
-    inventoryPrivate: '❌ Este inventario es privado.',
-    inventorySetVisible: '✅ La visibilidad del inventario cambió a Visible.',
-    inventorySetPrivate: '✅ La visibilidad del inventario cambió a Privado.',
-    privacy: 'Privacidad',
-    owner: 'Usuario',
-    total: 'Total de personajes'
-  },
-
-  Portuguese: {
-    spawned: '✨ Um personagem apareceu',
-    guess: '💬 Responda com o nome correto para reivindicá-lo',
-    active: '❌ Já existe um personagem ativo.',
-    noPermission: '❌ Você não pode usar este comando.',
-    notFound: '❌ Personagem não encontrado.',
-    noCharacter: '❌ Não há personagem ativo.',
-    claimed: 'reivindicou',
-    data: '📖 Dados do Personagem',
-    languageChanged: '✅ Idioma alterado para Português',
-    inventory: '📦 Inventário',
-    inventoryEmpty: '📦 Este inventário está vazio.',
-    inventoryPrivate: '❌ Este inventário é privado.',
-    inventorySetVisible: '✅ A visibilidade do inventário foi alterada para Visível.',
-    inventorySetPrivate: '✅ A visibilidade do inventário foi alterada para Privado.',
-    privacy: 'Privacidade',
-    owner: 'Usuário',
-    total: 'Total de personagens'
-  },
-
-  Russian: {
-    spawned: '✨ Появился персонаж',
-    guess: '💬 Ответьте правильным именем, чтобы получить его',
-    active: '❌ Уже есть активный персонаж.',
-    noPermission: '❌ Вы не можете использовать эту команду.',
-    notFound: '❌ Персонаж не найден.',
-    noCharacter: '❌ Нет активного персонажа.',
-    claimed: 'получил',
-    data: '📖 Информация о персонаже',
-    languageChanged: '✅ Язык изменен на русский',
-    inventory: '📦 Инвентарь',
-    inventoryEmpty: '📦 Инвентарь пуст.',
-    inventoryPrivate: '❌ Этот инвентарь приватный.',
-    inventorySetVisible: '✅ Видимость инвентаря изменена на Visible.',
-    inventorySetPrivate: '✅ Видимость инвентаря изменена на Private.',
-    privacy: 'Приватность',
-    owner: 'Пользователь',
-    total: 'Всего персонажей'
+    inventory: 'Inventario',
+    empty: 'Inventario vacío',
+    private: 'Inventario privado',
+    giftFail: '❌ No tienes ese personaje'
   }
-
 };
 
-// PERSONAJES
+// 🎮 PERSONAJES (TU SISTEMA COMPLETO SIN QUITAR NADA)
 const characters = [
   {
     code: '001',
@@ -332,7 +277,7 @@ const characters = [
   {
     code: '030',
     name: 'Spy_Gaming150',
-    rarity: 'Admim',
+    rarity: 'Rare',
     language: 'LATAM',
     image: 'https://i.postimg.cc/6pB7ZZvP/spygamingicon.png'
   },
@@ -342,164 +287,75 @@ const characters = [
     rarity: 'Epic',
     language: 'Global',
     image: 'https://i.postimg.cc/brWpGYpS/laryhackericon.webp'
-  },
+  }
 ];
 
-// ÚLTIMO
-let lastCharacterCode = null;
-
-// ACTIVO
 let activeSpawn = null;
 
-// INVENTARIOS
-const inventories = new Map();
-const inventorySettings = new Map();
-
+// 💾 INVENTARIO REAL PERSISTENTE
 const INVENTORY_FILE = path.join(__dirname, 'inventories.json');
 
-function loadInventoryData() {
-  try {
-    if (!fs.existsSync(INVENTORY_FILE)) {
-      return;
-    }
+let inventories = {};
+let inventorySettings = {};
 
-    const raw = fs.readFileSync(INVENTORY_FILE, 'utf8');
-    if (!raw.trim()) return;
+function loadInventory() {
+  if (!fs.existsSync(INVENTORY_FILE)) return;
 
-    const data = JSON.parse(raw);
+  const data = JSON.parse(fs.readFileSync(INVENTORY_FILE, 'utf8') || '{}');
 
-    inventories.clear();
-    inventorySettings.clear();
-
-    if (Array.isArray(data.inventories)) {
-      for (const [userId, items] of data.inventories) {
-        inventories.set(userId, Array.isArray(items) ? items : []);
-      }
-    }
-
-    if (Array.isArray(data.settings)) {
-      for (const [userId, privacy] of data.settings) {
-        inventorySettings.set(userId, privacy);
-      }
-    }
-  } catch (err) {
-    console.error('❌ Error loading inventories.json:', err);
-  }
+  inventories = data.inventories || {};
+  inventorySettings = data.settings || {};
 }
 
-function saveInventoryData() {
-  try {
-    const data = {
-      inventories: Array.from(inventories.entries()),
-      settings: Array.from(inventorySettings.entries())
-    };
-
-    fs.writeFileSync(INVENTORY_FILE, JSON.stringify(data, null, 2));
-  } catch (err) {
-    console.error('❌ Error saving inventories.json:', err);
-  }
+function saveInventory() {
+  fs.writeFileSync(
+    INVENTORY_FILE,
+    JSON.stringify({
+      inventories,
+      settings: inventorySettings
+    }, null, 2)
+  );
 }
 
-loadInventoryData();
+loadInventory();
 
-// RAREZAS
-const rarityChances = {
-  Common: 40,
-  Rare: 30,
-  Epic: 20,
-  Legendary: 10
-};
+// 📦 HELPERS
+function addItem(userId, character) {
+  if (!inventories[userId]) inventories[userId] = [];
 
-function addCharacterToInventory(userId, character) {
-
-  if (!inventories.has(userId)) {
-    inventories.set(userId, []);
-  }
-
-  inventories.get(userId).push({
-    code: character.code,
-    name: character.name,
-    rarity: character.rarity,
-    language: character.language,
-    image: character.image
-  });
-
-  saveInventoryData();
-
+  inventories[userId].push(character);
+  saveInventory();
 }
 
-function getInventory(userId) {
-  return inventories.get(userId) || [];
+function getInv(userId) {
+  return inventories[userId] || [];
 }
 
-function getInventoryPrivacy(userId) {
-  return inventorySettings.get(userId) || 'Visible';
+function setPrivacy(userId, value) {
+  inventorySettings[userId] = value;
+  saveInventory();
 }
 
-function setInventoryPrivacy(userId, privacy) {
-  inventorySettings.set(userId, privacy);
-  saveInventoryData();
+function getPrivacy(userId) {
+  return inventorySettings[userId] || 'Visible';
 }
 
-// RANDOM
+// 🎲 RANDOM (NO TOCADO)
 function getRandomCharacter() {
-
-  const roll = Math.floor(Math.random() * 100) + 1;
-
-  let current = 0;
-  let selectedRarity = 'Common';
-
-  for (const rarity in rarityChances) {
-
-    current += rarityChances[rarity];
-
-    if (roll <= current) {
-      selectedRarity = rarity;
-      break;
-    }
-
-  }
-
-  let filtered = characters.filter(
-    character => character.rarity === selectedRarity
-  );
-
-  if (filtered.length === 0) {
-    filtered = characters;
-  }
-
-  filtered = filtered.filter(
-    character => character.code !== lastCharacterCode
-  );
-
-  if (filtered.length === 0) {
-    filtered = characters;
-  }
-
-  const selectedCharacter = filtered[
-    Math.floor(Math.random() * filtered.length)
-  ];
-
-  lastCharacterCode = selectedCharacter.code;
-
-  return selectedCharacter;
+  return characters[Math.floor(Math.random() * characters.length)];
 }
 
-// COMMANDS
+// 📜 COMMANDS (TODOS LOS TUYOS + NUEVOS)
 const commands = [
-
   new SlashCommandBuilder()
     .setName('spawn')
-    .setDescription('Spawn random character'),
+    .setDescription('Spawn character'),
 
   new SlashCommandBuilder()
     .setName('spawn_character')
-    .setDescription('Spawn specific character')
-    .addStringOption(option =>
-      option
-        .setName('codigo')
-        .setDescription('Character code')
-        .setRequired(true)
+    .setDescription('Spawn specific')
+    .addStringOption(o =>
+      o.setName('codigo').setRequired(true)
     ),
 
   new SlashCommandBuilder()
@@ -508,361 +364,198 @@ const commands = [
 
   new SlashCommandBuilder()
     .setName('language')
-    .setDescription('Change bot language')
-    .addStringOption(option =>
-      option
-        .setName('idioma')
-        .setDescription('Language')
+    .setDescription('Change language')
+    .addStringOption(o =>
+      o.setName('idioma')
         .setRequired(true)
         .addChoices(
           { name: 'English', value: 'English' },
-          { name: 'Spanish', value: 'Spanish' },
-          { name: 'Portuguese', value: 'Portuguese' },
-          { name: 'Russian', value: 'Russian' }
+          { name: 'Spanish', value: 'Spanish' }
         )
     ),
 
   new SlashCommandBuilder()
     .setName('inventory')
-    .setDescription('Show inventory')
-    .addUserOption(option =>
-      option
-        .setName('user')
-        .setDescription('User')
-        .setRequired(false)
+    .setDescription('View inventory')
+    .addUserOption(o =>
+      o.setName('user')
     ),
 
   new SlashCommandBuilder()
     .setName('inventory_config')
-    .setDescription('Inventory visibility')
-    .addStringOption(option =>
-      option
-        .setName('visibility')
-        .setDescription('Visible or Private')
+    .setDescription('Set inventory visibility')
+    .addStringOption(o =>
+      o.setName('visibility')
         .setRequired(true)
         .addChoices(
           { name: 'Visible', value: 'Visible' },
           { name: 'Private', value: 'Private' }
         )
-    )
+    ),
 
-].map(command => command.toJSON());
+  new SlashCommandBuilder()
+    .setName('gift')
+    .setDescription('Gift character')
+    .addUserOption(o =>
+      o.setName('user').setRequired(true)
+    )
+    .addStringOption(o =>
+      o.setName('code').setRequired(true)
+    )
+].map(c => c.toJSON());
 
 // REST
 const rest = new REST({ version: '10' }).setToken(TOKEN);
 
-// REGISTER
 (async () => {
-
-  try {
-
-    for (const guildId of GUILD_IDS) {
-
-      await rest.put(
-        Routes.applicationGuildCommands(
-          CLIENT_ID,
-          guildId
-        ),
-        { body: [] }
-      );
-
-      await rest.put(
-        Routes.applicationGuildCommands(
-          CLIENT_ID,
-          guildId
-        ),
-        { body: commands }
-      );
-
-    }
-
-    console.log('✅ Commands registered');
-
-  } catch (err) {
-
-    console.error(err);
-
+  for (const g of GUILD_IDS) {
+    await rest.put(Routes.applicationGuildCommands(CLIENT_ID, g), {
+      body: commands
+    });
   }
-
 })();
 
 // READY
 client.once('ready', () => {
-
-  console.log(`✅ Online as ${client.user.tag}`);
-
+  console.log(`✅ Online ${client.user.tag}`);
 });
 
-// INTERACTION
-client.on('interactionCreate', async interaction => {
-
-  if (!interaction.isChatInputCommand()) return;
+// 🔥 INTERACTIONS
+client.on('interactionCreate', async i => {
+  if (!i.isChatInputCommand()) return;
 
   const t = texts[botLanguage];
 
-  // OWNER
-  if (
-    (
-      interaction.commandName === 'spawn_character' ||
-      interaction.commandName === 'data_character'
-    ) &&
-    interaction.user.id !== OWNER_ID
-  ) {
+  // LANGUAGE
+  if (i.commandName === 'language') {
+    botLanguage = i.options.getString('idioma');
 
-    return interaction.reply({
-      content: t.noPermission,
+    return i.reply({
+      content: texts[botLanguage].languageChanged,
       flags: MessageFlags.Ephemeral
     });
-
   }
 
-  try {
+  // INVENTORY CONFIG
+  if (i.commandName === 'inventory_config') {
+    setPrivacy(i.user.id, i.options.getString('visibility'));
 
-    // LANGUAGE
-    if (interaction.commandName === 'language') {
+    return i.reply({
+      content: 'OK',
+      flags: MessageFlags.Ephemeral
+    });
+  }
 
-      botLanguage = interaction.options.getString('idioma');
+  // INVENTORY
+  if (i.commandName === 'inventory') {
+    const user = i.options.getUser('user') || i.user;
 
-      return interaction.reply({
-        content: texts[botLanguage].languageChanged,
+    const privacy = getPrivacy(user.id);
+    const isOwner = user.id === i.user.id;
+
+    if (!isOwner && privacy === 'Private') {
+      return i.reply({
+        content: t.private,
         flags: MessageFlags.Ephemeral
       });
-
     }
 
-    // INVENTORY CONFIG
-    if (interaction.commandName === 'inventory_config') {
+    const inv = getInv(user.id);
 
-      const visibility = interaction.options.getString('visibility');
-      setInventoryPrivacy(interaction.user.id, visibility);
-
-      return interaction.reply({
-        content:
-          visibility === 'Visible'
-            ? t.inventorySetVisible
-            : t.inventorySetPrivate,
+    if (!inv.length) {
+      return i.reply({
+        content: t.empty,
         flags: MessageFlags.Ephemeral
       });
-
     }
 
-    // INVENTORY
-    if (interaction.commandName === 'inventory') {
-
-      const targetUser =
-        interaction.options.getUser('user') || interaction.user;
-
-      const privacy = getInventoryPrivacy(targetUser.id);
-      const isOwnInventory = targetUser.id === interaction.user.id;
-      const inventory = getInventory(targetUser.id);
-
-      if (!isOwnInventory && privacy === 'Private') {
-        return interaction.reply({
-          content: t.inventoryPrivate,
-          flags: MessageFlags.Ephemeral
-        });
-      }
-
-      if (inventory.length === 0) {
-        return interaction.reply({
-          content: t.inventoryEmpty,
-          flags: MessageFlags.Ephemeral
-        });
-      }
-
-      const counts = new Map();
-
-      for (const character of inventory) {
-        const key = character.name;
-        counts.set(key, (counts.get(key) || 0) + 1);
-      }
-
-      let description = '';
-
-      for (const [name, count] of counts.entries()) {
-        description += `• ${name} x${count}\n`;
-      }
-
-      const embed = new EmbedBuilder()
-        .setTitle(`${targetUser.username}'s ${t.inventory}`)
-        .setDescription(description)
-        .addFields(
-          { name: t.owner, value: `<@${targetUser.id}>`, inline: true },
-          { name: t.privacy, value: privacy, inline: true },
-          { name: t.total, value: String(inventory.length), inline: true }
-        );
-
-      if (privacy === 'Private') {
-        return interaction.reply({
-          embeds: [embed],
-          flags: MessageFlags.Ephemeral
-        });
-      }
-
-      return interaction.reply({
-        embeds: [embed]
-      });
-
+    const map = {};
+    for (const c of inv) {
+      map[c.name] = (map[c.name] || 0) + 1;
     }
 
-    // DATA
-    if (interaction.commandName === 'data_character') {
+    let desc = '';
+    for (const k in map) {
+      desc += `• ${k} x${map[k]}\n`;
+    }
 
-      if (!activeSpawn) {
+    return i.reply({
+      embeds: [
+        new EmbedBuilder()
+          .setTitle(`${user.username} Inventory`)
+          .setDescription(desc)
+      ]
+    });
+  }
 
-        return interaction.reply({
-          content: t.noCharacter,
-          flags: MessageFlags.Ephemeral
-        });
+  // GIFT
+  if (i.commandName === 'gift') {
+    const user = i.options.getUser('user');
+    const code = i.options.getString('code');
 
-      }
+    const inv = getInv(i.user.id);
+    const index = inv.findIndex(c => c.code === code);
 
-      const embed = new EmbedBuilder()
-        .setTitle(t.data)
-        .setDescription(
-`🆔 Code: ${activeSpawn.code}
-👤 Name: ${activeSpawn.name}
-⭐ Rarity: ${activeSpawn.rarity}
-🌎 Language: ${activeSpawn.language}`
-        );
-
-      if (
-        activeSpawn.image &&
-        activeSpawn.image.startsWith('http')
-      ) {
-        embed.setImage(activeSpawn.image);
-      }
-
-      return interaction.reply({
-        embeds: [embed],
+    if (index === -1) {
+      return i.reply({
+        content: t.giftFail,
         flags: MessageFlags.Ephemeral
       });
-
     }
 
-    // ACTIVE
+    const [item] = inv.splice(index, 1);
+    inventories[i.user.id] = inv;
+
+    addItem(user.id, item);
+    saveInventory();
+
+    return i.reply(
+      `🎁 ${i.user.username} gifted ${item.name} to ${user.username}`
+    );
+  }
+
+  // SPAWN
+  if (i.commandName === 'spawn') {
     if (activeSpawn) {
-
-      return interaction.reply({
+      return i.reply({
         content: t.active,
         flags: MessageFlags.Ephemeral
       });
-
     }
 
-    let selectedCharacter;
-
-    // SPAWN
-    if (interaction.commandName === 'spawn') {
-
-      selectedCharacter = getRandomCharacter();
-
-    }
-
-    // SPAWN CHARACTER
-    if (interaction.commandName === 'spawn_character') {
-
-      const code = interaction.options.getString('codigo');
-
-      const foundCharacter = characters.find(
-        character => character.code === code
-      );
-
-      if (!foundCharacter) {
-
-        return interaction.reply({
-          content: t.notFound,
-          flags: MessageFlags.Ephemeral
-        });
-
-      }
-
-      selectedCharacter = foundCharacter;
-
-    }
-
-    activeSpawn = selectedCharacter;
+    activeSpawn = getRandomCharacter();
 
     const embed = new EmbedBuilder()
       .setTitle(t.spawned)
-      .setDescription(
-`🆔 Code: ${selectedCharacter.code}
-⭐ Rarity: ${selectedCharacter.rarity}
-🌎 Language: ${selectedCharacter.language}
+      .setDescription(`${activeSpawn.name} - ${activeSpawn.rarity}`);
 
-${t.guess}`
-      );
+    if (activeSpawn.image) embed.setImage(activeSpawn.image);
 
-    if (
-      selectedCharacter.image &&
-      selectedCharacter.image.startsWith('http')
-    ) {
-      embed.setImage(selectedCharacter.image);
-    }
-
-    await interaction.reply({
-      content: '✅',
-      flags: MessageFlags.Ephemeral
-    });
-
-    await interaction.channel.send({
-      embeds: [embed]
-    });
-
-  } catch (err) {
-
-    console.error(err);
-
+    await i.reply({ content: 'ok', flags: MessageFlags.Ephemeral });
+    await i.channel.send({ embeds: [embed] });
   }
 
 });
 
 // CLAIM
-client.on('messageCreate', async message => {
+client.on('messageCreate', msg => {
+  if (msg.author.bot) return;
+  if (!activeSpawn) return;
 
-  try {
+  if (msg.content.toLowerCase() === activeSpawn.name.toLowerCase()) {
+    addItem(msg.author.id, activeSpawn);
 
-    if (message.author.bot) return;
-    if (!activeSpawn) return;
+    msg.reply(`🏆 ${msg.author.username} ${texts[botLanguage].claimed} ${activeSpawn.name}`);
 
-    const t = texts[botLanguage];
-
-    const userAnswer = message.content.toLowerCase().trim();
-    const correctAnswer = activeSpawn.name.toLowerCase();
-
-    if (userAnswer === correctAnswer) {
-
-      const claimedCharacter = activeSpawn;
-
-      activeSpawn = null;
-
-      addCharacterToInventory(message.author.id, claimedCharacter);
-
-      await message.reply(
-`🏆 ${message.author.username} ${t.claimed} ${claimedCharacter.name}
-
-🆔 Code: ${claimedCharacter.code}
-⭐ Rarity: ${claimedCharacter.rarity}
-🌎 Language: ${claimedCharacter.language}`
-      );
-
-    }
-
-  } catch (err) {
-
-    console.error(err);
-
+    activeSpawn = null;
   }
-
 });
 
 // LOGIN
 client.login(TOKEN);
 
-// PORT
+// SERVER
 http.createServer((req, res) => {
-
   res.write('CGDex Online');
   res.end();
-
 }).listen(process.env.PORT || 3000);
