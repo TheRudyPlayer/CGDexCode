@@ -9,6 +9,8 @@ const {
 } = require('discord.js');
 
 const http = require('http');
+const fs = require('fs');
+const path = require('path');
 
 const TOKEN = process.env.TOKEN;
 
@@ -353,6 +355,53 @@ let activeSpawn = null;
 const inventories = new Map();
 const inventorySettings = new Map();
 
+const INVENTORY_FILE = path.join(__dirname, 'inventories.json');
+
+function loadInventoryData() {
+  try {
+    if (!fs.existsSync(INVENTORY_FILE)) {
+      return;
+    }
+
+    const raw = fs.readFileSync(INVENTORY_FILE, 'utf8');
+    if (!raw.trim()) return;
+
+    const data = JSON.parse(raw);
+
+    inventories.clear();
+    inventorySettings.clear();
+
+    if (Array.isArray(data.inventories)) {
+      for (const [userId, items] of data.inventories) {
+        inventories.set(userId, Array.isArray(items) ? items : []);
+      }
+    }
+
+    if (Array.isArray(data.settings)) {
+      for (const [userId, privacy] of data.settings) {
+        inventorySettings.set(userId, privacy);
+      }
+    }
+  } catch (err) {
+    console.error('❌ Error loading inventories.json:', err);
+  }
+}
+
+function saveInventoryData() {
+  try {
+    const data = {
+      inventories: Array.from(inventories.entries()),
+      settings: Array.from(inventorySettings.entries())
+    };
+
+    fs.writeFileSync(INVENTORY_FILE, JSON.stringify(data, null, 2));
+  } catch (err) {
+    console.error('❌ Error saving inventories.json:', err);
+  }
+}
+
+loadInventoryData();
+
 // RAREZAS
 const rarityChances = {
   Common: 40,
@@ -375,6 +424,8 @@ function addCharacterToInventory(userId, character) {
     image: character.image
   });
 
+  saveInventoryData();
+
 }
 
 function getInventory(userId) {
@@ -387,6 +438,7 @@ function getInventoryPrivacy(userId) {
 
 function setInventoryPrivacy(userId, privacy) {
   inventorySettings.set(userId, privacy);
+  saveInventoryData();
 }
 
 // RANDOM
@@ -507,12 +559,18 @@ const rest = new REST({ version: '10' }).setToken(TOKEN);
     for (const guildId of GUILD_IDS) {
 
       await rest.put(
-        Routes.applicationGuildCommands(CLIENT_ID, guildId),
+        Routes.applicationGuildCommands(
+          CLIENT_ID,
+          guildId
+        ),
         { body: [] }
       );
 
       await rest.put(
-        Routes.applicationGuildCommands(CLIENT_ID, guildId),
+        Routes.applicationGuildCommands(
+          CLIENT_ID,
+          guildId
+        ),
         { body: commands }
       );
 
