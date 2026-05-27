@@ -32,9 +32,10 @@ const client = new Client({
   ]
 });
 
+// 🌍 LANGUAGE
 let botLanguage = 'English';
 
-// 🌍 TEXTOS (NO TOCADO)
+// TEXTOS
 const texts = {
   English: {
     spawned: '✨ A character has appeared',
@@ -45,13 +46,12 @@ const texts = {
     noCharacter: '❌ There is no active character.',
     claimed: 'claimed',
     data: '📖 Character Data',
-    languageChanged: '✅ Language changed to English',
+    languageChanged: '✅ Language changed',
     inventory: 'Inventory',
     empty: 'Empty inventory',
     private: 'Private inventory',
     giftFail: '❌ You don’t have that character'
   },
-
   Spanish: {
     spawned: '✨ Un personaje ha aparecido',
     guess: '💬 Responde con el nombre correcto para reclamarlo',
@@ -61,7 +61,7 @@ const texts = {
     noCharacter: '❌ No hay personaje activo.',
     claimed: 'reclamó a',
     data: '📖 Datos del Personaje',
-    languageChanged: '✅ Idioma cambiado a Español',
+    languageChanged: '✅ Idioma cambiado',
     inventory: 'Inventario',
     empty: 'Inventario vacío',
     private: 'Inventario privado',
@@ -69,7 +69,7 @@ const texts = {
   }
 };
 
-// 🎮 PERSONAJES (TU SISTEMA COMPLETO SIN QUITAR NADA)
+// 🎮 SOLO 2 PERSONAJES
 const characters = [
   {
     code: '001',
@@ -136,10 +136,10 @@ const characters = [
   },
   {
     code: '010',
-    name: 'Zhura24K',
+    name: 'Spy_Gaming150',
     rarity: 'Rare',
-    language: 'Ukrainian',
-    image: 'https://i.postimg.cc/4d0rP8Mq/zhura24kicon.png'
+    language: 'LATAM',
+    image: 'https://i.postimg.cc/6pB7ZZvP/spygamingicon.png'
   },
   {
     code: '011',
@@ -290,9 +290,7 @@ const characters = [
   }
 ];
 
-let activeSpawn = null;
-
-// 💾 INVENTARIO REAL PERSISTENTE
+// 💾 INVENTORY SYSTEM
 const INVENTORY_FILE = path.join(__dirname, 'inventories.json');
 
 let inventories = {};
@@ -300,9 +298,7 @@ let inventorySettings = {};
 
 function loadInventory() {
   if (!fs.existsSync(INVENTORY_FILE)) return;
-
   const data = JSON.parse(fs.readFileSync(INVENTORY_FILE, 'utf8') || '{}');
-
   inventories = data.inventories || {};
   inventorySettings = data.settings || {};
 }
@@ -310,20 +306,15 @@ function loadInventory() {
 function saveInventory() {
   fs.writeFileSync(
     INVENTORY_FILE,
-    JSON.stringify({
-      inventories,
-      settings: inventorySettings
-    }, null, 2)
+    JSON.stringify({ inventories, settings: inventorySettings }, null, 2)
   );
 }
 
 loadInventory();
 
-// 📦 HELPERS
-function addItem(userId, character) {
+function addItem(userId, char) {
   if (!inventories[userId]) inventories[userId] = [];
-
-  inventories[userId].push(character);
+  inventories[userId].push(char);
   saveInventory();
 }
 
@@ -331,8 +322,8 @@ function getInv(userId) {
   return inventories[userId] || [];
 }
 
-function setPrivacy(userId, value) {
-  inventorySettings[userId] = value;
+function setPrivacy(userId, v) {
+  inventorySettings[userId] = v;
   saveInventory();
 }
 
@@ -340,12 +331,15 @@ function getPrivacy(userId) {
   return inventorySettings[userId] || 'Visible';
 }
 
-// 🎲 RANDOM (NO TOCADO)
+// 🎯 ACTIVE SPAWN
+let activeSpawn = null;
+
+// 🎲 RANDOM
 function getRandomCharacter() {
   return characters[Math.floor(Math.random() * characters.length)];
 }
 
-// 📜 COMMANDS (TODOS LOS TUYOS + NUEVOS)
+// 📜 COMMANDS
 const commands = [
   new SlashCommandBuilder()
     .setName('spawn')
@@ -377,9 +371,7 @@ const commands = [
   new SlashCommandBuilder()
     .setName('inventory')
     .setDescription('View inventory')
-    .addUserOption(o =>
-      o.setName('user')
-    ),
+    .addUserOption(o => o.setName('user')),
 
   new SlashCommandBuilder()
     .setName('inventory_config')
@@ -404,7 +396,7 @@ const commands = [
     )
 ].map(c => c.toJSON());
 
-// REST
+// REGISTER
 const rest = new REST({ version: '10' }).setToken(TOKEN);
 
 (async () => {
@@ -420,7 +412,7 @@ client.once('ready', () => {
   console.log(`✅ Online ${client.user.tag}`);
 });
 
-// 🔥 INTERACTIONS
+// INTERACTIONS
 client.on('interactionCreate', async i => {
   if (!i.isChatInputCommand()) return;
 
@@ -429,60 +421,40 @@ client.on('interactionCreate', async i => {
   // LANGUAGE
   if (i.commandName === 'language') {
     botLanguage = i.options.getString('idioma');
-
-    return i.reply({
-      content: texts[botLanguage].languageChanged,
-      flags: MessageFlags.Ephemeral
-    });
+    return i.reply({ content: t.languageChanged, flags: MessageFlags.Ephemeral });
   }
 
   // INVENTORY CONFIG
   if (i.commandName === 'inventory_config') {
     setPrivacy(i.user.id, i.options.getString('visibility'));
-
-    return i.reply({
-      content: 'OK',
-      flags: MessageFlags.Ephemeral
-    });
+    return i.reply({ content: 'OK', flags: MessageFlags.Ephemeral });
   }
 
   // INVENTORY
   if (i.commandName === 'inventory') {
     const user = i.options.getUser('user') || i.user;
 
-    const privacy = getPrivacy(user.id);
-    const isOwner = user.id === i.user.id;
-
-    if (!isOwner && privacy === 'Private') {
-      return i.reply({
-        content: t.private,
-        flags: MessageFlags.Ephemeral
-      });
+    if (user.id !== i.user.id && getPrivacy(user.id) === 'Private') {
+      return i.reply({ content: t.private, flags: MessageFlags.Ephemeral });
     }
 
     const inv = getInv(user.id);
 
     if (!inv.length) {
-      return i.reply({
-        content: t.empty,
-        flags: MessageFlags.Ephemeral
-      });
+      return i.reply({ content: t.empty, flags: MessageFlags.Ephemeral });
     }
 
-    const map = {};
-    for (const c of inv) {
-      map[c.name] = (map[c.name] || 0) + 1;
-    }
+    const count = {};
+    inv.forEach(c => count[c.name] = (count[c.name] || 0) + 1);
 
-    let desc = '';
-    for (const k in map) {
-      desc += `• ${k} x${map[k]}\n`;
-    }
+    const desc = Object.entries(count)
+      .map(([k,v]) => `• ${k} x${v}`)
+      .join('\n');
 
     return i.reply({
       embeds: [
         new EmbedBuilder()
-          .setTitle(`${user.username} Inventory`)
+          .setTitle(`${user.username} ${t.inventory}`)
           .setDescription(desc)
       ]
     });
@@ -497,10 +469,7 @@ client.on('interactionCreate', async i => {
     const index = inv.findIndex(c => c.code === code);
 
     if (index === -1) {
-      return i.reply({
-        content: t.giftFail,
-        flags: MessageFlags.Ephemeral
-      });
+      return i.reply({ content: t.giftFail, flags: MessageFlags.Ephemeral });
     }
 
     const [item] = inv.splice(index, 1);
@@ -509,25 +478,20 @@ client.on('interactionCreate', async i => {
     addItem(user.id, item);
     saveInventory();
 
-    return i.reply(
-      `🎁 ${i.user.username} gifted ${item.name} to ${user.username}`
-    );
+    return i.reply(`🎁 ${i.user.username} gifted ${item.name} to ${user.username}`);
   }
 
   // SPAWN
   if (i.commandName === 'spawn') {
     if (activeSpawn) {
-      return i.reply({
-        content: t.active,
-        flags: MessageFlags.Ephemeral
-      });
+      return i.reply({ content: t.active, flags: MessageFlags.Ephemeral });
     }
 
     activeSpawn = getRandomCharacter();
 
     const embed = new EmbedBuilder()
       .setTitle(t.spawned)
-      .setDescription(`${activeSpawn.name} - ${activeSpawn.rarity}`);
+      .setDescription(`${activeSpawn.name} (${activeSpawn.rarity})`);
 
     if (activeSpawn.image) embed.setImage(activeSpawn.image);
 
@@ -556,6 +520,5 @@ client.login(TOKEN);
 
 // SERVER
 http.createServer((req, res) => {
-  res.write('CGDex Online');
-  res.end();
+  res.end('CGDex Online');
 }).listen(process.env.PORT || 3000);
