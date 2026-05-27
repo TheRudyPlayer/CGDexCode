@@ -39,7 +39,7 @@ const characters = [
     code: '001',
     name: 'Rudy',
     rarity: 'Common',
-    image: 'https://i.postimg.cc/vB49MTQv/rudyicon.png'
+    image: 'https://i.postimg.cc/TwxJ164Q/rudyicon.png'
   },
   {
     code: '002',
