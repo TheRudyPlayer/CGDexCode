@@ -713,10 +713,42 @@ client.on('interactionCreate', async interaction => {
 
       }
 
+      // CONTAR PERSONAJES
+      const countedCharacters = {};
+
+      for (const character of inventory) {
+
+        if (!countedCharacters[character.name]) {
+
+          countedCharacters[character.name] = {
+            amount: 0,
+            rarity: character.rarity,
+            code: character.code
+          };
+
+        }
+
+        countedCharacters[character.name]
+          .amount++;
+
+      }
+
+      // TEXTO
       const inventoryText =
-        inventory.map(character =>
-`🆔 ${character.code} • ${character.name} • ${character.rarity}`
-        ).join('\n');
+        Object.entries(countedCharacters)
+          .map(([name, data]) =>
+`🆔 ${data.code} • ${name} x${data.amount}
+⭐ ${data.rarity}`
+          )
+          .join('\n\n');
+
+      // TOTAL
+      const totalCharacters =
+        inventory.length;
+
+      const totalUnique =
+        Object.keys(countedCharacters)
+          .length;
 
       const embed =
         new EmbedBuilder()
@@ -724,7 +756,11 @@ client.on('interactionCreate', async interaction => {
             `${target.username} ${t.inventory}`
           )
           .setDescription(
-            inventoryText
+`${inventoryText}
+
+━━━━━━━━━━━━
+📦 Total Characters: ${totalCharacters}
+🧩 Unique Characters: ${totalUnique}`
           );
 
       return interaction.reply({
