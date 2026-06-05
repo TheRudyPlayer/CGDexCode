@@ -188,14 +188,14 @@ const characters = [
   {
     code: '004',
     name: 'Mr Meow',
-    rarity: 'Rare',
+    rarity: 'Epic',
     language: 'LATAM',
     image: 'https://i.postimg.cc/nrrjGqYM/mrmeowicon.png'
   },
   {
     code: '005',
     name: 'MirtHD',
-    rarity: 'Common',
+    rarity: 'Rare',
     language: 'LATAM',
     image: 'https://i.postimg.cc/hPvhnps0/mirticon.png'
   },
@@ -216,14 +216,14 @@ const characters = [
   {
     code: '008',
     name: 'Stiff LXR',
-    rarity: 'Epic',
+    rarity: 'Legendary',
     language: 'LATAM',
     image: 'https://i.postimg.cc/dtw9XRYD/stifflxricon.png'
   },
   {
     code: '009',
     name: 'JR Crack',
-    rarity: 'Legendary',
+    rarity: 'Mythic',
     language: 'LATAM',
     image: 'https://i.postimg.cc/6qHf0tkJ/jrcrackicon.png'
   },
@@ -335,7 +335,7 @@ const characters = [
   {
     code: '025',
     name: 'Vip Gurita',
-    rarity: 'Legendary',
+    rarity: 'Mythic',
     language: 'English',
     image: 'https://i.postimg.cc/9MDkmZKJ/vipguritaicon.png'
   },
@@ -370,7 +370,7 @@ const characters = [
   {
     code: '030',
     name: 'Spy_Gaming150',
-    rarity: 'Rare',
+    rarity: 'Admin',
     language: 'LATAM',
     image: 'https://i.postimg.cc/6pB7ZZvP/spygamingicon.png'
   },
@@ -394,7 +394,9 @@ const rarityChances = {
   Common: 70,
   Rare: 20,
   Epic: 9,
-  Legendary: 1
+  Legendary: 1,
+  Mythic: 0.3,
+  Admin: 0
 };
 
 // RANDOM
