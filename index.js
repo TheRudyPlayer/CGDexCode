@@ -9,8 +9,7 @@ const {
 } = require('discord.js');
 
 const http = require('http');
-const fs = require('fs');
-const path = require('path');
+const admin = require('firebase-admin');
 
 const TOKEN = process.env.TOKEN;
 
@@ -40,67 +39,51 @@ const client = new Client({
 let botLanguage = 'English';
 
 // INVENTORY FILE
-const INVENTORY_FILE = path.join(
-  __dirname,
-  'inventories.json'
-);
-
-// LOAD INVENTORY
 let inventories = {};
 let inventorySettings = {};
 
-function loadInventories() {
+admin.initializeApp({
+  credential: admin.credential.cert({
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
+  }),
+  databaseURL: process.env.FIREBASE_DATABASE_URL
+});
 
-  try {
+const db = admin.database();
 
-    if (!fs.existsSync(INVENTORY_FILE)) {
+async function loadInventories() {
 
-      fs.writeFileSync(
-        INVENTORY_FILE,
-        JSON.stringify({
-          inventories: {},
-          settings: {}
-        }, null, 2)
-      );
+  const snapshot =
+    await db.ref('inventories').once('value');
 
-    }
+  inventories =
+    snapshot.val() || {};
 
-    const data = JSON.parse(
-      fs.readFileSync(INVENTORY_FILE, 'utf8')
-    );
+  const settingsSnapshot =
+    await db.ref('settings').once('value');
 
-    inventories = data.inventories || {};
-    inventorySettings = data.settings || {};
-
-  } catch (err) {
-
-    console.error(err);
-
-  }
+  inventorySettings =
+    settingsSnapshot.val() || {};
 
 }
 
-function saveInventories() {
+async function saveInventories() {
 
-  try {
+  await db.ref('inventories')
+    .set(inventories);
 
-    fs.writeFileSync(
-      INVENTORY_FILE,
-      JSON.stringify({
-        inventories,
-        settings: inventorySettings
-      }, null, 2)
-    );
-
-  } catch (err) {
-
-    console.error(err);
-
-  }
+  await db.ref('settings')
+    .set(inventorySettings);
 
 }
 
-loadInventories();
+loadInventories()
+  .then(() =>
+    console.log('✅ Firebase loaded')
+  )
+  .catch(console.error);
 
 // TEXTS
 const texts = {
@@ -476,7 +459,10 @@ function getRandomCharacter() {
 }
 
 // INVENTORY HELPERS
-function addCharacterToInventory(userId, character) {
+async function addCharacterToInventory(
+  userId,
+  character
+) {
 
   if (!inventories[userId]) {
 
@@ -486,7 +472,7 @@ function addCharacterToInventory(userId, character) {
 
   inventories[userId].push(character);
 
-  saveInventories();
+  await saveInventories();
 
 }
 
@@ -1012,10 +998,10 @@ client.on('messageCreate', async message => {
       const claimedCharacter =
         activeSpawn;
 
-      addCharacterToInventory(
-        message.author.id,
-        claimedCharacter
-      );
+      await addCharacterToInventory(
+  message.author.id,
+  claimedCharacter
+);
 
       activeSpawn = null;
 
