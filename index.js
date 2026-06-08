@@ -24,7 +24,10 @@ const GUILD_IDS = [
 ];
 
 // OWNER
-const OWNER_ID = '1458910126168735806';
+const OWNER_ID = [
+  '1458910126168735806',
+  '1479970419850350818'
+];
 
 // CLIENT
 const client = new Client({
