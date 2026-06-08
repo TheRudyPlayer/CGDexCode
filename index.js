@@ -832,7 +832,7 @@ client.on('interactionCreate', async interaction => {
         interaction.commandName ===
         'data_character'
       ) &&
-      !OWNER_IDS.includes(interaction.user.id)
+      !OWNER_ID.includes(interaction.user.id)
     ) {
 
       return interaction.reply({
