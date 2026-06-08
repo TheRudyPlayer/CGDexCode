@@ -386,7 +386,7 @@ const characters = [
   },
   {
     code: '032',
-    name: '<MISSING:write;text.value:hola>',
+    name: `<MISSING:write;text.value:hola>`,
     rarity: 'OP',
     language: 'Global',
     image: ''
