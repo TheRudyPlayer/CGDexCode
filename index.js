@@ -383,6 +383,13 @@ const characters = [
     rarity: 'Epic',
     language: 'Global',
     image: 'https://i.postimg.cc/brWpGYpS/laryhackericon.webp'
+  },
+  {
+    code: '032',
+    name: '<MISSING:write;text.value:hola>',
+    rarity: 'OP',
+    language: 'Global',
+    image: ''
   }
 ];
 
@@ -399,6 +406,7 @@ const rarityChances = {
   Epic: 9,
   Legendary: 1,
   Mythic: 0.3,
+  OP: 0.000000000001,
   Admin: 0
 };
 
