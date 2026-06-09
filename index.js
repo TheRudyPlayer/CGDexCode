@@ -402,7 +402,7 @@ const worldCup2026Characters = [
     name: 'ChaloApps',
     rarity: 'Common',
     language: 'Global',
-    image: ''
+    image: 'https://i.postimg.cc/0yBvFhW0/chaloappsiconworldcup.png'
   }
 ];
 
