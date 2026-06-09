@@ -181,7 +181,7 @@ const characters = [
     code: '002',
     name: 'ChaloApps',
     rarity: 'Common',
-    language: 'Russian',
+    language: 'Global/Russian',
     image: 'https://i.postimg.cc/pT594SZJ/chaloappsicon.png'
   },
   {
@@ -399,10 +399,73 @@ const characters = [
 const worldCup2026Characters = [
   {
     code: 'WC001',
-    name: 'ChaloApps',
+    name: 'Rudy',
     rarity: 'Common',
     language: 'Global',
+    image: ''
+  },
+  {
+    code: 'WC002',
+    name: 'ChaloApps',
+    rarity: 'Common',
+    language: 'Global/Russian',
     image: 'https://i.postimg.cc/0yBvFhW0/chaloappsiconworldcup.png'
+  },
+  {
+    code: 'WC003',
+    name: 'Dragon Dude',
+    rarity: 'Common',
+    language: 'English',
+    image: ''
+  },
+  {
+    code: 'WC004',
+    name: 'TheRudyPlayer',
+    rarity: 'Common',
+    language: 'LATAM',
+    image: ''
+  },
+  {
+    code: 'WC005',
+    name: 'Den19K',
+    rarity: 'Common',
+    language: 'Ukrainian',
+    image: ''
+  },
+  {
+    code: 'WC006',
+    name: 'Stiff LXR',
+    rarity: 'Legendary',
+    language: 'LATAM',
+    image: ''
+  },
+  {
+    code: 'WC007',
+    name: 'JR Crack',
+    rarity: 'Mythic',
+    language: 'LATAM',
+    image: ''
+  },
+  {
+    code: 'WC008',
+    name: 'Funchik',
+    rarity: 'Epic',
+    language: 'English',
+    image: ''
+  },
+  {
+    code: 'WC009',
+    name: 'Mr Meow',
+    rarity: 'Rare',
+    language: 'LATAM',
+    image: ''
+  },
+  {
+    code: 'WC010',
+    name: 'MirtHD',
+    rarity: 'Rare',
+    language: 'LATAM',
+    image: ''
   }
 ];
 
@@ -430,7 +493,7 @@ const rarityChances = {
   Epic: 9,
   Legendary: 1,
   Mythic: 0.3,
-  OP: 0.000000000001,
+  OP: 0.07,
   Admin: 0
 };
 
