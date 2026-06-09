@@ -603,7 +603,7 @@ const commands = [
         .setName('code')
         .setDescription('Character code')
         .setRequired(true)
-    )
+    ),
 
   new SlashCommandBuilder()
   .setName('set_mode')
