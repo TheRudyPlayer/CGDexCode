@@ -38,6 +38,9 @@ const client = new Client({
   ]
 });
 
+// TEMPORADA (MODO)
+let cgdexSeason = 'Classic';
+
 // LANGUAGE
 let botLanguage = 'English';
 
@@ -393,6 +396,27 @@ const characters = [
   }
 ];
 
+const worldCup2026Characters = [
+  {
+    code: 'WC001',
+    name: 'ChaloApps',
+    rarity: 'Common',
+    language: 'Global',
+    image: ''
+  }
+];
+
+// FUNCION DE MODO WC2026
+function getCurrentCharacters() {
+
+  if (cgdexSeason === 'WorldCup2026') {
+    return worldCup2026Characters;
+  }
+
+  return characters;
+
+}
+
 // LAST
 let lastCharacterCode = null;
 
@@ -433,15 +457,18 @@ function getRandomCharacter() {
 
   }
 
-  let filtered =
-    characters.filter(
+  const currentCharacters =
+  getCurrentCharacters();
+
+let filtered =
+  currentCharacters.filter(
       character =>
         character.rarity === selectedRarity
     );
 
   if (filtered.length === 0) {
 
-    filtered = characters;
+    filtered = currentCharacters;
 
   }
 
@@ -453,7 +480,7 @@ function getRandomCharacter() {
 
   if (filtered.length === 0) {
 
-    filtered = characters;
+    filtered = currentCharacters;
 
   }
 
@@ -577,6 +604,20 @@ const commands = [
         .setDescription('Character code')
         .setRequired(true)
     )
+
+  new SlashCommandBuilder()
+  .setName('set_mode')
+  .setDescription('Change CGDex mode')
+  .addStringOption(option =>
+    option
+      .setName('mode')
+      .setDescription('Mode')
+      .setRequired(true)
+      .addChoices(
+        { name: 'Classic', value: 'Classic' },
+        { name: 'World Cup 2026', value: 'WorldCup2026' }
+      )
+  )
 
 ].map(command => command.toJSON());
 
@@ -835,10 +876,13 @@ client.on('interactionCreate', async interaction => {
     if (
       (
         interaction.commandName ===
-        'spawn_character' ||
+          'spawn_character' ||
 
         interaction.commandName ===
-        'data_character'
+          'data_character' ||
+
+        interaction.commandName ===
+          'set_mode'
       ) &&
       !OWNER_ID.includes(interaction.user.id)
     ) {
@@ -849,6 +893,27 @@ client.on('interactionCreate', async interaction => {
       });
 
     }
+
+    // SET MODE
+if (
+  interaction.commandName ===
+  'set_mode'
+) {
+
+  const mode =
+    interaction.options.getString(
+      'mode'
+    );
+
+  cgdexSeason = mode;
+
+  return interaction.reply({
+    content:
+      `✅ CGDex mode changed to: ${mode}`,
+    flags: MessageFlags.Ephemeral
+  });
+
+}
 
     // DATA
     if (
@@ -928,7 +993,7 @@ client.on('interactionCreate', async interaction => {
         );
 
       const foundCharacter =
-        characters.find(
+  getCurrentCharacters().find(
           character =>
             character.code === code
         );
