@@ -402,7 +402,7 @@ const worldCup2026Characters = [
     name: 'Rudy',
     rarity: 'Common',
     language: 'Global',
-    image: ''
+    image: 'https://i.postimg.cc/Vs3qZZwH/rudyiconworldcup.png'
   },
   {
     code: 'WC002',
@@ -423,7 +423,7 @@ const worldCup2026Characters = [
     name: 'TheRudyPlayer',
     rarity: 'Common',
     language: 'LATAM',
-    image: ''
+    image: 'https://i.postimg.cc/fT933M6B/therudyplayericonworldcup.png'
   },
   {
     code: 'WC005',
