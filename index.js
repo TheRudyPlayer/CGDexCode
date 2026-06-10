@@ -997,6 +997,54 @@ if (
   });
 
 }
+    //SELL
+    if (
+  interaction.commandName ===
+  'sell'
+) {
+
+  const code =
+    interaction.options.getString(
+      'code'
+    );
+
+  const inventory =
+    getInventory(interaction.user.id);
+
+  const index =
+    inventory.findIndex(
+      character =>
+        character.code === code
+    );
+
+  if (index === -1) {
+
+    return interaction.reply({
+      content: '❌ You do not own this character.',
+      flags: MessageFlags.Ephemeral
+    });
+
+  }
+
+  const character =
+    inventory.splice(index, 1)[0];
+
+  const value =
+    sellPrices[character.rarity] || 0;
+
+  cgCoins[interaction.user.id] =
+    (cgCoins[interaction.user.id] || 0)
+    + value;
+
+  await saveInventories();
+
+  return interaction.reply({
+    content:
+`💰 Sold ${character.name}
+🪙 +${value} CGCoins`
+  });
+
+    }
 
     // OWNER
     if (
