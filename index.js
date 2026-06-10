@@ -507,6 +507,17 @@ const rarityColors = {
   Admin: '#000000'
 };
 
+// RARITY PRICE
+const sellPrices = {
+  Common: 10,
+  Rare: 30,
+  Epic: 80,
+  Legendary: 200,
+  Mythic: 500,
+  OP: 1500,
+  Admin: 0
+};
+
 // RARITY CHANCE
 const rarityChances = {
   Common: 70,
@@ -970,6 +981,22 @@ client.on('interactionCreate', async interaction => {
       });
 
     }
+
+    // BALANCE
+if (
+  interaction.commandName ===
+  'balance'
+) {
+
+  const coins =
+    cgCoins[interaction.user.id] || 0;
+
+  return interaction.reply({
+    content:
+      `🪙 You have ${coins} CGCoins`
+  });
+
+}
 
     // OWNER
     if (
