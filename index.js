@@ -486,7 +486,18 @@ let lastCharacterCode = null;
 // ACTIVE
 let activeSpawn = null;
 
-// RARITY
+// RARITY COLOR
+const rarityColors = {
+  Common: '#D3D3D3',
+  Rare: '#0099FF',
+  Epic: '#8000FF',
+  Legendary: '#FFD700',
+  Mythic: '#FF0000',
+  OP: '#00FFFF',
+  Admin: '#000000'
+};
+
+// RARITY CHANCE
 const rarityChances = {
   Common: 70,
   Rare: 20,
@@ -994,8 +1005,13 @@ if (
       }
 
       const embed =
-        new EmbedBuilder()
-          .setTitle(t.data)
+  new EmbedBuilder()
+    .setColor(
+      rarityColors[
+        activeSpawn.rarity
+      ] || '#FFFFFF'
+    )
+    .setTitle(t.data)
           .setDescription(
 `🆔 Code: ${activeSpawn.code}
 👤 Name: ${activeSpawn.name}
@@ -1079,8 +1095,13 @@ if (
       selectedCharacter;
 
     const embed =
-      new EmbedBuilder()
-        .setTitle(t.spawned)
+  new EmbedBuilder()
+    .setColor(
+      rarityColors[
+        selectedCharacter.rarity
+      ] || '#FFFFFF'
+    )
+    .setTitle(t.spawned)
         .setDescription(
 `🆔 Code: ${selectedCharacter.code}
 ⭐ Rarity: ${selectedCharacter.rarity}
