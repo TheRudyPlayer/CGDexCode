@@ -47,6 +47,7 @@ let botLanguage = 'English';
 // INVENTORY FILE
 let inventories = {};
 let inventorySettings = {};
+let cgCoins = {};
 
 admin.initializeApp({
   credential: admin.credential.cert({
@@ -73,6 +74,12 @@ async function loadInventories() {
   inventorySettings =
     settingsSnapshot.val() || {};
 
+  const coinsSnapshot =
+  await db.ref('cgCoins').once('value');
+
+cgCoins =
+  coinsSnapshot.val() || {};
+
 }
 
 async function saveInventories() {
@@ -82,6 +89,9 @@ async function saveInventories() {
 
   await db.ref('settings')
     .set(inventorySettings);
+
+  await db.ref('cgCoins')
+  .set(cgCoins);
 
 }
 
@@ -680,6 +690,20 @@ const commands = [
     ),
 
   new SlashCommandBuilder()
+  .setName('sell')
+  .setDescription('Sell character')
+  .addStringOption(option =>
+    option
+      .setName('code')
+      .setDescription('Character code')
+      .setRequired(true)
+  ),
+
+  new SlashCommandBuilder()
+  .setName('balance')
+  .setDescription('View your CGCoins'),
+
+  new SlashCommandBuilder()
   .setName('set_mode')
   .setDescription('Change CGDex mode')
   .addStringOption(option =>
@@ -691,6 +715,7 @@ const commands = [
         { name: 'Classic', value: 'Classic' },
         { name: 'World Cup 2026', value: 'WorldCup2026' }
       )
+  
   )
 
 ].map(command => command.toJSON());
