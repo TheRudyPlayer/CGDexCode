@@ -5,7 +5,10 @@ const {
   REST,
   Routes,
   EmbedBuilder,
-  MessageFlags
+  MessageFlags,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle
 } = require('discord.js');
 
 const http = require('http');
@@ -722,6 +725,10 @@ const commands = [
     ),
 
   new SlashCommandBuilder()
+  .setName('collection')
+  .setDescription('View your collection'),
+
+  new SlashCommandBuilder()
   .setName('buy')
   .setDescription('Buy a pack')
   .addStringOption(option =>
@@ -1241,6 +1248,167 @@ if (
   });
 
     }
+    // COLLECTION
+if (
+  interaction.commandName ===
+  'collection'
+) {
+
+  const inventory =
+    getInventory(
+      interaction.user.id
+    );
+
+  const ownedCodes =
+    inventory.map(
+      character => character.code
+    );
+
+  const allCharacters =
+    getCurrentCharacters();
+
+  const perPage = 10;
+
+  let page = 0;
+
+  const totalPages =
+    Math.ceil(
+      allCharacters.length / perPage
+    );
+
+  function createEmbed(page) {
+
+    const start =
+      page * perPage;
+
+    const end =
+      start + perPage;
+
+    const pageCharacters =
+      allCharacters.slice(
+        start,
+        end
+      );
+
+    const text =
+      pageCharacters
+        .map(character => {
+
+          const owned =
+            ownedCodes.includes(
+              character.code
+            );
+
+          return owned
+            ? `✅ ${character.code} • ${character.name}`
+            : `❌ ${character.code} • ????????`;
+
+        })
+        .join('\n');
+
+    return new EmbedBuilder()
+      .setTitle(
+        `📖 Collection (${page + 1}/${totalPages})`
+      )
+      .setDescription(
+`${text}
+
+━━━━━━━━━━━━
+📊 Progress: ${
+  ownedCodes.length
+}/${allCharacters.length}`
+      );
+
+  }
+
+  const row =
+    new ActionRowBuilder()
+      .addComponents(
+        new ButtonBuilder()
+          .setCustomId('collection_prev')
+          .setLabel('Back')
+          .setStyle(ButtonStyle.Secondary),
+
+        new ButtonBuilder()
+          .setCustomId('collection_next')
+          .setLabel('Next')
+          .setStyle(ButtonStyle.Secondary)
+      );
+
+  const msg =
+    await interaction.reply({
+      embeds: [createEmbed(page)],
+      components: [row],
+      fetchReply: true
+    });
+
+  const collector =
+    msg.createMessageComponentCollector({
+      time: 300000
+    });
+
+  collector.on(
+    'collect',
+    async button => {
+
+      if (
+        button.user.id !==
+        interaction.user.id
+      ) {
+
+        return button.reply({
+          content:
+            '❌ This is not your collection.',
+          flags:
+            MessageFlags.Ephemeral
+        });
+
+      }
+
+      if (
+        button.customId ===
+        'collection_prev'
+      ) {
+
+        page--;
+
+        if (page < 0) {
+
+          page =
+            totalPages - 1;
+
+        }
+
+      }
+
+      if (
+        button.customId ===
+        'collection_next'
+      ) {
+
+        page++;
+
+        if (
+          page >= totalPages
+        ) {
+
+          page = 0;
+
+        }
+
+      }
+
+      await button.update({
+        embeds: [
+          createEmbed(page)
+        ],
+        components: [row]
+      });
+
+    }
+  );
+
+}
 
     // OWNER
     if (
