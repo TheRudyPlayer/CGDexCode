@@ -490,6 +490,27 @@ function getCurrentCharacters() {
 
 }
 
+// FUNCION DE PACKS
+function randomRarity(chances) {
+
+  const roll = Math.random() * 100;
+
+  let current = 0;
+
+  for (const rarity in chances) {
+
+    current += chances[rarity];
+
+    if (roll <= current) {
+      return rarity;
+    }
+
+  }
+
+  return Object.keys(chances)[0];
+
+}
+
 // LAST
 let lastCharacterCode = null;
 
@@ -699,6 +720,26 @@ const commands = [
         .setDescription('Character code')
         .setRequired(true)
     ),
+
+  new SlashCommandBuilder()
+  .setName('buy')
+  .setDescription('Buy a pack')
+  .addStringOption(option =>
+    option
+      .setName('pack')
+      .setDescription('Pack')
+      .setRequired(true)
+      .addChoices(
+        { name: 'Rare Pack', value: 'rare' },
+        { name: 'Epic Pack', value: 'epic' },
+        { name: 'Legendary Pack', value: 'legendary' },
+        { name: 'World Cup Pack', value: 'worldcup' }
+      )
+  ),
+
+  new SlashCommandBuilder()
+  .setName('shop')
+  .setDescription('View CGDex shop'),
 
   new SlashCommandBuilder()
   .setName('sell')
@@ -981,6 +1022,161 @@ client.on('interactionCreate', async interaction => {
       });
 
     }
+
+    // BUY
+if (
+  interaction.commandName ===
+  'buy'
+) {
+
+  const pack =
+    interaction.options.getString(
+      'pack'
+    );
+
+  let price = 0;
+  let character = null;
+
+  if (pack === 'rare') {
+
+    price = 300;
+
+  } else if (pack === 'epic') {
+
+    price = 800;
+
+  } else if (pack === 'legendary') {
+
+    price = 2000;
+
+  } else if (pack === 'worldcup') {
+
+    price = 500;
+
+  }
+
+  const coins =
+    cgCoins[interaction.user.id] || 0;
+
+  if (coins < price) {
+
+    return interaction.reply({
+      content:
+        '❌ Not enough CGCoins.'
+    });
+
+  }
+
+  cgCoins[interaction.user.id] =
+    coins - price;
+  if (pack === 'worldcup') {
+
+    character =
+      worldCup2026Characters[
+        Math.floor(
+          Math.random() *
+          worldCup2026Characters.length
+        )
+      ];
+
+  } else {
+
+    let rarity;
+
+    if (pack === 'rare') {
+
+      rarity = randomRarity({
+        Rare: 70,
+        Epic: 25,
+        Legendary: 5
+      });
+
+    }
+
+    if (pack === 'epic') {
+
+      rarity = randomRarity({
+        Epic: 75,
+        Legendary: 20,
+        Mythic: 5
+      });
+
+    }
+
+    if (pack === 'legendary') {
+
+      rarity = randomRarity({
+        Legendary: 80,
+        Mythic: 20
+      });
+
+    }
+
+    const possible =
+      characters.filter(
+        character =>
+          character.rarity === rarity
+      );
+
+    character =
+      possible[
+        Math.floor(
+          Math.random() *
+          possible.length
+        )
+      ];
+
+  }
+  await addCharacterToInventory(
+    interaction.user.id,
+    character
+  );
+
+  await saveInventories();
+
+  return interaction.reply({
+    content:
+`📦 Pack Opened!
+
+🎉 You got:
+🆔 ${character.code}
+👤 ${character.name}
+⭐ ${character.rarity}
+
+💰 Remaining CGCoins:
+${cgCoins[interaction.user.id]}`
+  });
+
+}
+
+    // SHOP
+if (
+  interaction.commandName ===
+  'shop'
+) {
+
+  const embed =
+    new EmbedBuilder()
+      .setTitle('📦 CGDex Shop')
+      .setDescription(
+`📦 Rare Pack
+💰 300 CGCoins
+
+📦 Epic Pack
+💰 800 CGCoins
+
+📦 Legendary Pack
+💰 2000 CGCoins
+
+⚽ World Cup Pack
+💰 500 CGCoins`
+      );
+
+  return interaction.reply({
+    embeds: [embed]
+  });
+
+}
 
     // BALANCE
 if (
