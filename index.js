@@ -1782,7 +1782,12 @@ client.on('messageCreate', async message => {
 
     if (!activeSpawn) return;
 
-    const t = texts[botLanguage];
+    const guildLanguage =
+  serverLanguages[message.guild.id] ||
+  botLanguage;
+
+const t =
+  texts[guildLanguage];
 
     const userAnswer =
       message.content.toLowerCase().trim();
