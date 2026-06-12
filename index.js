@@ -46,6 +46,7 @@ let cgdexSeason = 'Classic';
 
 // LANGUAGE
 let botLanguage = 'English';
+let serverLanguages = {};
 
 // INVENTORY FILE
 let inventories = {};
@@ -83,6 +84,13 @@ async function loadInventories() {
 cgCoins =
   coinsSnapshot.val() || {};
 
+const languagesSnapshot =
+  await db.ref('languages')
+    .once('value');
+
+serverLanguages =
+  languagesSnapshot.val() || {};
+
 }
 
 async function saveInventories() {
@@ -95,6 +103,9 @@ async function saveInventories() {
 
   await db.ref('cgCoins')
   .set(cgCoins);
+
+  await db.ref('languages')
+  .set(serverLanguages);
 
 }
 
@@ -910,7 +921,13 @@ client.on('interactionCreate', async interaction => {
 
   if (!interaction.isChatInputCommand()) return;
 
-  const t = texts[botLanguage];
+  const language =
+  serverLanguages[
+    interaction.guild.id
+  ] || 'English';
+
+const t =
+  texts[language];
 
   try {
 
@@ -920,10 +937,14 @@ client.on('interactionCreate', async interaction => {
       'language'
     ) {
 
-      botLanguage =
-        interaction.options.getString(
-          'idioma'
-        );
+      serverLanguages[
+  interaction.guild.id
+] =
+  interaction.options.getString(
+    'idioma'
+  );
+
+await saveInventories();
 
       return interaction.reply({
         content:
