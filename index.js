@@ -1659,85 +1659,96 @@ if (
   ranking =
     ranking.slice(0, 100);
 
-  const page = 0;
-  const perPage = 10;
+const perPage = 10;
 
-  const currentPage =
-    ranking.slice(
-      page * perPage,
-      (page + 1) * perPage
-    );
+if (
+  interaction.customId ===
+  'leaderboard_next'
+) {
 
-  let text = '';
-
-  for (
-    let i = 0;
-    i < currentPage.length;
-    i++
+  if (
+    (data.page + 1) * perPage <
+    data.ranking.length
   ) {
 
-    const player =
-      currentPage[i];
-
-    let username =
-      'Unknown User';
-
-    try {
-
-      const user =
-        await client.users.fetch(
-          player.userId
-        );
-
-      username =
-        user.username;
-
-    } catch {}
-
-    text +=
-      `#${i + 1} ${username} • ${player.value}\n`;
+    data.page++;
 
   }
 
-  const embed =
-    new EmbedBuilder()
-      .setTitle(
-        `🏆 ${scope.toUpperCase()} ${
-          category === 'characters'
-            ? 'Characters'
-            : 'CGCoins'
-        }`
-      )
-      .setDescription(
-        text || 'No data.'
-        )
-      .setFooter({
-  text: `${t.page} 1/${Math.ceil(ranking.length / 10)}`
-});
-  leaderboardPages[
-  interaction.user.id
-] = {
-  ranking,
-  page: 0,
-  scope,
-  category
-};
-  const row = new ActionRowBuilder()
-  .addComponents(
-    new ButtonBuilder()
-      .setCustomId('leaderboard_back')
-      .setLabel(t.back)
-      .setStyle(ButtonStyle.Secondary),
+}
 
-    new ButtonBuilder()
-      .setCustomId('leaderboard_next')
-      .setLabel(t.next)
-      .setStyle(ButtonStyle.Primary)
+if (
+  interaction.customId ===
+  'leaderboard_back'
+) {
+
+  if (data.page > 0) {
+
+    data.page--;
+
+  }
+
+}
+
+const start =
+  data.page * perPage;
+
+const currentPage =
+  data.ranking.slice(
+    start,
+    start + perPage
   );
 
-  return interaction.reply({
-  embeds: [embed],
-  components: [row]
+let text = '';
+
+for (
+  let i = 0;
+  i < currentPage.length;
+  i++
+) {
+
+  const player =
+    currentPage[i];
+
+  let username =
+    'Unknown User';
+
+  try {
+
+    const user =
+      await client.users.fetch(
+        player.userId
+      );
+
+    username =
+      user.username;
+
+  } catch {}
+
+  text +=
+    `#${start + i + 1} ${username} • ${player.value}\n`;
+
+}
+
+const embed =
+  new EmbedBuilder()
+    .setTitle(
+      `🏆 ${data.scope.toUpperCase()} ${
+        data.category === 'characters'
+          ? 'Characters'
+          : 'CGCoins'
+      }`
+    )
+    .setDescription(
+      text || 'No data.'
+    )
+    .setFooter({
+      text:
+        `${data.page + 1}/${Math.ceil(data.ranking.length / 10)}`
+    });
+
+await interaction.update({
+  embeds: [embed]
 });
 
 }
@@ -1951,36 +1962,6 @@ ${t.guess}`
     console.error(err);
 
   }
-
-});
-
-client.on('interactionCreate', async interaction => {
-
-  if (!interaction.isButton()) return;
-
-  if (
-    interaction.customId !== 'leaderboard_next' &&
-    interaction.customId !== 'leaderboard_back'
-  ) return;
-
-  const data =
-    leaderboardPages[
-      interaction.user.id
-    ];
-
-  if (!data) {
-
-    return interaction.reply({
-      content: '❌ Leaderboard expired.',
-      flags: MessageFlags.Ephemeral
-    });
-
-  }
-
-  return interaction.reply({
-    content: '✅ Button works',
-    flags: MessageFlags.Ephemeral
-  });
 
 });
 
