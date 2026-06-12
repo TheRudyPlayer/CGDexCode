@@ -1709,8 +1709,7 @@ if (
         )
       .setFooter({
   text: `${t.page} 1/${Math.ceil(ranking.length / 10)}`
-})
-      );
+});
   leaderboardPages[
   interaction.user.id
 ] = {
