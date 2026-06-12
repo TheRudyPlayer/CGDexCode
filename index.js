@@ -1698,7 +1698,6 @@ for (
 
 }
 
-const embed =
   new EmbedBuilder()
     .setTitle(
       `🏆 ${scope.toUpperCase()} ${
