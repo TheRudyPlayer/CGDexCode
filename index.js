@@ -1339,7 +1339,7 @@ if (
   if (index === -1) {
 
     return interaction.reply({
-      content: '❌ ${t.nocharacterownedtext}.',
+      content: `❌ ${t.nocharacterownedtext}.`,
       flags: MessageFlags.Ephemeral
     });
 
