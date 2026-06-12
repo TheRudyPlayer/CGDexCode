@@ -155,7 +155,10 @@ const texts = {
     soldtext: 'Sold',
     russian: 'Russian',
     global: 'Global',
-    english: 'English'
+    english: 'English',
+    portuguese: 'Portuguese',
+    latam: 'LATAM (Latin America)',
+    ukrainian: 'Ukrainian'
   },
 
   Spanish: {
@@ -195,7 +198,10 @@ const texts = {
     soldtext: 'Vendido',
     russian: 'Ruso',
     global: 'Global',
-    english: 'Inglés'
+    english: 'Inglés',
+    portuguese: 'Portugués',
+    latam: 'LATAM (América Latina)',
+    ukrainian: 'Ucraniano'
   },
 
   Portuguese: {
@@ -235,7 +241,10 @@ const texts = {
     soldtext: 'Vendido',
     russian: 'Russo',
     global: 'Global',
-    english: 'Inglês'
+    english: 'Inglês',
+    portuguese: 'Português',
+    latam: 'América Latina',
+    ukrainian: 'Ucraniano'
   },
 
   Russian: {
@@ -275,7 +284,10 @@ const texts = {
     soldtext: 'Продано',
     russian: 'Русский',
     global: 'Глобальный',
-    english: 'Английский'
+    english: 'Английский',
+    portuguese: 'Португальский',
+    latam: 'Латинская Америка',
+    ukrainian: 'Украинский'
   }
 
 };
@@ -293,14 +305,14 @@ const characters = [
     code: '002',
     name: 'ChaloApps',
     rarity: 'Common',
-    language: `${t.global}/${t.russian}`,
+    language: 'Global/Russian',
     image: 'https://i.postimg.cc/pT594SZJ/chaloappsicon.png'
   },
   {
     code: '003',
     name: 'Dragon Dude',
     rarity: 'Epic',
-    language: `${t.english}`,
+    language: 'English',
     image: 'https://i.postimg.cc/85KLhQ2n/dragondudeicon.png'
   },
   {
@@ -412,14 +424,14 @@ const characters = [
     code: '019',
     name: 'Dun Dun Dun',
     rarity: 'Epic',
-    language: `${t.global}`,
+    language: 'Global',
     image: 'https://i.postimg.cc/Gtt19GRF/dundundunicon.png'
   },
   {
     code: '020',
     name: 'Khooni Player',
     rarity: 'Rare',
-    language: `${t.english}`,
+    language: 'English',
     image: 'https://i.postimg.cc/mkJKDn8Z/khooniplayericon.png'
   },
   {
@@ -433,14 +445,14 @@ const characters = [
     code: '022',
     name: 'Rudy Roblox',
     rarity: 'Common',
-    language: `${t.global}`,
+    language: 'Global',
     image: 'https://i.postimg.cc/g03hBLfS/rudyrobloxicon.png'
   },
   {
     code: '023',
     name: 'Rudy Plush',
     rarity: 'Rare',
-    language: `${t.global}`,
+    language: 'Global',
     image: 'https://i.postimg.cc/KYYztkmv/rudyplushicon.png'
   },
   {
@@ -475,7 +487,7 @@ const characters = [
     code: '028',
     name: 'Zombie',
     rarity: 'Admin',
-    language: `${t.global}`,
+    language: 'Global',
     image: ''
   },
   {
@@ -496,7 +508,7 @@ const characters = [
     code: '031',
     name: 'Lary Hacker',
     rarity: 'Epic',
-    language: `${t.global}`,
+    language: 'Global',
     image: 'https://i.postimg.cc/brWpGYpS/laryhackericon.webp'
   }
 ];
@@ -599,6 +611,24 @@ function getRarityName(rarity, t) {
   };
 
   return rarities[rarity] || rarity;
+
+}
+
+// TRADUCCION DE IDIOMAS DE PERSONAJES
+function getLanguageName(lang, t) {
+
+  const languages = {
+    'Global': t.global,
+    'Russian': t.russian,
+    'English': t.english,
+    'LATAM': t.latam,
+    'Portuguese': t.portuguese,
+    'Ukrainian': t.ukrainian,
+    'Global/Russian':
+      `${t.global}/${t.russian}`
+  };
+
+  return languages[lang] || lang;
 
 }
 
@@ -1606,7 +1636,12 @@ if (
     t
   )
 }
-🌎 ${t.language}: ${activeSpawn.language}`
+🌎 ${t.language}: ${
+  getLanguageName(
+    activeSpawn.language,
+    t
+  )
+}`
           );
 
       if (
@@ -1700,7 +1735,12 @@ if (
     t
   )
 }
-🌎 ${t.language}: ${selectedCharacter.language}
+🌎 ${t.language}: ${
+  getLanguageName(
+    selectedCharacter.language,
+    t
+  )
+}
 
 ${t.guess}`
         );
@@ -1772,7 +1812,12 @@ client.on('messageCreate', async message => {
     t
   )
 }
-🌎 ${t.language}: ${claimedCharacter.language}`
+🌎 ${t.language}: ${
+  getLanguageName(
+    claimedCharacter.language,
+    t
+  )
+}`
       );
 
     }
