@@ -1718,6 +1718,18 @@ if (
   scope,
   category
 };
+  const row = new ActionRowBuilder()
+  .addComponents(
+    new ButtonBuilder()
+      .setCustomId('leaderboard_back')
+      .setLabel(t.back)
+      .setStyle(ButtonStyle.Secondary),
+
+    new ButtonBuilder()
+      .setCustomId('leaderboard_next')
+      .setLabel(t.next)
+      .setStyle(ButtonStyle.Primary)
+  );
 
   return interaction.reply({
   embeds: [embed],
