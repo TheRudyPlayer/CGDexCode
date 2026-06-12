@@ -183,8 +183,8 @@ const texts = {
     inventoryConfig: '✅ Инвентарь обновлен.',
     gifted: '🎁 Персонаж подарен.',
     giftFail: '❌ У вас нет этого персонажа.',
-    back: '',
-    next: ''
+    back: 'Назад',
+    next: 'Далее'
   }
 
 };
