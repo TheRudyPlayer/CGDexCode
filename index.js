@@ -1594,7 +1594,7 @@ if (
 
 }
     // LEADERBOARD
-    if (interaction.commandName === 'leaderboard') {
+if (interaction.commandName === 'leaderboard') {
 
   const scope = interaction.options.getString('scope');
   const category = interaction.options.getString('category');
@@ -1605,7 +1605,7 @@ if (
   if (category === 'characters') {
     ranking = Object.entries(inventories).map(([userId, inv]) => ({
       userId,
-      value: inv.length
+      value: inv.length || 0
     }));
   }
 
@@ -1613,14 +1613,13 @@ if (
   if (category === 'coins') {
     ranking = Object.entries(cgCoins).map(([userId, coins]) => ({
       userId,
-      value: coins
+      value: coins || 0
     }));
   }
 
   // SERVER FILTER
   if (scope === 'server') {
     const memberIds = interaction.guild.members.cache.map(m => m.id);
-
     ranking = ranking.filter(p => memberIds.includes(p.userId));
   }
 
@@ -1641,20 +1640,20 @@ if (
     let username = 'Unknown';
 
     try {
-  const user = await client.users.fetch(p.userId);
-  username = user.username;
-} catch (err) {
-  username = 'Unknown';
+      const user = await client.users.fetch(p.userId);
+      username = user.username;
+    } catch {
+      username = 'Unknown';
     }
 
     text += `#${i + 1} ${username} • ${p.value}\n`;
   }
 
   const embed = new EmbedBuilder()
-    .setTitle(`🏆 Leaderboard`)
+    .setTitle('🏆 Leaderboard')
     .setDescription(text || 'No data')
     .setFooter({
-      text: `${interaction.options.getString('scope')} • Page 1/${Math.ceil(ranking.length / perPage)}`
+      text: `${scope} • Page 1/${Math.ceil(ranking.length / perPage)}`
     });
 
   leaderboardPages[interaction.user.id] = {
@@ -1667,12 +1666,12 @@ if (
   const row = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
       .setCustomId('leaderboard_back')
-      .setLabel(t.back)
+      .setLabel('Back')
       .setStyle(ButtonStyle.Secondary),
 
     new ButtonBuilder()
       .setCustomId('leaderboard_next')
-      .setLabel(t.next)
+      .setLabel('Next')
       .setStyle(ButtonStyle.Primary)
   );
 
@@ -1680,10 +1679,8 @@ if (
     embeds: [embed],
     components: [row]
   });
-    }
-    
-    // LEADERBOARD BUTTONS
-if (
+}
+    if (
   interaction.isButton() &&
   (interaction.customId === 'leaderboard_next' ||
    interaction.customId === 'leaderboard_back')
@@ -1691,21 +1688,23 @@ if (
 
   const data = leaderboardPages[interaction.user.id];
 
-if (!data) {
-  return interaction.reply({
-    content: '❌ Leaderboard expired (bot restart o cache perdida).',
-    ephemeral: true
-  });
-}
+  if (!data) {
+    return interaction.reply({
+      content: '❌ Leaderboard expired.',
+      ephemeral: true
+    });
+  }
 
   const perPage = 10;
 
+  // NEXT
   if (interaction.customId === 'leaderboard_next') {
     if ((data.page + 1) * perPage < data.ranking.length) {
       data.page++;
     }
   }
 
+  // BACK
   if (interaction.customId === 'leaderboard_back') {
     if (data.page > 0) {
       data.page--;
@@ -1713,21 +1712,22 @@ if (!data) {
   }
 
   const start = data.page * perPage;
-  const pageData = data.ranking.slice(start, start + perPage);
+  const currentPage = data.ranking.slice(start, start + perPage);
 
   let text = '';
 
-  for (let i = 0; i < pageData.length; i++) {
-    const p = pageData[i];
+  for (let i = 0; i < currentPage.length; i++) {
+
+    const p = currentPage[i];
 
     let username = 'Unknown';
 
-try {
-  const user = await client.users.fetch(p.userId);
-  if (user) username = user.username;
-} catch (err) {
-  username = 'Unknown';
-}
+    try {
+      const user = await client.users.fetch(p.userId);
+      username = user.username;
+    } catch {
+      username = 'Unknown';
+    }
 
     text += `#${start + i + 1} ${username} • ${p.value}\n`;
   }
@@ -1740,9 +1740,10 @@ try {
     });
 
   return interaction.update({
-  embeds: [embed]
-});
-}
+    embeds: [embed]
+  });
+    }
+
   
     // OWNER
     if (
