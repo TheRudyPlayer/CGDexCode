@@ -1691,12 +1691,12 @@ if (
 
   const data = leaderboardPages[interaction.user.id];
 
-  if (!data) {
-    return interaction.reply({
-      content: '❌ Leaderboard expired (bot restart).',
-      ephemeral: true
-    });
-  }
+if (!data) {
+  return interaction.reply({
+    content: '❌ Leaderboard expired (bot restart o cache perdida).',
+    ephemeral: true
+  });
+}
 
   const perPage = 10;
 
@@ -1722,12 +1722,12 @@ if (
 
     let username = 'Unknown';
 
-    try {
-      const user = await client.users.fetch(p.userId);
-      username = user.username;
-    } catch {
-      username = 'Unknown';
-    }
+try {
+  const user = await client.users.fetch(p.userId);
+  if (user) username = user.username;
+} catch (err) {
+  username = 'Unknown';
+}
 
     text += `#${start + i + 1} ${username} • ${p.value}\n`;
   }
@@ -1740,8 +1740,8 @@ if (
     });
 
   return interaction.update({
-    embeds: [embed]
-  });
+  embeds: [embed]
+});
 }
   
     // OWNER
