@@ -663,9 +663,6 @@ let lastCharacterCode = null;
 // ACTIVE
 let activeSpawn = null;
 
-// LEADERBOARD
-const leaderboardPages = {};
-
 // RARITY COLOR
 const rarityColors = {
   Common: '#D3D3D3',
@@ -1675,11 +1672,12 @@ if (interaction.commandName === 'leaderboard') {
     components: [row]
   });
 }
-    if (
-  interaction.isButton() &&
-  (interaction.customId === 'lb_next' ||
-   interaction.customId === 'lb_back')
-) {
+if (interaction.isButton()) {
+
+  if (
+    interaction.customId !== 'lb_next' &&
+    interaction.customId !== 'lb_back'
+  ) return;
 
   const snap = await db.ref(`leaderboards/${interaction.user.id}`).get();
   const data = snap.val();
@@ -1693,14 +1691,12 @@ if (interaction.commandName === 'leaderboard') {
 
   const perPage = 10;
 
-  // NEXT
   if (interaction.customId === 'lb_next') {
     if ((data.page + 1) * perPage < data.ranking.length) {
       data.page++;
     }
   }
 
-  // BACK
   if (interaction.customId === 'lb_back') {
     if (data.page > 0) {
       data.page--;
@@ -1719,17 +1715,12 @@ if (interaction.commandName === 'leaderboard') {
     let username = 'Unknown';
 
     try {
-      const user = await client.users.fetch(p.userId);
-      username = user.username;
+      const user = await client.users.fetch(p.userId).catch(() => null);
+      username = user?.username || 'Unknown';
     } catch {}
 
     text += `#${start + i + 1} ${username} • ${p.value}\n`;
   }
-
-  // Actualizar Firebase
-  await db.ref(`leaderboards/${interaction.user.id}`).update({
-    page: data.page
-  });
 
   const embed = new EmbedBuilder()
     .setTitle('🏆 Leaderboard')
@@ -1738,10 +1729,14 @@ if (interaction.commandName === 'leaderboard') {
       text: `${data.scope} • Page ${data.page + 1}/${Math.ceil(data.ranking.length / perPage)}`
     });
 
+  await db.ref(`leaderboards/${interaction.user.id}`).update({
+    page: data.page
+  });
+
   return interaction.update({
     embeds: [embed]
   });
-    }
+}
     
     // OWNER
     if (
