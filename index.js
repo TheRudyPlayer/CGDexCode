@@ -1667,12 +1667,12 @@ if (
   const row = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
       .setCustomId('leaderboard_back')
-      .setLabel('Back')
+      .setLabel(t.back)
       .setStyle(ButtonStyle.Secondary),
 
     new ButtonBuilder()
       .setCustomId('leaderboard_next')
-      .setLabel('Next')
+      .setLabel(t.next)
       .setStyle(ButtonStyle.Primary)
   );
 
