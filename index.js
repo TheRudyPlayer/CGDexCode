@@ -129,7 +129,14 @@ const texts = {
     name: 'Name',
     rarity: 'Rarity',
     language: 'Language',
-    collectiontext: 'Collection'
+    collectiontext: 'Collection',
+    common: 'Common',
+    rare: 'Rare',
+    epic: 'Epic',
+    legendary: 'Legendary',
+    mythic: 'Mythic',
+    op: 'OP',
+    admin: 'Admin'
   },
 
   Spanish: {
@@ -154,7 +161,14 @@ const texts = {
     name: 'Nombre',
     rarity: 'Rareza',
     language: 'Idioma',
-    collectiontext: 'Colección'
+    collectiontext: 'Colección',
+    common: 'Común',
+    rare: 'Raro',
+    epic: 'Épico',
+    legendary: 'Legendario',
+    mythic: 'Mítico',
+    op: 'OP',
+    admin: 'Admin'
   },
 
   Portuguese: {
@@ -179,7 +193,14 @@ const texts = {
     name: 'Nome',
     rarity: 'Raridade',
     language: 'Linguagem',
-    collectiontext: 'Coleção'
+    collectiontext: 'Coleção',
+    common: 'Comum',
+    rare: 'Raro',
+    epic: 'Épico',
+    legendary: 'Lendário',
+    mythic: 'Mítico',
+    op: 'OP',
+    admin: 'Admin',
   },
 
   Russian: {
@@ -204,7 +225,14 @@ const texts = {
     name: 'Имя',
     rarity: 'Редкость',
     language: 'Язык',
-    collectiontext: 'Коллекция'
+    collectiontext: 'Коллекция',
+    common: 'Обычный',
+    rare: 'Редкий',
+    epic: 'Эпический',
+    legendary: 'Легендарный',
+    mythic: 'Мифический',
+    op: 'OP',
+    admin: 'Admin',
   }
 
 };
@@ -518,6 +546,23 @@ function getCurrentCharacters() {
   }
 
   return characters;
+
+}
+
+// TRADUCCIÓN DE RAREZAS
+function getRarityName(rarity, t) {
+
+  const rarities = {
+    Common: t.common,
+    Rare: t.rare,
+    Epic: t.epic,
+    Legendary: t.legendary,
+    Mythic: t.mythic,
+    OP: t.op,
+    Admin: t.admin
+  };
+
+  return rarities[rarity] || rarity;
 
 }
 
