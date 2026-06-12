@@ -128,7 +128,8 @@ const texts = {
     code: 'Code',
     name: 'Name',
     rarity: 'Rarity',
-    language: 'Language'
+    language: 'Language',
+    collectiontext: 'Collection'
   },
 
   Spanish: {
@@ -152,7 +153,8 @@ const texts = {
     code: 'Código',
     name: 'Nombre',
     rarity: 'Rareza',
-    language: 'Idioma'
+    language: 'Idioma',
+    collectiontext: 'Colección'
   },
 
   Portuguese: {
@@ -176,7 +178,8 @@ const texts = {
     code: 'Código',
     name: 'Nome',
     rarity: 'Raridade',
-    language: 'Linguagem'
+    language: 'Linguagem',
+    collectiontext: 'Coleção'
   },
 
   Russian: {
@@ -200,7 +203,8 @@ const texts = {
     code: 'Код',
     name: 'Имя',
     rarity: 'Редкость',
-    language: 'Язык'
+    language: 'Язык',
+    collectiontext: 'Коллекция'
   }
 
 };
@@ -1332,7 +1336,7 @@ if (
 
     return new EmbedBuilder()
       .setTitle(
-        `📖 Collection (${page + 1}/${totalPages})`
+        `📖 ${t.collectiontext} (${page + 1}/${totalPages})`
       )
       .setDescription(
 `${text}
@@ -1556,7 +1560,7 @@ if (
 
       const code =
         interaction.options.getString(
-          'codigo'
+          'code'
         );
 
       const foundCharacter =
