@@ -1679,6 +1679,7 @@ if (
     components: [row]
   });
     }
+    
     // LEADERBOARD BUTTONS
 if (
   interaction.isButton() &&
