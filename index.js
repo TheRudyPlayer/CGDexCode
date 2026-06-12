@@ -1678,7 +1678,8 @@ if (
     embeds: [embed],
     components: [row]
   });
-      // LEADERBOARD BUTTONS
+    }
+    // LEADERBOARD BUTTONS
 if (
   interaction.isButton &&
   (interaction.customId === 'leaderboard_next' ||
@@ -1738,8 +1739,7 @@ if (
   return interaction.update({
     embeds: [embed]
   });
-    }
-    }
+}
   
     // OWNER
     if (
