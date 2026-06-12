@@ -1678,6 +1678,67 @@ if (
     embeds: [embed],
     components: [row]
   });
+      // LEADERBOARD BUTTONS
+if (
+  interaction.isButton &&
+  (interaction.customId === 'leaderboard_next' ||
+   interaction.customId === 'leaderboard_back')
+) {
+
+  const data = leaderboardPages[interaction.user.id];
+  if (!data) {
+    return interaction.reply({
+      content: '❌ Leaderboard expired.',
+      ephemeral: true
+    });
+  }
+
+  const perPage = 10;
+
+  // NEXT
+  if (interaction.customId === 'leaderboard_next') {
+    if ((data.page + 1) * perPage < data.ranking.length) {
+      data.page++;
+    }
+  }
+
+  // BACK
+  if (interaction.customId === 'leaderboard_back') {
+    if (data.page > 0) {
+      data.page--;
+    }
+  }
+
+  const start = data.page * perPage;
+  const currentPage = data.ranking.slice(start, start + perPage);
+
+  let text = '';
+
+  for (let i = 0; i < currentPage.length; i++) {
+
+    const p = currentPage[i];
+
+    let username = 'Unknown';
+
+    try {
+      const user = await client.users.fetch(p.userId);
+      username = user.username;
+    } catch {}
+
+    text += `#${start + i + 1} ${username} • ${p.value}\n`;
+  }
+
+  const embed = new EmbedBuilder()
+    .setTitle(`🏆 Leaderboard`)
+    .setDescription(text || 'No data')
+    .setFooter({
+      text: `${data.page + 1}/${Math.ceil(data.ranking.length / perPage)}`
+    });
+
+  return interaction.update({
+    embeds: [embed]
+  });
+    }
     }
   
     // OWNER
