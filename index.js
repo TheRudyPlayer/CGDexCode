@@ -124,7 +124,11 @@ const texts = {
     gifted: '🎁 Character gifted successfully.',
     giftFail: '❌ You do not own this character.',
     back: 'Back',
-    next: 'Next'
+    next: 'Next',
+    code: 'Code',
+    name: 'Name',
+    rarity: 'Rarity',
+    language: 'Language'
   },
 
   Spanish: {
@@ -144,7 +148,11 @@ const texts = {
     gifted: '🎁 Personaje regalado correctamente.',
     giftFail: '❌ No tienes este personaje.',
     back: 'Atrás',
-    next: 'Siguiente'
+    next: 'Siguiente',
+    code: 'Código',
+    name: 'Nombre',
+    rarity: 'Rareza',
+    language: 'Idioma'
   },
 
   Portuguese: {
@@ -164,7 +172,11 @@ const texts = {
     gifted: '🎁 Personagem enviado.',
     giftFail: '❌ Você não possui esse personagem.',
     back: 'Voltar',
-    next: 'Seguindo'
+    next: 'Seguindo',
+    code: 'Código',
+    name: 'Nome',
+    rarity: 'Raridade',
+    language: 'Linguagem'
   },
 
   Russian: {
@@ -184,7 +196,11 @@ const texts = {
     gifted: '🎁 Персонаж подарен.',
     giftFail: '❌ У вас нет этого персонажа.',
     back: 'Назад',
-    next: 'Далее'
+    next: 'Далее',
+    code: 'Код',
+    name: 'Имя',
+    rarity: 'Редкость',
+    language: 'Язык'
   }
 
 };
@@ -1485,10 +1501,10 @@ if (
     )
     .setTitle(t.data)
           .setDescription(
-`🆔 Code: ${activeSpawn.code}
-👤 Name: ${activeSpawn.name}
-⭐ Rarity: ${activeSpawn.rarity}
-🌎 Language: ${activeSpawn.language}`
+`🆔 ${t.code}: ${activeSpawn.code}
+👤 ${t.name}: ${activeSpawn.name}
+⭐ ${t.rarity}: ${activeSpawn.rarity}
+🌎 ${t.language}: ${activeSpawn.language}`
           );
 
       if (
@@ -1575,9 +1591,9 @@ if (
     )
     .setTitle(t.spawned)
         .setDescription(
-`🆔 Code: ${selectedCharacter.code}
-⭐ Rarity: ${selectedCharacter.rarity}
-🌎 Language: ${selectedCharacter.language}
+`🆔 ${t.code}: ${selectedCharacter.code}
+⭐ ${t.rarity}: ${selectedCharacter.rarity}
+🌎 ${t.language}: ${selectedCharacter.language}
 
 ${t.guess}`
         );
@@ -1642,9 +1658,9 @@ client.on('messageCreate', async message => {
       await message.reply(
 `🏆 ${message.author.username} ${t.claimed} ${claimedCharacter.name}
 
-🆔 Code: ${claimedCharacter.code}
-⭐ Rarity: ${claimedCharacter.rarity}
-🌎 Language: ${claimedCharacter.language}`
+🆔 ${t.code}: ${claimedCharacter.code}
+⭐ ${t.rarity}: ${claimedCharacter.rarity}
+🌎 ${t.language}: ${claimedCharacter.language}`
       );
 
     }
