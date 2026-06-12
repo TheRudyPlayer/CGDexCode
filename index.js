@@ -150,7 +150,9 @@ const texts = {
     admin: 'Admin',
     progresstext: 'Progress',
     totalcharacterstext: 'Total Characters',
-    uniquecharacterstext: 'Unique Characters'
+    uniquecharacterstext: 'Unique Characters',
+    nocharacterownedtext: 'You do not own this character',
+    soldtext: 'Sold'
   },
 
   Spanish: {
@@ -185,7 +187,9 @@ const texts = {
     admin: 'Admin',
     progresstext: 'Progreso',
     totalcharacterstext: 'Personajes Totales',
-    uniquecharacterstext: 'Personajes Únicos'
+    uniquecharacterstext: 'Personajes Únicos',
+    nocharacterownedtext: 'Este personaje no te pertenece.',
+    soldtext: 'Vendido'
   },
 
   Portuguese: {
@@ -220,7 +224,9 @@ const texts = {
     admin: 'Admin',
     progresstext: 'Progresso',
     totalcharacterstext: 'Total de Caracteres',
-    uniquecharacterstext: 'Personagens Únicos'
+    uniquecharacterstext: 'Personagens Únicos',
+    nocharacterownedtext: 'Você não é o dono deste personagem',
+    soldtext: 'Vendido'
   },
 
   Russian: {
@@ -255,7 +261,9 @@ const texts = {
     admin: 'Admin',
     progresstext: 'Прогресс',
     totalcharacterstext: 'Общее количество символов',
-    uniquecharacterstext: 'Уникальные персонажи'
+    uniquecharacterstext: 'Уникальные персонажи',
+    nocharacterownedtext: 'Этот персонаж не принадлежит вам',
+    soldtext: 'Продано'
   }
 
 };
@@ -1331,7 +1339,7 @@ if (
   if (index === -1) {
 
     return interaction.reply({
-      content: '❌ You do not own this character.',
+      content: '❌ ${t.nocharacterownedtext}.',
       flags: MessageFlags.Ephemeral
     });
 
@@ -1351,7 +1359,7 @@ if (
 
   return interaction.reply({
     content:
-`💰 Sold ${character.name}
+`💰 ${t.soldtext} ${character.name}
 🪙 +${value} CGCoins`
   });
 
