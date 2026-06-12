@@ -947,9 +947,24 @@ const t =
 await saveInventories();
 
       return interaction.reply({
-        content:
-          texts[botLanguage]
-            .languageChanged,
+        const selectedLanguage =
+  interaction.options.getString(
+    'idioma'
+  );
+
+serverLanguages[
+  interaction.guild.id
+] = selectedLanguage;
+
+await saveInventories();
+
+return interaction.reply({
+  content:
+    texts[selectedLanguage]
+      .languageChanged,
+  flags:
+    MessageFlags.Ephemeral
+});
         flags: MessageFlags.Ephemeral
       });
 
