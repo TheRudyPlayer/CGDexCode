@@ -659,6 +659,9 @@ let lastCharacterCode = null;
 // ACTIVE
 let activeSpawn = null;
 
+// LEADERBOARD
+const leaderboardPages = {};
+
 // RARITY COLOR
 const rarityColors = {
   Common: '#D3D3D3',
@@ -900,6 +903,32 @@ const commands = [
   new SlashCommandBuilder()
   .setName('balance')
   .setDescription('View your CGCoins'),
+
+  new SlashCommandBuilder()
+  .setName('leaderboard')
+  .setDescription('View rankings')
+
+  .addStringOption(option =>
+    option
+      .setName('scope')
+      .setDescription('Global or Server')
+      .setRequired(true)
+      .addChoices(
+        { name: 'Global', value: 'global' },
+        { name: 'Server', value: 'server' }
+      )
+  )
+
+  .addStringOption(option =>
+    option
+      .setName('category')
+      .setDescription('Ranking category')
+      .setRequired(true)
+      .addChoices(
+        { name: 'Characters', value: 'characters' },
+        { name: 'CGCoins', value: 'coins' }
+      )
+  ),
 
   new SlashCommandBuilder()
   .setName('set_mode')
@@ -1558,6 +1587,143 @@ if (
 
     }
   );
+
+}
+    // LEADERBOARD
+if (
+  interaction.commandName ===
+  'leaderboard'
+) {
+
+  const scope =
+    interaction.options.getString(
+      'scope'
+    );
+
+  const category =
+    interaction.options.getString(
+      'category'
+    );
+
+  let ranking = [];
+
+  // CHARACTERS
+  if (category === 'characters') {
+
+    ranking =
+      Object.entries(inventories)
+        .map(([userId, inventory]) => ({
+          userId,
+          value: inventory.length
+        }));
+
+  }
+
+  // CGCOINS
+  if (category === 'coins') {
+
+    ranking =
+      Object.entries(cgCoins)
+        .map(([userId, coins]) => ({
+          userId,
+          value: coins
+        }));
+
+  }
+
+  // SERVER ONLY
+  if (scope === 'server') {
+
+    const memberIds =
+      interaction.guild.members.cache
+        .map(member => member.id);
+
+    ranking =
+      ranking.filter(player =>
+        memberIds.includes(
+          player.userId
+        )
+      );
+
+  }
+
+  ranking.sort(
+    (a, b) =>
+      b.value - a.value
+  );
+
+  ranking =
+    ranking.slice(0, 100);
+
+  const page = 0;
+  const perPage = 10;
+
+  const currentPage =
+    ranking.slice(
+      page * perPage,
+      (page + 1) * perPage
+    );
+
+  let text = '';
+
+  for (
+    let i = 0;
+    i < currentPage.length;
+    i++
+  ) {
+
+    const player =
+      currentPage[i];
+
+    let username =
+      'Unknown User';
+
+    try {
+
+      const user =
+        await client.users.fetch(
+          player.userId
+        );
+
+      username =
+        user.username;
+
+    } catch {}
+
+    text +=
+      `#${i + 1} ${username} • ${player.value}\n`;
+
+  }
+
+  const embed =
+    new EmbedBuilder()
+      .setTitle(
+        `🏆 ${scope.toUpperCase()} ${
+          category === 'characters'
+            ? 'Characters'
+            : 'CGCoins'
+        }`
+      )
+      .setDescription(
+        text || 'No data.'
+        )
+      .setFooter({
+  text: `${t.page} 1/${Math.ceil(ranking.length / 10)}`
+})
+      );
+  leaderboardPages[
+  interaction.user.id
+] = {
+  ranking,
+  page: 0,
+  scope,
+  category
+};
+
+  return interaction.reply({
+  embeds: [embed],
+  components: [row]
+});
 
 }
 
