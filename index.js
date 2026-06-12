@@ -932,43 +932,30 @@ const t =
   try {
 
     // LANGUAGE
-    if (
-      interaction.commandName ===
-      'language'
-    ) {
+if (
+  interaction.commandName ===
+  'language'
+) {
 
-      serverLanguages[
-  interaction.guild.id
-] =
-  interaction.options.getString(
-    'idioma'
-  );
+  const selectedLanguage =
+    interaction.options.getString(
+      'idioma'
+    );
 
-await saveInventories();
+  serverLanguages[
+    interaction.guild.id
+  ] = selectedLanguage;
 
-      return interaction.reply({
-        const selectedLanguage =
-  interaction.options.getString(
-    'idioma'
-  );
+  await saveInventories();
 
-serverLanguages[
-  interaction.guild.id
-] = selectedLanguage;
+  return interaction.reply({
+    content:
+      texts[selectedLanguage]
+        .languageChanged,
+    flags: MessageFlags.Ephemeral
+  });
 
-await saveInventories();
-
-return interaction.reply({
-  content:
-    texts[selectedLanguage]
-      .languageChanged,
-  flags:
-    MessageFlags.Ephemeral
-});
-        flags: MessageFlags.Ephemeral
-      });
-
-    }
+}
 
     // INVENTORY CONFIG
     if (
