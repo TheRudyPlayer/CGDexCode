@@ -819,8 +819,8 @@ const commands = [
     .setDescription('Change bot language')
     .addStringOption(option =>
       option
-        .setName('idioma')
-        .setDescription('Language')
+        .setName('language')
+        .setDescription('Change the language of CGDex!')
         .setRequired(true)
         .addChoices(
           { name: '🇺🇸 English', value: 'English' },
