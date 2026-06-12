@@ -816,10 +816,10 @@ const commands = [
         .setDescription('Language')
         .setRequired(true)
         .addChoices(
-          { name: 'English', value: 'English' },
-          { name: 'Spanish', value: 'Spanish' },
-          { name: 'Portuguese', value: 'Portuguese' },
-          { name: 'Russian', value: 'Russian' }
+          { name: '🇺🇸 English', value: 'English' },
+          { name: '🇲🇽 Spanish', value: 'Spanish' },
+          { name: '🇧🇷 Portuguese', value: 'Portuguese' },
+          { name: '🇷🇺 Russian', value: 'Russian' }
         )
     ),
 
@@ -982,7 +982,7 @@ if (
 
   const selectedLanguage =
     interaction.options.getString(
-      'idioma'
+      'language'
     );
 
   serverLanguages[
