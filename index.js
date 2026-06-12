@@ -1658,45 +1658,13 @@ if (
 
   ranking =
     ranking.slice(0, 100);
-
+  const page = 0;
 const perPage = 10;
 
-if (
-  interaction.customId ===
-  'leaderboard_next'
-) {
-
-  if (
-    (data.page + 1) * perPage <
-    data.ranking.length
-  ) {
-
-    data.page++;
-
-  }
-
-}
-
-if (
-  interaction.customId ===
-  'leaderboard_back'
-) {
-
-  if (data.page > 0) {
-
-    data.page--;
-
-  }
-
-}
-
-const start =
-  data.page * perPage;
-
 const currentPage =
-  data.ranking.slice(
-    start,
-    start + perPage
+  ranking.slice(
+    page * perPage,
+    (page + 1) * perPage
   );
 
 let text = '';
@@ -1726,15 +1694,15 @@ for (
   } catch {}
 
   text +=
-    `#${start + i + 1} ${username} • ${player.value}\n`;
+    `#${i + 1} ${username} • ${player.value}\n`;
 
 }
 
 const embed =
   new EmbedBuilder()
     .setTitle(
-      `🏆 ${data.scope.toUpperCase()} ${
-        data.category === 'characters'
+      `🏆 ${scope.toUpperCase()} ${
+        category === 'characters'
           ? 'Characters'
           : 'CGCoins'
       }`
@@ -1744,15 +1712,45 @@ const embed =
     )
     .setFooter({
       text:
-        `${data.page + 1}/${Math.ceil(data.ranking.length / 10)}`
+        `${t.page} 1/${Math.max(1, Math.ceil(ranking.length / 10))}`
     });
 
-await interaction.update({
-  embeds: [embed]
+leaderboardPages[
+  interaction.user.id
+] = {
+  ranking,
+  page: 0,
+  scope,
+  category
+};
+
+const row =
+  new ActionRowBuilder()
+    .addComponents(
+      new ButtonBuilder()
+        .setCustomId(
+          'leaderboard_back'
+        )
+        .setLabel(t.back)
+        .setStyle(
+          ButtonStyle.Secondary
+        ),
+
+      new ButtonBuilder()
+        .setCustomId(
+          'leaderboard_next'
+        )
+        .setLabel(t.next)
+        .setStyle(
+          ButtonStyle.Primary
+        )
+    );
+
+return interaction.reply({
+  embeds: [embed],
+  components: [row]
 });
-
-}
-
+  
     // OWNER
     if (
       (
