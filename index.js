@@ -1688,6 +1688,7 @@ if (
 ) {
 
   const data = leaderboardPages[interaction.user.id];
+
   if (!data) {
     return interaction.reply({
       content: '❌ Leaderboard expired.',
