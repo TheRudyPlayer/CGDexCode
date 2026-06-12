@@ -136,7 +136,10 @@ const texts = {
     legendary: 'Legendary',
     mythic: 'Mythic',
     op: 'OP',
-    admin: 'Admin'
+    admin: 'Admin',
+    progresstext: 'Progress',
+    totalcharacterstext: 'Total Characters',
+    uniquecharacterstext: 'Unique Characters'
   },
 
   Spanish: {
@@ -168,7 +171,10 @@ const texts = {
     legendary: 'Legendario',
     mythic: 'Mítico',
     op: 'OP',
-    admin: 'Admin'
+    admin: 'Admin',
+    progresstext: 'Progreso',
+    totalcharacterstext: 'Personajes Totales',
+    uniquecharacterstext: 'Personajes Únicos'
   },
 
   Portuguese: {
@@ -201,6 +207,9 @@ const texts = {
     mythic: 'Mítico',
     op: 'OP',
     admin: 'Admin',
+    progresstext: 'Progresso',
+    totalcharacterstext: 'Total de Caracteres',
+    uniquecharacterstext: 'Personagens Únicos'
   },
 
   Russian: {
@@ -233,6 +242,9 @@ const texts = {
     mythic: 'Мифический',
     op: 'OP',
     admin: 'Admin',
+    progresstext: 'Прогресс',
+    totalcharacterstext: 'Общее количество символов',
+    uniquecharacterstext: 'Уникальные персонажи'
   }
 
 };
@@ -1030,8 +1042,8 @@ client.on('interactionCreate', async interaction => {
 `${inventoryText}
 
 ━━━━━━━━━━━━
-📦 Total Characters: ${totalCharacters}
-🧩 Unique Characters: ${totalUnique}`
+📦 ${t.totalcharacterstext}: ${totalCharacters}
+🧩 ${t.uniquecharacterstext}: ${totalUnique}`
           );
 
       return interaction.reply({
@@ -1387,7 +1399,7 @@ if (
 `${text}
 
 ━━━━━━━━━━━━
-📊 Progress: ${
+📊 ${t.progresstext}: ${
   ownedCodes.length
 }/${allCharacters.length}`
       );
@@ -1552,7 +1564,12 @@ if (
           .setDescription(
 `🆔 ${t.code}: ${activeSpawn.code}
 👤 ${t.name}: ${activeSpawn.name}
-⭐ ${t.rarity}: ${activeSpawn.rarity}
+⭐ ${t.rarity}: ${
+  getRarityName(
+    activeSpawn.rarity,
+    t
+  )
+}
 🌎 ${t.language}: ${activeSpawn.language}`
           );
 
@@ -1641,7 +1658,12 @@ if (
     .setTitle(t.spawned)
         .setDescription(
 `🆔 ${t.code}: ${selectedCharacter.code}
-⭐ ${t.rarity}: ${selectedCharacter.rarity}
+⭐ ${t.rarity}: ${
+  getRarityName(
+    selectedCharacter.rarity,
+    t
+  )
+}
 🌎 ${t.language}: ${selectedCharacter.language}
 
 ${t.guess}`
@@ -1708,7 +1730,12 @@ client.on('messageCreate', async message => {
 `🏆 ${message.author.username} ${t.claimed} ${claimedCharacter.name}
 
 🆔 ${t.code}: ${claimedCharacter.code}
-⭐ ${t.rarity}: ${claimedCharacter.rarity}
+⭐ ${t.rarity}: ${
+  getRarityName(
+    claimedCharacter.rarity,
+    t
+  )
+}
 🌎 ${t.language}: ${claimedCharacter.language}`
       );
 
