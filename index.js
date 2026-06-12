@@ -1601,7 +1601,6 @@ if (interaction.commandName === 'leaderboard') {
 
   let ranking = [];
 
-  // CHARACTERS
   if (category === 'characters') {
     ranking = Object.entries(inventories).map(([userId, inv]) => ({
       userId,
@@ -1609,7 +1608,6 @@ if (interaction.commandName === 'leaderboard') {
     }));
   }
 
-  // COINS
   if (category === 'coins') {
     ranking = Object.entries(cgCoins).map(([userId, coins]) => ({
       userId,
@@ -1617,7 +1615,6 @@ if (interaction.commandName === 'leaderboard') {
     }));
   }
 
-  // SERVER FILTER
   if (scope === 'server') {
     const memberIds = interaction.guild.members.cache.map(m => m.id);
     ranking = ranking.filter(p => memberIds.includes(p.userId));
@@ -1627,24 +1624,29 @@ if (interaction.commandName === 'leaderboard') {
   ranking = ranking.slice(0, 100);
 
   const perPage = 10;
-  const page = 0;
 
-  const currentPage = ranking.slice(0, perPage);
+  // 🔥 GUARDAR EN FIREBASE
+  await db.ref(`leaderboards/${interaction.user.id}`).set({
+    ranking,
+    page: 0,
+    scope,
+    category
+  });
+
+  const current = ranking.slice(0, perPage);
 
   let text = '';
 
-  for (let i = 0; i < currentPage.length; i++) {
+  for (let i = 0; i < current.length; i++) {
 
-    const p = currentPage[i];
+    const p = current[i];
 
     let username = 'Unknown';
 
     try {
       const user = await client.users.fetch(p.userId);
       username = user.username;
-    } catch {
-      username = 'Unknown';
-    }
+    } catch {}
 
     text += `#${i + 1} ${username} • ${p.value}\n`;
   }
@@ -1656,21 +1658,14 @@ if (interaction.commandName === 'leaderboard') {
       text: `${scope} • Page 1/${Math.ceil(ranking.length / perPage)}`
     });
 
-  leaderboardPages[interaction.user.id] = {
-    ranking,
-    page: 0,
-    scope,
-    category
-  };
-
   const row = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
-      .setCustomId('leaderboard_back')
+      .setCustomId('lb_back')
       .setLabel('Back')
       .setStyle(ButtonStyle.Secondary),
 
     new ButtonBuilder()
-      .setCustomId('leaderboard_next')
+      .setCustomId('lb_next')
       .setLabel('Next')
       .setStyle(ButtonStyle.Primary)
   );
@@ -1682,11 +1677,12 @@ if (interaction.commandName === 'leaderboard') {
 }
     if (
   interaction.isButton() &&
-  (interaction.customId === 'leaderboard_next' ||
-   interaction.customId === 'leaderboard_back')
+  (interaction.customId === 'lb_next' ||
+   interaction.customId === 'lb_back')
 ) {
 
-  const data = leaderboardPages[interaction.user.id];
+  const snap = await db.ref(`leaderboards/${interaction.user.id}`).get();
+  const data = snap.val();
 
   if (!data) {
     return interaction.reply({
@@ -1698,53 +1694,55 @@ if (interaction.commandName === 'leaderboard') {
   const perPage = 10;
 
   // NEXT
-  if (interaction.customId === 'leaderboard_next') {
+  if (interaction.customId === 'lb_next') {
     if ((data.page + 1) * perPage < data.ranking.length) {
       data.page++;
     }
   }
 
   // BACK
-  if (interaction.customId === 'leaderboard_back') {
+  if (interaction.customId === 'lb_back') {
     if (data.page > 0) {
       data.page--;
     }
   }
 
   const start = data.page * perPage;
-  const currentPage = data.ranking.slice(start, start + perPage);
+  const current = data.ranking.slice(start, start + perPage);
 
   let text = '';
 
-  for (let i = 0; i < currentPage.length; i++) {
+  for (let i = 0; i < current.length; i++) {
 
-    const p = currentPage[i];
+    const p = current[i];
 
     let username = 'Unknown';
 
     try {
       const user = await client.users.fetch(p.userId);
       username = user.username;
-    } catch {
-      username = 'Unknown';
-    }
+    } catch {}
 
     text += `#${start + i + 1} ${username} • ${p.value}\n`;
   }
+
+  // Actualizar Firebase
+  await db.ref(`leaderboards/${interaction.user.id}`).update({
+    page: data.page
+  });
 
   const embed = new EmbedBuilder()
     .setTitle('🏆 Leaderboard')
     .setDescription(text || 'No data')
     .setFooter({
-      text: `${data.page + 1}/${Math.ceil(data.ranking.length / perPage)}`
+      text: `${data.scope} • Page ${data.page + 1}/${Math.ceil(data.ranking.length / perPage)}`
     });
 
   return interaction.update({
     embeds: [embed]
   });
     }
-
-  
+    
     // OWNER
     if (
       (
