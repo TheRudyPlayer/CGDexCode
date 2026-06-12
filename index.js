@@ -122,7 +122,9 @@ const texts = {
     inventoryPrivate: '❌ This inventory is private.',
     inventoryConfig: '✅ Inventory updated.',
     gifted: '🎁 Character gifted successfully.',
-    giftFail: '❌ You do not own this character.'
+    giftFail: '❌ You do not own this character.',
+    back: 'Back',
+    next: 'Next'
   },
 
   Spanish: {
@@ -140,7 +142,9 @@ const texts = {
     inventoryPrivate: '❌ Este inventario es privado.',
     inventoryConfig: '✅ Inventario actualizado.',
     gifted: '🎁 Personaje regalado correctamente.',
-    giftFail: '❌ No tienes este personaje.'
+    giftFail: '❌ No tienes este personaje.',
+    back: 'Atrás',
+    next: 'Siguiente'
   },
 
   Portuguese: {
@@ -158,7 +162,9 @@ const texts = {
     inventoryPrivate: '❌ Este inventário é privado.',
     inventoryConfig: '✅ Inventário atualizado.',
     gifted: '🎁 Personagem enviado.',
-    giftFail: '❌ Você não possui esse personagem.'
+    giftFail: '❌ Você não possui esse personagem.',
+    back: 'Voltar',
+    next: 'Seguindo'
   },
 
   Russian: {
@@ -176,7 +182,9 @@ const texts = {
     inventoryPrivate: '❌ Инвентарь приватный.',
     inventoryConfig: '✅ Инвентарь обновлен.',
     gifted: '🎁 Персонаж подарен.',
-    giftFail: '❌ У вас нет этого персонажа.'
+    giftFail: '❌ У вас нет этого персонажа.',
+    back: '',
+    next: ''
   }
 
 };
@@ -1326,12 +1334,12 @@ if (
       .addComponents(
         new ButtonBuilder()
           .setCustomId('collection_prev')
-          .setLabel('Back')
+          .setLabel(t.back)
           .setStyle(ButtonStyle.Secondary),
 
         new ButtonBuilder()
           .setCustomId('collection_next')
-          .setLabel('Next')
+          .setLabel(t.next)
           .setStyle(ButtonStyle.Secondary)
       );
 
