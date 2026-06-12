@@ -1685,7 +1685,7 @@ if (interaction.isButton()) {
   if (!data) {
     return interaction.reply({
       content: '❌ Leaderboard expired.',
-      ephemeral: true
+      flags: MessageFlags.Ephemeral
     });
   }
 
