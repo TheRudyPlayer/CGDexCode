@@ -1641,9 +1641,11 @@ if (
     let username = 'Unknown';
 
     try {
-      const user = await client.users.fetch(p.userId);
-      username = user.username;
-    } catch {}
+  const user = await client.users.fetch(p.userId);
+  username = user.username;
+} catch (err) {
+  username = 'Unknown';
+    }
 
     text += `#${i + 1} ${username} • ${p.value}\n`;
   }
