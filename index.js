@@ -158,7 +158,8 @@ const texts = {
     english: 'English',
     portuguese: 'Portuguese',
     latam: 'LATAM (Latin America)',
-    ukrainian: 'Ukrainian'
+    ukrainian: 'Ukrainian',
+    page: 'Page'
   },
 
   Spanish: {
@@ -201,7 +202,8 @@ const texts = {
     english: 'Inglés',
     portuguese: 'Portugués',
     latam: 'LATAM (América Latina)',
-    ukrainian: 'Ucraniano'
+    ukrainian: 'Ucraniano',
+    page: 'Página'
   },
 
   Portuguese: {
@@ -244,7 +246,8 @@ const texts = {
     english: 'Inglês',
     portuguese: 'Português',
     latam: 'América Latina',
-    ukrainian: 'Ucraniano'
+    ukrainian: 'Ucraniano',
+    page: 'Página'
   },
 
   Russian: {
@@ -287,7 +290,8 @@ const texts = {
     english: 'Английский',
     portuguese: 'Португальский',
     latam: 'Латинская Америка',
-    ukrainian: 'Украинский'
+    ukrainian: 'Украинский',
+    page: 'Страница'
   }
 
 };
