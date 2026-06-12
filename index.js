@@ -1681,7 +1681,7 @@ if (
     }
     // LEADERBOARD BUTTONS
 if (
-  interaction.isButton &&
+  interaction.isButton() &&
   (interaction.customId === 'leaderboard_next' ||
    interaction.customId === 'leaderboard_back')
 ) {
