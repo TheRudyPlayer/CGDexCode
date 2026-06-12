@@ -152,7 +152,10 @@ const texts = {
     totalcharacterstext: 'Total Characters',
     uniquecharacterstext: 'Unique Characters',
     nocharacterownedtext: 'You do not own this character',
-    soldtext: 'Sold'
+    soldtext: 'Sold',
+    russian: 'Russian',
+    global: 'Global',
+    english: 'English'
   },
 
   Spanish: {
@@ -189,7 +192,10 @@ const texts = {
     totalcharacterstext: 'Personajes Totales',
     uniquecharacterstext: 'Personajes Únicos',
     nocharacterownedtext: 'Este personaje no te pertenece',
-    soldtext: 'Vendido'
+    soldtext: 'Vendido',
+    russian: 'Ruso',
+    global: 'Global',
+    english: 'Inglés'
   },
 
   Portuguese: {
@@ -226,7 +232,10 @@ const texts = {
     totalcharacterstext: 'Total de Caracteres',
     uniquecharacterstext: 'Personagens Únicos',
     nocharacterownedtext: 'Você não é o dono deste personagem',
-    soldtext: 'Vendido'
+    soldtext: 'Vendido',
+    russian: 'Russo',
+    global: 'Global',
+    english: 'Inglês'
   },
 
   Russian: {
@@ -263,7 +272,10 @@ const texts = {
     totalcharacterstext: 'Общее количество символов',
     uniquecharacterstext: 'Уникальные персонажи',
     nocharacterownedtext: 'Этот персонаж не принадлежит вам',
-    soldtext: 'Продано'
+    soldtext: 'Продано',
+    russian: 'Русский',
+    global: 'Глобальный',
+    english: 'Английский'
   }
 
 };
@@ -281,14 +293,14 @@ const characters = [
     code: '002',
     name: 'ChaloApps',
     rarity: 'Common',
-    language: 'Global/Russian',
+    language: `${t.global}/${t.russian}`,
     image: 'https://i.postimg.cc/pT594SZJ/chaloappsicon.png'
   },
   {
     code: '003',
     name: 'Dragon Dude',
     rarity: 'Epic',
-    language: 'English',
+    language: `${t.english}`,
     image: 'https://i.postimg.cc/85KLhQ2n/dragondudeicon.png'
   },
   {
@@ -400,14 +412,14 @@ const characters = [
     code: '019',
     name: 'Dun Dun Dun',
     rarity: 'Epic',
-    language: 'Global',
+    language: `${t.global}`,
     image: 'https://i.postimg.cc/Gtt19GRF/dundundunicon.png'
   },
   {
     code: '020',
     name: 'Khooni Player',
     rarity: 'Rare',
-    language: 'English',
+    language: `${t.english}`,
     image: 'https://i.postimg.cc/mkJKDn8Z/khooniplayericon.png'
   },
   {
@@ -421,14 +433,14 @@ const characters = [
     code: '022',
     name: 'Rudy Roblox',
     rarity: 'Common',
-    language: 'Global',
+    language: `${t.global}`,
     image: 'https://i.postimg.cc/g03hBLfS/rudyrobloxicon.png'
   },
   {
     code: '023',
     name: 'Rudy Plush',
     rarity: 'Rare',
-    language: 'Global',
+    language: `${t.global}`,
     image: 'https://i.postimg.cc/KYYztkmv/rudyplushicon.png'
   },
   {
@@ -463,7 +475,7 @@ const characters = [
     code: '028',
     name: 'Zombie',
     rarity: 'Admin',
-    language: 'Global',
+    language: `${t.global}`,
     image: ''
   },
   {
@@ -484,15 +496,8 @@ const characters = [
     code: '031',
     name: 'Lary Hacker',
     rarity: 'Epic',
-    language: 'Global',
+    language: `${t.global}`,
     image: 'https://i.postimg.cc/brWpGYpS/laryhackericon.webp'
-  },
-  {
-    code: '032',
-    name: `<MISSING:write;text.value:hola>`,
-    rarity: 'OP',
-    language: 'Global',
-    image: ''
   }
 ];
 
