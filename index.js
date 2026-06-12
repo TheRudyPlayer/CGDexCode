@@ -1693,21 +1693,19 @@ if (
 
   if (!data) {
     return interaction.reply({
-      content: '❌ Leaderboard expired.',
+      content: '❌ Leaderboard expired (bot restart).',
       ephemeral: true
     });
   }
 
   const perPage = 10;
 
-  // NEXT
   if (interaction.customId === 'leaderboard_next') {
     if ((data.page + 1) * perPage < data.ranking.length) {
       data.page++;
     }
   }
 
-  // BACK
   if (interaction.customId === 'leaderboard_back') {
     if (data.page > 0) {
       data.page--;
@@ -1715,26 +1713,27 @@ if (
   }
 
   const start = data.page * perPage;
-  const currentPage = data.ranking.slice(start, start + perPage);
+  const pageData = data.ranking.slice(start, start + perPage);
 
   let text = '';
 
-  for (let i = 0; i < currentPage.length; i++) {
-
-    const p = currentPage[i];
+  for (let i = 0; i < pageData.length; i++) {
+    const p = pageData[i];
 
     let username = 'Unknown';
 
     try {
       const user = await client.users.fetch(p.userId);
       username = user.username;
-    } catch {}
+    } catch {
+      username = 'Unknown';
+    }
 
     text += `#${start + i + 1} ${username} • ${p.value}\n`;
   }
 
   const embed = new EmbedBuilder()
-    .setTitle(`🏆 Leaderboard`)
+    .setTitle('🏆 Leaderboard')
     .setDescription(text || 'No data')
     .setFooter({
       text: `${data.page + 1}/${Math.ceil(data.ranking.length / perPage)}`
