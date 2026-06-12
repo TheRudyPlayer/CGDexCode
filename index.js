@@ -1954,6 +1954,36 @@ ${t.guess}`
 
 });
 
+client.on('interactionCreate', async interaction => {
+
+  if (!interaction.isButton()) return;
+
+  if (
+    interaction.customId !== 'leaderboard_next' &&
+    interaction.customId !== 'leaderboard_back'
+  ) return;
+
+  const data =
+    leaderboardPages[
+      interaction.user.id
+    ];
+
+  if (!data) {
+
+    return interaction.reply({
+      content: '❌ Leaderboard expired.',
+      flags: MessageFlags.Ephemeral
+    });
+
+  }
+
+  return interaction.reply({
+    content: '✅ Button works',
+    flags: MessageFlags.Ephemeral
+  });
+
+});
+
 // CLAIM
 client.on('messageCreate', async message => {
 
