@@ -1594,161 +1594,91 @@ if (
 
 }
     // LEADERBOARD
-if (
-  interaction.commandName ===
-  'leaderboard'
-) {
+    if (interaction.commandName === 'leaderboard') {
 
-  const scope =
-    interaction.options.getString(
-      'scope'
-    );
-
-  const category =
-    interaction.options.getString(
-      'category'
-    );
+  const scope = interaction.options.getString('scope');
+  const category = interaction.options.getString('category');
 
   let ranking = [];
 
   // CHARACTERS
   if (category === 'characters') {
-
-    ranking =
-      Object.entries(inventories)
-        .map(([userId, inventory]) => ({
-          userId,
-          value: inventory.length
-        }));
-
+    ranking = Object.entries(inventories).map(([userId, inv]) => ({
+      userId,
+      value: inv.length
+    }));
   }
 
-  // CGCOINS
+  // COINS
   if (category === 'coins') {
-
-    ranking =
-      Object.entries(cgCoins)
-        .map(([userId, coins]) => ({
-          userId,
-          value: coins
-        }));
-
+    ranking = Object.entries(cgCoins).map(([userId, coins]) => ({
+      userId,
+      value: coins
+    }));
   }
 
-  // SERVER ONLY
+  // SERVER FILTER
   if (scope === 'server') {
+    const memberIds = interaction.guild.members.cache.map(m => m.id);
 
-    const memberIds =
-      interaction.guild.members.cache
-        .map(member => member.id);
-
-    ranking =
-      ranking.filter(player =>
-        memberIds.includes(
-          player.userId
-        )
-      );
-
+    ranking = ranking.filter(p => memberIds.includes(p.userId));
   }
 
-  ranking.sort(
-    (a, b) =>
-      b.value - a.value
-  );
+  ranking.sort((a, b) => b.value - a.value);
+  ranking = ranking.slice(0, 100);
 
-  ranking =
-    ranking.slice(0, 100);
+  const perPage = 10;
   const page = 0;
-const perPage = 10;
 
-const currentPage =
-  ranking.slice(
-    page * perPage,
-    (page + 1) * perPage
-  );
+  const currentPage = ranking.slice(0, perPage);
 
-let text = '';
+  let text = '';
 
-for (
-  let i = 0;
-  i < currentPage.length;
-  i++
-) {
+  for (let i = 0; i < currentPage.length; i++) {
 
-  const player =
-    currentPage[i];
+    const p = currentPage[i];
 
-  let username =
-    'Unknown User';
+    let username = 'Unknown';
 
-  try {
+    try {
+      const user = await client.users.fetch(p.userId);
+      username = user.username;
+    } catch {}
 
-    const user =
-      await client.users.fetch(
-        player.userId
-      );
+    text += `#${i + 1} ${username} • ${p.value}\n`;
+  }
 
-    username =
-      user.username;
-
-  } catch {}
-
-  text +=
-    `#${i + 1} ${username} • ${player.value}\n`;
-
-}
-
-  new EmbedBuilder()
-    .setTitle(
-      `🏆 ${scope.toUpperCase()} ${
-        category === 'characters'
-          ? 'Characters'
-          : 'CGCoins'
-      }`
-    )
-    .setDescription(
-      text || 'No data.'
-    )
+  const embed = new EmbedBuilder()
+    .setTitle(`🏆 Leaderboard`)
+    .setDescription(text || 'No data')
     .setFooter({
-      text:
-        `${t.page} 1/${Math.max(1, Math.ceil(ranking.length / 10))}`
+      text: `${interaction.options.getString('scope')} • Page 1/${Math.ceil(ranking.length / perPage)}`
     });
 
-leaderboardPages[
-  interaction.user.id
-] = {
-  ranking,
-  page: 0,
-  scope,
-  category
-};
+  leaderboardPages[interaction.user.id] = {
+    ranking,
+    page: 0,
+    scope,
+    category
+  };
 
-const row =
-  new ActionRowBuilder()
-    .addComponents(
-      new ButtonBuilder()
-        .setCustomId(
-          'leaderboard_back'
-        )
-        .setLabel(t.back)
-        .setStyle(
-          ButtonStyle.Secondary
-        ),
+  const row = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId('leaderboard_back')
+      .setLabel('Back')
+      .setStyle(ButtonStyle.Secondary),
 
-      new ButtonBuilder()
-        .setCustomId(
-          'leaderboard_next'
-        )
-        .setLabel(t.next)
-        .setStyle(
-          ButtonStyle.Primary
-        )
-    );
+    new ButtonBuilder()
+      .setCustomId('leaderboard_next')
+      .setLabel('Next')
+      .setStyle(ButtonStyle.Primary)
+  );
 
-return interaction.reply({
-  embeds: [embed],
-  components: [row]
-});
+  return interaction.reply({
+    embeds: [embed],
+    components: [row]
+  });
+    }
   
     // OWNER
     if (
