@@ -188,7 +188,7 @@ const texts = {
     progresstext: 'Progreso',
     totalcharacterstext: 'Personajes Totales',
     uniquecharacterstext: 'Personajes Únicos',
-    nocharacterownedtext: 'Este personaje no te pertenece.',
+    nocharacterownedtext: 'Este personaje no te pertenece',
     soldtext: 'Vendido'
   },
 
