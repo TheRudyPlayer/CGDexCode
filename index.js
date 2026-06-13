@@ -918,7 +918,7 @@ const commands = [
         { name: 'Global', value: 'global' },
         { name: 'Server', value: 'server' }
       )
-  )
+  ),
 
   .addStringOption(option =>
     option
