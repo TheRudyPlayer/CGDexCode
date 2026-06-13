@@ -1797,92 +1797,55 @@ if (
     }
 
     // SPAWN CHARACTER
-    if (
-      interaction.commandName ===
-      'spawn_character'
-    ) {
+    // SPAWN CHARACTER
+if (interaction.commandName === 'spawn_character') {
 
-      const code =
-        interaction.options.getString(
-          'code'
-        );
+  const code = interaction.options.getString('code');
 
-      const foundCharacter =
-  getCurrentCharacters().find(
-          character =>
-            character.code === code
-        );
+  const foundCharacter = getCurrentCharacters().find(
+    character => character.code === code
+  );
 
-      if (!foundCharacter) {
-
-        return interaction.reply({
-          content: t.notFound,
-          flags: MessageFlags.Ephemeral
-        });
-
-      }
-
-      selectedCharacter =
-        foundCharacter;
-
-    }
-
-    activeSpawn =
-      selectedCharacter;
-
-    const embed =
-  new EmbedBuilder()
-    .setColor(
-      rarityColors[
-        selectedCharacter.rarity
-      ] || '#FFFFFF'
-    )
-    .setTitle(t.spawned)
-        .setDescription(
-`🆔 ${t.code}: ${selectedCharacter.code}
-⭐ ${t.rarity}: ${
-  getRarityName(
-    selectedCharacter.rarity,
-    t
-  )
-}
-🌎 ${t.language}: ${
-  getLanguageName(
-    selectedCharacter.language,
-    t
-  )
-}
-
-${t.guess}`
-        );
-
-    if (
-      selectedCharacter.image &&
-      selectedCharacter.image.startsWith('http')
-    ) {
-
-      embed.setImage(
-        selectedCharacter.image
-      );
-
-    }
-
-    await interaction.reply({
-      content: '✅',
+  if (!foundCharacter) {
+    return interaction.reply({
+      content: t.notFound,
       flags: MessageFlags.Ephemeral
     });
-
-    await interaction.channel.send({
-      embeds: [embed]
-    });
-
-  } catch (err) {
-
-    console.error(err);
-
   }
 
-});
+  const selectedCharacter = foundCharacter;
+
+  activeSpawn = selectedCharacter;
+
+  const embed = new EmbedBuilder()
+    .setColor(
+      rarityColors[selectedCharacter.rarity] || '#FFFFFF'
+    )
+    .setTitle(t.spawned)
+    .setDescription(
+`🆔 ${t.code}: ${selectedCharacter.code}
+⭐ ${t.rarity}: ${getRarityName(selectedCharacter.rarity, t)}
+🌎 ${t.language}: ${getLanguageName(selectedCharacter.language, t)}
+
+${t.guess}`
+    );
+
+  if (
+    selectedCharacter.image &&
+    selectedCharacter.image.startsWith('http')
+  ) {
+    embed.setImage(selectedCharacter.image);
+  }
+
+  await interaction.reply({
+    content: '✅',
+    flags: MessageFlags.Ephemeral
+  });
+
+  await interaction.channel.send({
+    embeds: [embed]
+  });
+}
 
 // CLAIM
 client.on('messageCreate', async message => {
