@@ -1590,6 +1590,9 @@ if (
   );
 
 }
+    
+if (interaction.isChatInputCommand() && interaction.commandName === 'leaderboard') {
+    
     // LEADERBOARD
 if (interaction.commandName === 'leaderboard') {
 
