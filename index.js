@@ -1797,7 +1797,6 @@ if (
     }
 
     // SPAWN CHARACTER
-    // SPAWN CHARACTER
 if (interaction.commandName === 'spawn_character') {
 
   const code = interaction.options.getString('code');
@@ -1846,6 +1845,7 @@ ${t.guess}`
     embeds: [embed]
   });
 }
+  });
 
 // CLAIM
 client.on('messageCreate', async message => {
