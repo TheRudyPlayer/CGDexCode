@@ -1601,119 +1601,39 @@ if (interaction.commandName === 'leaderboard') {
 
   let ranking = [];
 
+  // CHARACTERS
   if (category === 'characters') {
     ranking = Object.entries(inventories).map(([userId, inv]) => ({
       userId,
-      value: inv.length || 0
+      value: Array.isArray(inv) ? inv.length : 0
     }));
   }
 
+  // COINS
   if (category === 'coins') {
     ranking = Object.entries(cgCoins).map(([userId, coins]) => ({
       userId,
-      value: coins || 0
+      value: Number(coins) || 0
     }));
   }
 
+  // SERVER FILTER
   if (scope === 'server') {
     const memberIds = interaction.guild.members.cache.map(m => m.id);
     ranking = ranking.filter(p => memberIds.includes(p.userId));
   }
 
   ranking.sort((a, b) => b.value - a.value);
-  ranking = ranking.slice(0, 100);
+  ranking = ranking.slice(0, 50);
 
-  const perPage = 10;
+  const medals = ['🥇', '🥈', '🥉'];
 
-  // 🔥 GUARDAR EN FIREBASE
-  await db.ref(`leaderboards/${interaction.user.id}`).set({
-    ranking,
-    page: 0,
-    scope,
-    category
-  });
+  let left = '';
+  let right = '';
 
-  const current = ranking.slice(0, perPage);
+  for (let i = 0; i < ranking.length; i++) {
 
-  let text = '';
-
-  for (let i = 0; i < current.length; i++) {
-
-    const p = current[i];
-
-    let username = 'Unknown';
-
-    try {
-      const user = await client.users.fetch(p.userId);
-      username = user.username;
-    } catch {}
-
-    text += `#${i + 1} ${username} • ${p.value}\n`;
-  }
-
-  const embed = new EmbedBuilder()
-    .setTitle('🏆 Leaderboard')
-    .setDescription(text || 'No data')
-    .setFooter({
-      text: `${scope} • Page 1/${Math.ceil(ranking.length / perPage)}`
-    });
-
-  const row = new ActionRowBuilder().addComponents(
-    new ButtonBuilder()
-      .setCustomId('lb_back')
-      .setLabel('Back')
-      .setStyle(ButtonStyle.Secondary),
-
-    new ButtonBuilder()
-      .setCustomId('lb_next')
-      .setLabel('Next')
-      .setStyle(ButtonStyle.Primary)
-  );
-
-  return interaction.reply({
-    embeds: [embed],
-    components: [row]
-  });
-}
-if (interaction.isButton()) {
-
-  if (
-    interaction.customId !== 'lb_next' &&
-    interaction.customId !== 'lb_back'
-  ) return;
-
-  const snap = await db.ref(`leaderboards/${interaction.user.id}`).get();
-  const data = snap.val();
-
-  if (!data) {
-    return interaction.reply({
-      content: '❌ Leaderboard expired.',
-      flags: MessageFlags.Ephemeral
-    });
-  }
-
-  const perPage = 10;
-
-  if (interaction.customId === 'lb_next') {
-    if ((data.page + 1) * perPage < data.ranking.length) {
-      data.page++;
-    }
-  }
-
-  if (interaction.customId === 'lb_back') {
-    if (data.page > 0) {
-      data.page--;
-    }
-  }
-
-  const start = data.page * perPage;
-  const current = data.ranking.slice(start, start + perPage);
-
-  let text = '';
-
-  for (let i = 0; i < current.length; i++) {
-
-    const p = current[i];
+    const p = ranking[i];
 
     let username = 'Unknown';
 
@@ -1722,25 +1642,36 @@ if (interaction.isButton()) {
       username = user?.username || 'Unknown';
     } catch {}
 
-    text += `#${start + i + 1} ${username} • ${p.value}\n`;
+    let medal = '';
+
+    if (i === 0) medal = medals[0];
+    else if (i === 1) medal = medals[1];
+    else if (i === 2) medal = medals[2];
+
+    const line = `${medal} #${i + 1} ${username} • ${p.value}\n`;
+
+    if (i < 25) {
+      left += line;
+    } else {
+      right += line;
+    }
   }
 
   const embed = new EmbedBuilder()
-    .setTitle('🏆 Leaderboard')
-    .setDescription(text || 'No data')
+    .setTitle(`🏆 TOP 50 ${scope.toUpperCase()} - ${category.toUpperCase()}`)
+    .addFields(
+      { name: 'TOP 1 - 25', value: left || 'No data', inline: true },
+      { name: 'TOP 26 - 50', value: right || 'No data', inline: true }
+    )
     .setFooter({
-      text: `${data.scope} • Page ${data.page + 1}/${Math.ceil(data.ranking.length / perPage)}`
+      text: `Top 50 • ${scope}`
     });
 
-  await db.ref(`leaderboards/${interaction.user.id}`).update({
-    page: data.page
-  });
-
-  return interaction.update({
+  return interaction.reply({
     embeds: [embed]
   });
 }
-    
+  
     // OWNER
     if (
       (
