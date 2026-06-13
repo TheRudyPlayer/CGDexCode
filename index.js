@@ -1772,6 +1772,7 @@ if (
       });
 
     }
+  });
 
     // ACTIVE
     if (activeSpawn) {
