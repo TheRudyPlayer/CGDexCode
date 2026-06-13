@@ -908,7 +908,6 @@ const commands = [
   new SlashCommandBuilder()
   .setName('leaderboard')
   .setDescription('View rankings')
-
   .addStringOption(option =>
     option
       .setName('scope')
@@ -917,6 +916,16 @@ const commands = [
       .addChoices(
         { name: 'Global', value: 'global' },
         { name: 'Server', value: 'server' }
+      )
+  )
+  .addStringOption(option =>
+    option
+      .setName('category')
+      .setDescription('Ranking category')
+      .setRequired(true)
+      .addChoices(
+        { name: 'Characters', value: 'characters' },
+        { name: 'CGCoins', value: 'coins' }
       )
   ),
 
