@@ -16,7 +16,7 @@ const admin = require('firebase-admin');
 
 const TOKEN = process.env.TOKEN;
 
-const CLIENT_ID = '1498803742391406633';
+const CLIENT_ID = '1515526958866501652';
 
 // SERVERS
 const GUILD_IDS = [
@@ -1602,84 +1602,7 @@ if (
     
 if (interaction.isChatInputCommand() && interaction.commandName === 'leaderboard') {
     
-    // LEADERBOARD
-if (interaction.commandName === 'leaderboard') {
-
-  const scope = interaction.options.getString('scope');
-  const category = interaction.options.getString('category');
-
-  let ranking = [];
-
-  // CHARACTERS
-  if (category === 'characters') {
-    ranking = Object.entries(inventories).map(([userId, inv]) => ({
-      userId,
-      value: Array.isArray(inv) ? inv.length : 0
-    }));
-  }
-
-  // COINS
-  if (category === 'coins') {
-    ranking = Object.entries(cgCoins).map(([userId, coins]) => ({
-      userId,
-      value: Number(coins) || 0
-    }));
-  }
-
-  // SERVER FILTER
-  if (scope === 'server') {
-    const memberIds = interaction.guild.members.cache.map(m => m.id);
-    ranking = ranking.filter(p => memberIds.includes(p.userId));
-  }
-
-  ranking.sort((a, b) => b.value - a.value);
-  ranking = ranking.slice(0, 50);
-
-  const medals = ['🥇', '🥈', '🥉'];
-
-  let left = '';
-  let right = '';
-
-  for (let i = 0; i < ranking.length; i++) {
-
-    const p = ranking[i];
-
-    let username = 'Unknown';
-
-    try {
-      const user = await client.users.fetch(p.userId).catch(() => null);
-      username = user?.username || 'Unknown';
-    } catch {}
-
-    let medal = '';
-
-    if (i === 0) medal = medals[0];
-    else if (i === 1) medal = medals[1];
-    else if (i === 2) medal = medals[2];
-
-    const line = `${medal} #${i + 1} ${username} • ${p.value}\n`;
-
-    if (i < 25) {
-      left += line;
-    } else {
-      right += line;
-    }
-  }
-
-  const embed = new EmbedBuilder()
-    .setTitle(`🏆 TOP 50 ${scope.toUpperCase()} - ${category.toUpperCase()}`)
-    .addFields(
-      { name: 'TOP 1 - 25', value: left || 'No data', inline: true },
-      { name: 'TOP 26 - 50', value: right || 'No data', inline: true }
-    )
-    .setFooter({
-      text: `Top 50 • ${scope}`
-    });
-
-  return interaction.reply({
-    embeds: [embed]
-  });
-}
+    // LEADERBOARD (EN PROGRESO)
   
     // OWNER
     if (
