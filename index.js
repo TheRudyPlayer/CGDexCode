@@ -927,7 +927,7 @@ const commands = [
         { name: 'Characters', value: 'characters' },
         { name: 'CGCoins', value: 'coins' }
       )
-  ),
+  )
 
   .addStringOption(option =>
     option
