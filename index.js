@@ -802,7 +802,7 @@ const commands = [
     .setDescription('Spawn specific character')
     .addStringOption(option =>
       option
-        .setName('codigo')
+        .setName('code')
         .setDescription('Character code')
         .setRequired(true)
     ),
