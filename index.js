@@ -927,17 +927,6 @@ const commands = [
         { name: 'Characters', value: 'characters' },
         { name: 'CGCoins', value: 'coins' }
       )
-  )
-
-  .addStringOption(option =>
-    option
-      .setName('category')
-      .setDescription('Ranking category')
-      .setRequired(true)
-      .addChoices(
-        { name: 'Characters', value: 'characters' },
-        { name: 'CGCoins', value: 'coins' }
-      )
   ),
 
   new SlashCommandBuilder()
