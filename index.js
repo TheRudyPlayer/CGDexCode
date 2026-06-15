@@ -927,7 +927,7 @@ const commands = [
         { name: 'Characters', value: 'characters' },
         { name: 'CGCoins', value: 'coins' }
       )
-  )
+  ),
 
   new SlashCommandBuilder()
   .setName('set_mode')
@@ -942,7 +942,7 @@ const commands = [
         { name: 'World Cup 2026', value: 'WorldCup2026' }
       )
   
-  )
+  ),
 
 ].map(command => command.toJSON());
 
