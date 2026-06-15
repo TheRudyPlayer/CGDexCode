@@ -927,7 +927,7 @@ const commands = [
         { name: 'Characters', value: 'characters' },
         { name: 'CGCoins', value: 'coins' }
       )
-  ),
+  )
 
   new SlashCommandBuilder()
   .setName('set_mode')
@@ -1589,9 +1589,10 @@ if (
 
 }
     
-if (interaction.isChatInputCommand() && interaction.commandName === 'leaderboard') {
+if (interaction.isChatInputCommand() && interaction.commandName === 'leaderboard') {}
     
     // LEADERBOARD (EN PROGRESO)
+
   
     // OWNER
     if (
