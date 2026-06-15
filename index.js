@@ -1778,7 +1778,8 @@ ${t.guess}`
     embeds: [embed]
   });
 }
-
+  )
+    
 // CLAIM
 client.on('messageCreate', async message => {
 
