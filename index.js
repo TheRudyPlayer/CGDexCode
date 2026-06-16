@@ -1601,10 +1601,7 @@ if (
   );
 
 }
-  
-    
-    // LEADERBOARD (EN PROGRESO)
-    // LEADERBOARD
+  // LEADERBOARD
 if (
   interaction.commandName ===
   'leaderboard'
@@ -1642,8 +1639,10 @@ if (
 
   }
 
-  // SOLO MI SERVIDOR
-  if (scope === 'server') {
+  // SERVER ONLY
+  if (
+    scope === 'server'
+  ) {
 
     const memberIds =
       interaction.guild.members.cache
@@ -1669,35 +1668,51 @@ if (
   const text =
     ranking.length
       ? ranking
-          .map(
-            (user, index) =>
-`#${index + 1} <@${user.userId}>
-${user.value}`
-          )
-          .join('\n\n')
+          .map((user, index) => {
+
+            const member =
+              client.users.cache.get(
+                user.userId
+              );
+
+            const username =
+              member
+                ? member.username
+                : 'Unknown User';
+
+            const medal =
+              index === 0 ? '🥇' :
+              index === 1 ? '🥈' :
+              index === 2 ? '🥉' :
+              '🏅';
+
+            return `${medal} #${index + 1} • ${username} — ${user.value}`;
+
+          })
+          .join('\n')
       : 'No data.';
 
   const embed =
     new EmbedBuilder()
-      .setTitle(
-        `🏆 ${
-          scope === 'global'
-            ? 'Global'
-            : 'Server'
-        } ${
-          category === 'characters'
-            ? 'Characters'
-            : 'CGCoins'
-        }`
-      )
-      .setDescription(text);
+      .setTitle('🏆 Leaderboard')
+      .setDescription(text)
+      .setFooter({
+        text:
+`${scope === 'global'
+  ? 'Global'
+  : 'Server'}
+ • ${
+category === 'characters'
+  ? 'Characters'
+  : 'CGCoins'
+}`
+      });
 
   return interaction.reply({
     embeds: [embed]
   });
 
 }
-
   
     // OWNER
     if (
