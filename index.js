@@ -24,12 +24,13 @@ const GUILD_IDS = [
   '1490431622930239691',
   '1501669636700373002',
   '1311142612555661402',
-  '1513226847712968734'
+  '1513226847712968734',
+  '1482193584663953518'
 ];
 
 // OWNER
 const OWNER_ID = [
-  '1458910126168735806',
+  '1515472742538023064',
   '1421975491891433553'
 ];
 
@@ -1695,16 +1696,59 @@ if (
     let selectedCharacter;
 
     // SPAWN
-    if (
-      interaction.commandName ===
-      'spawn'
-    ) {
+if (
+  interaction.commandName ===
+  'spawn'
+) {
 
-      selectedCharacter =
-        getRandomCharacter();
+  const selectedCharacter =
+    getRandomCharacter();
 
-    }
+  activeSpawn =
+    selectedCharacter;
 
+  const embed =
+    new EmbedBuilder()
+      .setColor(
+        rarityColors[
+          selectedCharacter.rarity
+        ] || '#FFFFFF'
+      )
+      .setTitle(t.spawned)
+      .setDescription(
+`🆔 ${t.code}: ${selectedCharacter.code}
+⭐ ${t.rarity}: ${
+  getRarityName(
+    selectedCharacter.rarity,
+    t
+  )
+}
+🌎 ${t.language}: ${
+  getLanguageName(
+    selectedCharacter.language,
+    t
+  )
+}
+
+${t.guess}`
+      );
+
+  if (
+    selectedCharacter.image &&
+    selectedCharacter.image.startsWith('http')
+  ) {
+
+    embed.setImage(
+      selectedCharacter.image
+    );
+
+  }
+
+  return interaction.reply({
+    embeds: [embed]
+  });
+
+}
     // SPAWN CHARACTER
 if (interaction.commandName === 'spawn_character') {
 
