@@ -1694,7 +1694,6 @@ if (
       });
 
     }
-  };
 
     // ACTIVE
     if (activeSpawn) {
