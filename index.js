@@ -933,6 +933,15 @@ const rest =
 
   try {
 
+    // Global Commands
+    await rest.put(
+      Routes.applicationCommands(
+        CLIENT_ID
+      ),
+      { body: commands }
+    );
+
+    // Guild Commands
     for (const guildId of GUILD_IDS) {
 
       await rest.put(
@@ -945,7 +954,9 @@ const rest =
 
     }
 
-    console.log('✅ Commands registered');
+    console.log(
+      '✅ Global & Guild Commands Registered'
+    );
 
   } catch (err) {
 
