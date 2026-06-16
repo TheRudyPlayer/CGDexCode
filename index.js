@@ -1601,7 +1601,7 @@ if (
   );
 
 }
-  // LEADERBOARD
+        // LEADERBOARD
 if (
   interaction.commandName ===
   'leaderboard'
@@ -1619,40 +1619,49 @@ if (
 
   let ranking = [];
 
-  if (category === 'characters') {
+  if (
+    category ===
+    'characters'
+  ) {
 
     ranking =
       Object.entries(inventories)
-        .map(([userId, inventory]) => ({
-          userId,
-          value: inventory.length
-        }));
+        .map(
+          ([userId, inventory]) => ({
+            userId,
+            value: inventory.length
+          })
+        );
 
   } else {
 
     ranking =
       Object.entries(cgCoins)
-        .map(([userId, coins]) => ({
-          userId,
-          value: coins
-        }));
+        .map(
+          ([userId, coins]) => ({
+            userId,
+            value: coins
+          })
+        );
 
   }
 
-  // SERVER ONLY
   if (
     scope === 'server'
   ) {
 
     const memberIds =
       interaction.guild.members.cache
-        .map(member => member.id);
+        .map(
+          member => member.id
+        );
 
     ranking =
-      ranking.filter(user =>
-        memberIds.includes(
-          user.userId
-        )
+      ranking.filter(
+        user =>
+          memberIds.includes(
+            user.userId
+          )
       );
 
   }
@@ -1665,37 +1674,51 @@ if (
       )
       .slice(0, 10);
 
+  const lines = [];
+
+  for (
+    const [index, user]
+    of ranking.entries()
+  ) {
+
+    const fetchedUser =
+      await client.users.fetch(
+        user.userId
+      ).catch(() => null);
+
+    const username =
+      fetchedUser
+        ? fetchedUser.username
+        : 'Unknown User';
+
+    const medal =
+      index === 0
+        ? '🥇'
+        : index === 1
+        ? '🥈'
+        : index === 2
+        ? '🥉'
+        : '🏅';
+
+    lines.push(
+      `${medal} #${index + 1} • ${username} — ${user.value}`
+    );
+
+  }
+
   const text =
-    ranking.length
-      ? ranking
-          .map((user, index) => {
-
-            const member =
-              client.users.cache.get(
-                user.userId
-              );
-
-            const username =
-              member
-                ? member.username
-                : 'Unknown User';
-
-            const medal =
-              index === 0 ? '🥇' :
-              index === 1 ? '🥈' :
-              index === 2 ? '🥉' :
-              '🏅';
-
-            return `${medal} #${index + 1} • ${username} — ${user.value}`;
-
-          })
-          .join('\n')
+    lines.length > 0
+      ? lines.join('\n')
       : 'No data.';
 
   const embed =
     new EmbedBuilder()
-      .setTitle('🏆 Leaderboard')
-      .setDescription(text)
+      .setTitle(
+        '🏆 Leaderboard'
+      )
+      .setDescription(
+        text
+      )
       .setFooter({
         text:
 `${scope === 'global'
