@@ -1742,6 +1742,14 @@ ${t.guess}`
     embeds: [embed]
   });
 }
+
+  } catch (err) {
+
+    console.error(err);
+
+  }
+
+});
     
 // CLAIM
 client.on('messageCreate', async message => {
