@@ -906,30 +906,6 @@ const commands = [
   .setDescription('View your CGCoins'),
 
   new SlashCommandBuilder()
-  .setName('leaderboard')
-  .setDescription('View rankings')
-  .addStringOption(option =>
-    option
-      .setName('scope')
-      .setDescription('Global or Server')
-      .setRequired(true)
-      .addChoices(
-        { name: 'Global', value: 'global' },
-        { name: 'Server', value: 'server' }
-      )
-  )
-  .addStringOption(option =>
-    option
-      .setName('category')
-      .setDescription('Ranking category')
-      .setRequired(true)
-      .addChoices(
-        { name: 'Characters', value: 'characters' },
-        { name: 'CGCoins', value: 'coins' }
-      )
-  ),
-
-  new SlashCommandBuilder()
   .setName('set_mode')
   .setDescription('Change CGDex mode')
   .addStringOption(option =>
