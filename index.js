@@ -890,6 +890,30 @@ const commands = [
   ),
 
   new SlashCommandBuilder()
+  .setName('leaderboard')
+  .setDescription('View rankings')
+  .addStringOption(option =>
+    option
+      .setName('scope')
+      .setDescription('Global or Server')
+      .setRequired(true)
+      .addChoices(
+        { name: 'Global', value: 'global' },
+        { name: 'Server', value: 'server' }
+      )
+  )
+  .addStringOption(option =>
+    option
+      .setName('category')
+      .setDescription('Ranking category')
+      .setRequired(true)
+      .addChoices(
+        { name: 'Characters', value: 'characters' },
+        { name: 'CGCoins', value: 'coins' }
+      )
+  ),
+
+  new SlashCommandBuilder()
   .setName('shop')
   .setDescription('View CGDex shop'),
 
@@ -1580,6 +1604,99 @@ if (
   
     
     // LEADERBOARD (EN PROGRESO)
+    // LEADERBOARD
+if (
+  interaction.commandName ===
+  'leaderboard'
+) {
+
+  const scope =
+    interaction.options.getString(
+      'scope'
+    );
+
+  const category =
+    interaction.options.getString(
+      'category'
+    );
+
+  let ranking = [];
+
+  if (category === 'characters') {
+
+    ranking =
+      Object.entries(inventories)
+        .map(([userId, inventory]) => ({
+          userId,
+          value: inventory.length
+        }));
+
+  } else {
+
+    ranking =
+      Object.entries(cgCoins)
+        .map(([userId, coins]) => ({
+          userId,
+          value: coins
+        }));
+
+  }
+
+  // SOLO MI SERVIDOR
+  if (scope === 'server') {
+
+    const memberIds =
+      interaction.guild.members.cache
+        .map(member => member.id);
+
+    ranking =
+      ranking.filter(user =>
+        memberIds.includes(
+          user.userId
+        )
+      );
+
+  }
+
+  ranking =
+    ranking
+      .sort(
+        (a, b) =>
+          b.value - a.value
+      )
+      .slice(0, 10);
+
+  const text =
+    ranking.length
+      ? ranking
+          .map(
+            (user, index) =>
+`#${index + 1} <@${user.userId}>
+${user.value}`
+          )
+          .join('\n\n')
+      : 'No data.';
+
+  const embed =
+    new EmbedBuilder()
+      .setTitle(
+        `🏆 ${
+          scope === 'global'
+            ? 'Global'
+            : 'Server'
+        } ${
+          category === 'characters'
+            ? 'Characters'
+            : 'CGCoins'
+        }`
+      )
+      .setDescription(text);
+
+  return interaction.reply({
+    embeds: [embed]
+  });
+
+}
 
   
     // OWNER
