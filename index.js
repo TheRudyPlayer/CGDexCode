@@ -1588,8 +1588,7 @@ if (
   );
 
 }
-    
-if (interaction.isChatInputCommand() && interaction.commandName === 'leaderboard') {}
+  
     
     // LEADERBOARD (EN PROGRESO)
 
