@@ -163,7 +163,25 @@ const texts = {
     latam: 'LATAM (Latin America)',
     ukrainian: 'Ukrainian',
     page: 'Page',
-    own500characterstext: 'Own 500 Characters'
+    achievementstext: 'Achievements',
+    firstcharacter: 'First Character',
+    collector: 'Collector',
+    mastercollector: 'Master Collector',
+    hoarder: 'Hoarder',
+    cgdexgod: 'CGDex God',
+    rich: 'Rich',
+    millionaire: 'Millionaire',
+    lucky: 'Lucky',
+    legend: 'Legend',
+    own1charactertext: 'Own 1 character',
+    own25characterstext: 'Own 25 characters',
+    own100characterstext: 'Own 100 characters',
+    own250characterstext: 'Own 250 characters',
+    own500characterstext: 'Own 500 characters',
+    own1000coinstext: 'Own 1000 CGCoins',
+    own10000coinstext: 'Own 10000 CGCoins',
+    own1mythictext: 'Own 1 Mythic character',
+    own5mythicstext: 'Own 5 Mythic characters',
   },
 
   Spanish: {
@@ -208,7 +226,25 @@ const texts = {
     latam: 'LATAM (América Latina)',
     ukrainian: 'Ucraniano',
     page: 'Página',
-    own500characterstext: 'Posee 500 Personajes'
+    achievementstext: 'Logros',
+    firstcharacter: 'Primer Personaje',
+    collector: 'Coleccionista',
+    mastercollector: 'Maestro Coleccionista',
+    hoarder: 'Acumulador',
+    cgdexgod: 'Dios de CGDex',
+    rich: 'Rico',
+    millionaire: 'Millonario',
+    lucky: 'Afortunado',
+    legend: 'Leyenda',
+    own1charactertext: 'Posee 1 personaje',
+    own25characterstext: 'Posee 25 personajes',
+    own100characterstext: 'Posee 100 personajes',
+    own250characterstext: 'Posee 250 personajes',
+    own500characterstext: 'Posee 500 personajes',
+    own1000coinstext: 'Posee 1000 CGCoins',
+    own10000coinstext: 'Posee 10000 CGCoins',
+    own1mythictext: 'Posee 1 personaje Mítico',
+    own5mythicstext: 'Posee 5 personajes Míticos',
   },
 
   Portuguese: {
@@ -1940,67 +1976,67 @@ if (
   const achievements = [
 
     {
-      name: 'First Character',
-      desc: 'Own 1 character',
-      unlocked:
-        inventory.length >= 1
-    },
+  name: t.firstcharacter,
+  desc: t.own1charactertext,
+  unlocked:
+    inventory.length >= 1
+},
 
-    {
-      name: 'Collector',
-      desc: 'Own 25 characters',
-      unlocked:
-        inventory.length >= 25
-    },
+{
+  name: t.collector,
+  desc: t.own25characterstext,
+  unlocked:
+    inventory.length >= 25
+},
 
-    {
-      name: 'Many Characters!',
-      desc: 'Own 100 characters',
-      unlocked:
-        inventory.length >= 100
-    },
+{
+  name: t.mastercollector,
+  desc: t.own100characterstext,
+  unlocked:
+    inventory.length >= 100
+},
 
-    {
-      name: 'Addicted to Characters',
-      desc: 'Own 250 characters',
-      unlocked:
-        inventory.length >= 250
-    },
+{
+  name: t.hoarder,
+  desc: t.own250characterstext,
+  unlocked:
+    inventory.length >= 250
+},
 
-    {
-      name: 'CGDex God',
-      desc: `${t.own500characterstext}`,
-      unlocked:
-        inventory.length >= 500
-    },
+{
+  name: t.cgdexgod,
+  desc: t.own500characterstext,
+  unlocked:
+    inventory.length >= 500
+},
 
-    {
-      name: 'Rich',
-      desc: 'Own 1000 CGCoins',
-      unlocked:
-        coins >= 1000
-    },
+{
+  name: t.rich,
+  desc: t.own1000coinstext,
+  unlocked:
+    coins >= 1000
+},
 
-    {
-      name: 'Millionaire',
-      desc: 'Own 10000 CGCoins',
-      unlocked:
-        coins >= 10000
-    },
+{
+  name: t.millionaire,
+  desc: t.own10000coinstext,
+  unlocked:
+    coins >= 10000
+},
 
-    {
-      name: 'Lucky',
-      desc: 'Own 1 Mythic',
-      unlocked:
-        mythics >= 1
-    },
+{
+  name: t.lucky,
+  desc: t.own1mythictext,
+  unlocked:
+    mythics >= 1
+},
 
-    {
-      name: 'Legend',
-      desc: 'Own 5 Mythics',
-      unlocked:
-        mythics >= 5
-    }
+{
+  name: t.legend,
+  desc: t.own5mythicstext,
+  unlocked:
+    mythics >= 5
+}
 
   ];
 
