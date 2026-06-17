@@ -1777,6 +1777,7 @@ if (
   const coins =
     cgCoins[target.id] || 0;
 
+  // GLOBAL CHARACTERS
   const globalCharacters =
     Object.keys(inventories)
       .map(id => ({
@@ -1790,48 +1791,17 @@ if (
       user => user.id === target.id
     ) + 1;
 
+  // GLOBAL COINS
   const globalCoins =
-    Object.entries(cgCoins)
-      .map(([id, coins]) => ({
-        id,
-        coins
-      }))
-      .sort((a, b) => b.coins - a.coins);
-
-  const globalCoinsRank =
-    globalCoins.findIndex(
-      user => user.id === target.id
-    ) + 1;
-
-  const members =
-    await interaction.guild.members.fetch();
-
-  const serverIds =
-    members.map(member => member.id);
-
-  const serverCharacters =
-    serverIds
-      .map(id => ({
-        id,
-        total: getInventory(id).length
-      }))
-      .sort((a, b) => b.total - a.total);
-
-  const serverCharactersRank =
-    serverCharacters.findIndex(
-      user => user.id === target.id
-    ) + 1;
-
-  const serverCoins =
-    serverIds
+    Object.keys(cgCoins)
       .map(id => ({
         id,
         coins: cgCoins[id] || 0
       }))
       .sort((a, b) => b.coins - a.coins);
 
-  const serverCoinsRank =
-    serverCoins.findIndex(
+  const globalCoinsRank =
+    globalCoins.findIndex(
       user => user.id === target.id
     ) + 1;
 
@@ -1847,15 +1817,15 @@ if (
 
 🌍 GLOBAL RANKS
 
-🪙 Coins: #${globalCoinsRank}
-📦 Characters: #${globalCharactersRank}
+🪙 Coins: #${globalCoinsRank || 'N/A'}
+📦 Characters: #${globalCharactersRank || 'N/A'}
 
 ━━━━━━━━━━━━
 
 🏠 SERVER RANKS
 
-🪙 Coins: #${serverCoinsRank}
-📦 Characters: #${serverCharactersRank}`
+🚧 Coming Soon
+🚧 Coming Soon`
       );
 
   return interaction.reply({
