@@ -1806,10 +1806,69 @@ if (
       user => user.id === target.id
     ) + 1;
 
+  // SERVER MEMBERS
+  const members =
+    await interaction.guild.members.fetch();
+
+  const serverIds =
+    [...members.keys()];
+
+  // SERVER CHARACTERS
+  const serverCharacters =
+    serverIds
+      .map(id => ({
+        id,
+        total: getInventory(id).length
+      }))
+      .sort((a, b) => b.total - a.total);
+
+  const serverCharactersRank =
+    serverCharacters.findIndex(
+      user => user.id === target.id
+    ) + 1;
+
+  // SERVER COINS
+  const serverCoins =
+    serverIds
+      .map(id => ({
+        id,
+        coins: cgCoins[id] || 0
+      }))
+      .sort((a, b) => b.coins - a.coins);
+
+  const serverCoinsRank =
+    serverCoins.findIndex(
+      user => user.id === target.id
+    ) + 1;
+
+  // RARITIES
+  let rare = 0;
+  let epic = 0;
+  let legendary = 0;
+  let mythic = 0;
+
+  for (const character of inventory) {
+
+    if (character.rarity === 'Rare')
+      rare++;
+
+    if (character.rarity === 'Epic')
+      epic++;
+
+    if (character.rarity === 'Legendary')
+      legendary++;
+
+    if (character.rarity === 'Mythic')
+      mythic++;
+
+  }
+
   const embed =
     new EmbedBuilder()
       .setColor('#FFD700')
-      .setTitle(`👤 ${target.username}`)
+      .setTitle(
+        `👤 ${target.username}`
+      )
       .setDescription(
 `🪙 CGCoins: ${coins}
 📦 Characters: ${inventory.length}
@@ -1825,8 +1884,17 @@ if (
 
 🏠 SERVER RANKS
 
-🚧 Coming Soon
-🚧 Coming Soon`
+🪙 Coins: #${serverCoinsRank || 'N/A'}
+📦 Characters: #${serverCharactersRank || 'N/A'}
+
+━━━━━━━━━━━━
+
+⭐ RARITY STATS
+
+🔵 Rare: ${rare}
+🟣 Epic: ${epic}
+🟠 Legendary: ${legendary}
+🔴 Mythic: ${mythic}`
       );
 
   return interaction.reply({
