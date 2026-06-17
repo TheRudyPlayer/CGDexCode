@@ -1957,24 +1957,24 @@ if (
 
 🌍 GLOBAL RANKS
 
-🪙 Coins: #${globalCoinsRank || 'N/A'}
+🪙 CGCoins: #${globalCoinsRank || 'N/A'}
 📦 Characters: #${globalCharactersRank || 'N/A'}
 
 ━━━━━━━━━━━━
 
 🏠 SERVER RANKS
 
-🪙 Coins: #${serverCoinsRank || 'N/A'}
+🪙 CGCoins: #${serverCoinsRank || 'N/A'}
 📦 Characters: #${serverCharactersRank || 'N/A'}
 
 ━━━━━━━━━━━━
 
 ⭐ RARITY STATS
 
-🔵 Rare: ${rare}
-🟣 Epic: ${epic}
-🟠 Legendary: ${legendary}
-🔴 Mythic: ${mythic}`
+🔵 ${t.rare}: ${rare}
+🟣 ${t.epic}: ${epic}
+🟠 ${t.legendary}: ${legendary}
+🔴 ${t.mythic}: ${mythic}`
       );
 
   return interaction.reply({
@@ -2124,7 +2124,7 @@ ${achievement.desc}`
 `${text}
 
 ━━━━━━━━━━━━
-📊 Progress:
+📊 ${t.progresstext}:
 ${unlocked}/${achievements.length}`
       );
 
