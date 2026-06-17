@@ -162,7 +162,8 @@ const texts = {
     portuguese: 'Portuguese',
     latam: 'LATAM (Latin America)',
     ukrainian: 'Ukrainian',
-    page: 'Page'
+    page: 'Page',
+    own500characterstext: 'Own 500 Characters'
   },
 
   Spanish: {
@@ -206,7 +207,8 @@ const texts = {
     portuguese: 'Portugués',
     latam: 'LATAM (América Latina)',
     ukrainian: 'Ucraniano',
-    page: 'Página'
+    page: 'Página',
+    own500characterstext: 'Posee 500 Personajes'
   },
 
   Portuguese: {
@@ -250,7 +252,8 @@ const texts = {
     portuguese: 'Português',
     latam: 'América Latina',
     ukrainian: 'Ucraniano',
-    page: 'Página'
+    page: 'Página',
+    own500characterstext: 'Possui 500 caracteres'
   },
 
   Russian: {
@@ -294,7 +297,8 @@ const texts = {
     portuguese: 'Португальский',
     latam: 'Латинская Америка',
     ukrainian: 'Украинский',
-    page: 'Страница'
+    page: 'Страница',
+    own500characterstext: 'В игре 500 персонажей'
   }
 
 };
@@ -1950,14 +1954,14 @@ if (
     },
 
     {
-      name: 'Master Collector',
+      name: 'Many Characters!',
       desc: 'Own 100 characters',
       unlocked:
         inventory.length >= 100
     },
 
     {
-      name: 'Hoarder',
+      name: 'Addicted to Characters',
       desc: 'Own 250 characters',
       unlocked:
         inventory.length >= 250
@@ -1965,7 +1969,7 @@ if (
 
     {
       name: 'CGDex God',
-      desc: 'Own 500 characters',
+      desc: `${t.own500characterstext}`,
       unlocked:
         inventory.length >= 500
     },
