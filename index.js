@@ -935,6 +935,10 @@ const commands = [
   ),
 
   new SlashCommandBuilder()
+  .setName('achievements')
+  .setDescription('View your achievements'),
+
+  new SlashCommandBuilder()
   .setName('shop')
   .setDescription('View CGDex shop'),
 
@@ -1906,6 +1910,255 @@ if (
   });
 
 }
+    // ACHIEVEMENTS
+if (
+  interaction.commandName ===
+  'achievements'
+) {
+
+  const inventory =
+    getInventory(
+      interaction.user.id
+    );
+
+  const coins =
+    cgCoins[
+      interaction.user.id
+    ] || 0;
+
+  const mythics =
+    inventory.filter(
+      character =>
+        character.rarity ===
+        'Mythic'
+    ).length;
+
+  const achievements = [
+
+    {
+      name: 'First Character',
+      desc: 'Own 1 character',
+      unlocked:
+        inventory.length >= 1
+    },
+
+    {
+      name: 'Collector',
+      desc: 'Own 25 characters',
+      unlocked:
+        inventory.length >= 25
+    },
+
+    {
+      name: 'Master Collector',
+      desc: 'Own 100 characters',
+      unlocked:
+        inventory.length >= 100
+    },
+
+    {
+      name: 'Hoarder',
+      desc: 'Own 250 characters',
+      unlocked:
+        inventory.length >= 250
+    },
+
+    {
+      name: 'CGDex God',
+      desc: 'Own 500 characters',
+      unlocked:
+        inventory.length >= 500
+    },
+
+    {
+      name: 'Rich',
+      desc: 'Own 1000 CGCoins',
+      unlocked:
+        coins >= 1000
+    },
+
+    {
+      name: 'Millionaire',
+      desc: 'Own 10000 CGCoins',
+      unlocked:
+        coins >= 10000
+    },
+
+    {
+      name: 'Lucky',
+      desc: 'Own 1 Mythic',
+      unlocked:
+        mythics >= 1
+    },
+
+    {
+      name: 'Legend',
+      desc: 'Own 5 Mythics',
+      unlocked:
+        mythics >= 5
+    }
+
+  ];
+
+  const perPage = 5;
+
+  let page = 0;
+
+  const totalPages =
+    Math.ceil(
+      achievements.length /
+      perPage
+    );
+
+  function createEmbed(page) {
+
+    const start =
+      page * perPage;
+
+    const end =
+      start + perPage;
+
+    const pageAchievements =
+      achievements.slice(
+        start,
+        end
+      );
+
+    const unlocked =
+      achievements.filter(
+        achievement =>
+          achievement.unlocked
+      ).length;
+
+    const text =
+      pageAchievements
+        .map(
+          achievement =>
+`${achievement.unlocked ? '✅' : '🔒'} ${achievement.name}
+${achievement.desc}`
+        )
+        .join('\n\n');
+
+    return new EmbedBuilder()
+      .setColor('#FFD700')
+      .setTitle(
+        `🏆 Achievements (${page + 1}/${totalPages})`
+      )
+      .setDescription(
+`${text}
+
+━━━━━━━━━━━━
+📊 Progress:
+${unlocked}/${achievements.length}`
+      );
+
+  }
+
+  const row =
+    new ActionRowBuilder()
+      .addComponents(
+
+        new ButtonBuilder()
+          .setCustomId(
+            'achievement_prev'
+          )
+          .setLabel(
+            t.back
+          )
+          .setStyle(
+            ButtonStyle.Secondary
+          ),
+
+        new ButtonBuilder()
+          .setCustomId(
+            'achievement_next'
+          )
+          .setLabel(
+            t.next
+          )
+          .setStyle(
+            ButtonStyle.Secondary
+          )
+
+      );
+
+  const msg =
+    await interaction.reply({
+      embeds: [
+        createEmbed(page)
+      ],
+      components: [row],
+      fetchReply: true
+    });
+
+  const collector =
+    msg.createMessageComponentCollector({
+      time: 300000
+    });
+
+  collector.on(
+    'collect',
+    async button => {
+
+      if (
+        button.user.id !==
+        interaction.user.id
+      ) {
+
+        return button.reply({
+          content:
+            '❌ This is not your achievements.',
+          flags:
+            MessageFlags.Ephemeral
+        });
+
+      }
+
+      if (
+        button.customId ===
+        'achievement_prev'
+      ) {
+
+        page--;
+
+        if (page < 0) {
+
+          page =
+            totalPages - 1;
+
+        }
+
+      }
+
+      if (
+        button.customId ===
+        'achievement_next'
+      ) {
+
+        page++;
+
+        if (
+          page >= totalPages
+        ) {
+
+          page = 0;
+
+        }
+
+      }
+
+      await button.update({
+        embeds: [
+          createEmbed(page)
+        ],
+        components: [row]
+      });
+
+    }
+
+  );
+
+   }
   
     // OWNER
     if (
