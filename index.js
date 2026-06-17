@@ -854,6 +854,26 @@ const commands = [
     ),
 
   new SlashCommandBuilder()
+  .setName('profile')
+  .setDescription('View profile')
+  .addUserOption(option =>
+    option
+      .setName('user')
+      .setDescription('User')
+      .setRequired(false)
+  )
+  .addStringOption(option =>
+    option
+      .setName('visibility')
+      .setDescription('Public or Private')
+      .setRequired(false)
+      .addChoices(
+        { name: 'Public', value: 'public' },
+        { name: 'Private', value: 'private' }
+      )
+  ),
+
+  new SlashCommandBuilder()
     .setName('gift')
     .setDescription('Gift character')
     .addUserOption(option =>
@@ -1733,6 +1753,117 @@ category === 'characters'
 
   return interaction.reply({
     embeds: [embed]
+  });
+
+}
+    // PROFILE
+if (
+  interaction.commandName ===
+  'profile'
+) {
+
+  const target =
+    interaction.options.getUser('user') ||
+    interaction.user;
+
+  const visibility =
+    interaction.options.getString(
+      'visibility'
+    ) || 'public';
+
+  const inventory =
+    getInventory(target.id);
+
+  const coins =
+    cgCoins[target.id] || 0;
+
+  const globalCharacters =
+    Object.keys(inventories)
+      .map(id => ({
+        id,
+        total: getInventory(id).length
+      }))
+      .sort((a, b) => b.total - a.total);
+
+  const globalCharactersRank =
+    globalCharacters.findIndex(
+      user => user.id === target.id
+    ) + 1;
+
+  const globalCoins =
+    Object.entries(cgCoins)
+      .map(([id, coins]) => ({
+        id,
+        coins
+      }))
+      .sort((a, b) => b.coins - a.coins);
+
+  const globalCoinsRank =
+    globalCoins.findIndex(
+      user => user.id === target.id
+    ) + 1;
+
+  const members =
+    await interaction.guild.members.fetch();
+
+  const serverIds =
+    members.map(member => member.id);
+
+  const serverCharacters =
+    serverIds
+      .map(id => ({
+        id,
+        total: getInventory(id).length
+      }))
+      .sort((a, b) => b.total - a.total);
+
+  const serverCharactersRank =
+    serverCharacters.findIndex(
+      user => user.id === target.id
+    ) + 1;
+
+  const serverCoins =
+    serverIds
+      .map(id => ({
+        id,
+        coins: cgCoins[id] || 0
+      }))
+      .sort((a, b) => b.coins - a.coins);
+
+  const serverCoinsRank =
+    serverCoins.findIndex(
+      user => user.id === target.id
+    ) + 1;
+
+  const embed =
+    new EmbedBuilder()
+      .setColor('#FFD700')
+      .setTitle(`👤 ${target.username}`)
+      .setDescription(
+`🪙 CGCoins: ${coins}
+📦 Characters: ${inventory.length}
+
+━━━━━━━━━━━━
+
+🌍 GLOBAL RANKS
+
+🪙 Coins: #${globalCoinsRank}
+📦 Characters: #${globalCharactersRank}
+
+━━━━━━━━━━━━
+
+🏠 SERVER RANKS
+
+🪙 Coins: #${serverCoinsRank}
+📦 Characters: #${serverCharactersRank}`
+      );
+
+  return interaction.reply({
+    embeds: [embed],
+    flags:
+      visibility === 'private'
+        ? MessageFlags.Ephemeral
+        : undefined
   });
 
 }
