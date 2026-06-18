@@ -1634,7 +1634,6 @@ if (
         )
       ];
 
-  }
   await addCharacterToInventory(
     interaction.user.id,
     character
