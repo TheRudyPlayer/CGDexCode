@@ -1056,6 +1056,21 @@ const commands = [
           { name: 'Private', value: 'Private' }
         )
     ),
+  
+  new SlashCommandBuilder()
+  .setName('missions')
+  .setDescription('View missions')
+  .addStringOption(option =>
+  option
+    .setName('type')
+    .setDescription('Mission type')
+    .setRequired(true)
+    .addChoices(
+      { name: 'Daily', value: 'daily' },
+      { name: 'Weekly', value: 'weekly' },
+      { name: 'Event', value: 'event' }
+    )
+),
 
   new SlashCommandBuilder()
   .setName('profile')
@@ -2427,6 +2442,87 @@ if (
   });
 
 }
+    // MISSIONS
+    if (
+  interaction.commandName ===
+  'missions'
+) {
+
+  const type =
+    interaction.options.getString('type');
+
+  const userId =
+    interaction.user.id;
+
+  if (type === 'daily') {
+
+    const progress =
+      missions.daily?.[userId] || 0;
+
+    return interaction.reply({
+      content:
+`🎯 Daily Missions
+
+📦 Obtain 5 characters
+Progress: ${progress}/5
+
+Reward:
+🪙 100 CGCoins`
+    });
+
+  }
+
+  if (type === 'weekly') {
+
+    const progress =
+      missions.weekly?.[userId] || 0;
+
+    return interaction.reply({
+      content:
+`🎯 Weekly Missions
+
+📦 Obtain 25 characters
+Progress: ${progress}/25
+
+Reward:
+🪙 1000 CGCoins`
+    });
+
+  }
+      if (type === 'event') {
+
+  const progress =
+    missions.event?.[userId] || 0;
+
+  const goal = 5;
+
+  if (progress >= goal) {
+
+    // Reclamación de Event Mission
+
+    return interaction.reply({
+      content:
+`🏆 Mission Completed!
+
+🎁 You can claim your Exclusive Character!`
+    });
+
+  }
+
+  return interaction.reply({
+    content:
+`⚽ World Cup Mission
+
+📦 Obtain 5 World Cup Characters
+Progress: ${progress}/${goal}
+
+🎁 Reward:
+Exclusive Character`
+  });
+
+      }
+
+    }
   
     // OWNER
     if (
