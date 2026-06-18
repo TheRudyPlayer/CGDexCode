@@ -211,7 +211,8 @@ const texts = {
     globalrankstext: 'GLOBAL RANKS',
     serverrankstext: 'SERVER RANKS',
     charactersText: 'Characters',
-    characterTextSingular: 'Character'
+    characterTextSingular: 'Character',
+    raritystatstext: 'RARITY STATS'
   },
 
   Spanish: {
@@ -280,7 +281,8 @@ const texts = {
     globalrankstext: 'RANKING GLOBAL',
     serverrankstext: 'RANKING DEL SERVIDOR',
     charactersText: 'Personajes',
-    characterTextSingular: 'Personaje'
+    characterTextSingular: 'Personaje',
+    raritystatstext: 'ESTADÍSTICAS DE RAREZA'
   },
 
   Portuguese: {
@@ -349,7 +351,8 @@ const texts = {
     globalrankstext: 'CLASSIFICAÇÃO GLOBAL',
     serverrankstext: 'CLASSIFICAÇÃO DO SERVIDOR',
     charactersText: 'Personagens',
-    characterTextSingular: 'Personagem'
+    characterTextSingular: 'Personagem',
+    raritystatstext: 'ESTATÍSTICAS DE RARIDADE'
   },
 
   Russian: {
@@ -419,6 +422,7 @@ const texts = {
     serverrankstext: 'РЕЙТИНГИ СЕРВЕРА',
     charactersText: 'Персонажи',
     characterTextSingular: 'Персонаж',
+    raritystatstext: 'СТАТИСТИКА РЕДКОСТЕЙ'
   },
 
   Ukrainian: {
@@ -487,7 +491,8 @@ const texts = {
     globalrankstext: 'ГЛОБАЛЬНІ РЕЙТИНГИ',
     serverrankstext: 'РЕЙТИНГИ СЕРВЕРА',
     charactersText: 'Персонажі',
-    characterTextSingular: 'Персонаж'
+    characterTextSingular: 'Персонаж',
+    raritystatstext: 'СТАТИСТИКА РІДКОСТЕЙ'
   }
 
 };
@@ -2067,7 +2072,7 @@ if (
 🌍 ${t.globalrankstext}
 
 🪙 CGCoins: #${globalCoinsRank || 'N/A'}
-📦 ${t.characterText}: #${globalCharactersRank || 'N/A'}
+📦 ${t.charactersText}: #${globalCharactersRank || 'N/A'}
 
 ━━━━━━━━━━━━
 
@@ -2078,7 +2083,7 @@ if (
 
 ━━━━━━━━━━━━
 
-⭐ RARITY STATS
+⭐ ${t.raritystatstext}
 
 🔵 ${t.rare}: ${rare}
 🟣 ${t.epic}: ${epic}
