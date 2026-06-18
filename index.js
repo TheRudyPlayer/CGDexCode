@@ -999,14 +999,18 @@ const commands = [
     .setDescription('Spawn random character'),
 
   new SlashCommandBuilder()
-    .setName('spawn_character')
-    .setDescription('Spawn specific character')
-    .addStringOption(option =>
-      option
-        .setName('code')
-        .setDescription('Character code')
-        .setRequired(true)
-    ),
+  .setName('spawn_character')
+  .setDescription('Spawn a character')
+  .addStringOption(option =>
+    option
+      .setName('name')
+      .setDescription('Character name')
+  )
+  .addStringOption(option =>
+    option
+      .setName('code')
+      .setDescription('Character code')
+  ),
 
   new SlashCommandBuilder()
     .setName('data_character')
@@ -2594,11 +2598,101 @@ ${t.guess}`
     // SPAWN CHARACTER
 if (interaction.commandName === 'spawn_character') {
 
-  const code = interaction.options.getString('code');
+  const code =
+  interaction.options.getString('code');
 
-  const foundCharacter = getCurrentCharacters().find(
-    character => character.code === code
-  );
+const name =
+  interaction.options.getString('name');
+
+if (!code && !name) {
+
+  return interaction.reply({
+    content:
+      '❌ You must provide a name or code.',
+    flags:
+      MessageFlags.Ephemeral
+  });
+
+}
+
+let foundCharacter = null;
+
+if (code) {
+
+  foundCharacter =
+    getCurrentCharacters().find(
+      character =>
+        character.code
+          .toLowerCase() ===
+        code.toLowerCase()
+    );
+
+}
+
+if (!foundCharacter && name) {
+
+  foundCharacter =
+    getCurrentCharacters().find(
+      character =>
+        character.name
+          .toLowerCase() ===
+        name.toLowerCase()
+    );
+
+}
+
+if (!foundCharacter) {
+
+  return interaction.reply({
+    content:
+      t.notFound,
+    flags:
+      MessageFlags.Ephemeral
+  });
+
+}
+
+if (
+  code &&
+  name
+) {
+
+  const codeCharacter =
+    getCurrentCharacters().find(
+      character =>
+        character.code
+          .toLowerCase() ===
+        code.toLowerCase()
+    );
+
+  const nameCharacter =
+    getCurrentCharacters().find(
+      character =>
+        character.name
+          .toLowerCase() ===
+        name.toLowerCase()
+    );
+
+  if (
+    !codeCharacter ||
+    !nameCharacter ||
+    codeCharacter.code !==
+    nameCharacter.code
+  ) {
+
+    return interaction.reply({
+      content:
+        '❌ Name and code do not match.',
+      flags:
+        MessageFlags.Ephemeral
+    });
+
+  }
+
+  foundCharacter =
+    codeCharacter;
+
+}
 
   if (!foundCharacter) {
     return interaction.reply({
