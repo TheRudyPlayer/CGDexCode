@@ -208,7 +208,10 @@ const texts = {
     own5mythicstext: 'Own 5 Mythic characters',
     thisisnotyourachievementstext: 'This is not your achievements',
     thisisnotyourcollectiontext: 'This is not your collection',
-    globalrankstext: 'GLOBAL RANKS'
+    globalrankstext: 'GLOBAL RANKS',
+    serverrankstext: 'SERVER RANKS',
+    charactersText: 'Characters',
+    characterTextSingular: 'Character'
   },
 
   Spanish: {
@@ -274,7 +277,10 @@ const texts = {
     own5mythicstext: 'Posee 5 personajes Míticos',
     thisisnotyourachievementstext: 'Estos no son tus logros',
     thisisnotyourcollectiontext: 'Esta no es tu colección',
-    globalrankstext: 'RANKING GLOBAL'
+    globalrankstext: 'RANKING GLOBAL',
+    serverrankstext: 'RANKING DEL SERVIDOR',
+    charactersText: 'Personajes',
+    characterTextSingular: 'Personaje'
   },
 
   Portuguese: {
@@ -340,7 +346,10 @@ const texts = {
     own5mythicstext: 'Possua 5 personagens Míticos',
     thisisnotyourachievementstext: 'Essas não são suas conquistas',
     thisisnotyourcollectiontext: 'Esta não é a sua coleção',
-    globalrankstext: 'RANKINGS GLOBAIS'
+    globalrankstext: 'CLASSIFICAÇÃO GLOBAL',
+    serverrankstext: 'CLASSIFICAÇÃO DO SERVIDOR',
+    charactersText: 'Personagens',
+    characterTextSingular: 'Personagem'
   },
 
   Russian: {
@@ -404,9 +413,12 @@ const texts = {
     own10000coinstext: 'Имейте 10000 CGCoins',
     own1mythictext: 'Получите 1 Мифического персонажа',
     own5mythicstext: 'Получите 5 Мифических персонажей',
-    thisisnotyourachievementstext: 'undefinedtraduction',
-    thisisnotyourcollectiontext: 'undefinedtraduction',
-    globalrankstext: 'undefinedtraduction'
+    thisisnotyourachievementstext: 'Это не ваши достижения',
+    thisisnotyourcollectiontext: 'Это не ваша коллекция',
+    globalrankstext: 'ГЛОБАЛЬНЫЕ РЕЙТИНГИ',
+    serverrankstext: 'РЕЙТИНГИ СЕРВЕРА',
+    charactersText: 'Персонажи',
+    characterTextSingular: 'Персонаж',
   },
 
   Ukrainian: {
@@ -470,9 +482,12 @@ const texts = {
     own10000coinstext: 'Майте 10000 CGCoins',
     own1mythictext: 'Отримайте 1 міфічного персонажа',
     own5mythicstext: 'Отримайте 5 міфічних персонажів',
-    thisisnotyourachievementstext: 'undefinedtraduction',
-    thisisnotyourcollectiontext: 'undefinedtraduction',
-    globalrankstext: 'undefinedtraduction'
+    thisisnotyourachievementstext: 'Це не ваші досягнення',
+    thisisnotyourcollectiontext: 'Це не ваша колекція',
+    globalrankstext: 'ГЛОБАЛЬНІ РЕЙТИНГИ',
+    serverrankstext: 'РЕЙТИНГИ СЕРВЕРА',
+    charactersText: 'Персонажі',
+    characterTextSingular: 'Персонаж'
   }
 
 };
@@ -2045,21 +2060,21 @@ if (
       )
       .setDescription(
 `🪙 CGCoins: ${coins}
-📦 Characters: ${inventory.length}
+📦 ${t.charactersText}: ${inventory.length}
 
 ━━━━━━━━━━━━
 
 🌍 ${t.globalrankstext}
 
 🪙 CGCoins: #${globalCoinsRank || 'N/A'}
-📦 Characters: #${globalCharactersRank || 'N/A'}
+📦 ${t.characterText}: #${globalCharactersRank || 'N/A'}
 
 ━━━━━━━━━━━━
 
-🏠 SERVER RANKS
+🏠 ${t.serverrankstext}
 
 🪙 CGCoins: #${serverCoinsRank || 'N/A'}
-📦 Characters: #${serverCharactersRank || 'N/A'}
+📦 ${t.charactersText}: #${serverCharactersRank || 'N/A'}
 
 ━━━━━━━━━━━━
 
