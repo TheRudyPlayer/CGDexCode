@@ -1259,41 +1259,96 @@ client.on('interactionCreate', async interaction => {
 
   if (!interaction.isChatInputCommand()) return;
 
-  const language =
-  serverLanguages[
-    interaction.guild.id
-  ] || 'English';
-
-const t =
-  texts[language];
-
   try {
 
+    const language =
+      serverLanguages?.[interaction.guild?.id] || 'English';
+
+    const t =
+      texts?.[language] || texts['English'];
+
     // LANGUAGE
-if (
-  interaction.commandName ===
-  'language'
-) {
+    if (interaction.commandName === 'language') {
 
-  const selectedLanguage =
-    interaction.options.getString(
-      'language'
-    );
+      const selectedLanguage =
+        interaction.options.getString('language');
 
-  serverLanguages[
-    interaction.guild.id
-  ] = selectedLanguage;
+      serverLanguages[interaction.guild.id] =
+        selectedLanguage;
 
-  await saveInventories();
+      await saveInventories();
 
-  return interaction.reply({
-    content:
-      texts[selectedLanguage]
-        .languageChanged,
-    flags: MessageFlags.Ephemeral
-  });
+      return interaction.reply({
+        content:
+          texts[selectedLanguage].languageChanged,
+        ephemeral: true
+      });
 
-}
+    }
+
+    // INVENTORY CONFIG
+    else if (
+      interaction.commandName === 'inventory_config'
+    ) {
+
+      const visibility =
+        interaction.options.getString('visibility');
+
+      inventorySettings[interaction.user.id] =
+        visibility;
+
+      await saveInventories();
+
+      return interaction.reply({
+        content: t.inventoryConfig,
+        ephemeral: true
+      });
+
+    }
+
+    // MISSIONS
+    else if (
+      interaction.commandName === 'missions'
+    ) {
+
+      return handleMissions(interaction);
+
+    }
+
+    // SPAWN CHARACTER
+    else if (
+      interaction.commandName === 'spawn_character'
+    ) {
+
+      return handleSpawnCharacter(interaction);
+
+    }
+
+    // SPAWN NORMAL
+    else if (
+      interaction.commandName === 'spawn'
+    ) {
+
+      return handleSpawn(interaction);
+
+    }
+
+  } catch (err) {
+
+    console.log('INTERACTION ERROR:', err);
+
+    if (!interaction.replied) {
+
+      return interaction.reply({
+        content: '❌ Internal bot error.',
+        ephemeral: true
+      });
+
+    }
+
+  }
+
+});
 
     // INVENTORY CONFIG
     if (
@@ -2448,54 +2503,58 @@ if (
 
 }
     // MISSIONS
-    if (interaction.commandName !== 'missions') return;
+    async function handleMissions(interaction) {
 
-const type = interaction.options.getString('type');
-const userId = interaction.user.id;
+  const type = interaction.options.getString('type');
+  const userId = interaction.user.id;
 
-missions = missions || {};
-missions.daily = missions.daily || {};
-missions.weekly = missions.weekly || {};
-missions.event = missions.event || {};
+  // seguridad total
+  if (!global.missions) global.missions = {
+    daily: {},
+    weekly: {},
+    event: {}
+  };
 
-let progress = 0;
-let goal = 0;
-let title = '';
-let reward = '';
+  const missions = global.missions;
 
-switch (type) {
+  let progress = 0;
+  let goal = 0;
+  let title = '';
+  let reward = '';
 
-  case 'daily':
-    progress = missions.daily[userId] ?? 0;
-    goal = 5;
-    title = '🎯 Daily Missions';
-    reward = '🪙 100 CGCoins';
-    break;
+  switch (type) {
 
-  case 'weekly':
-    progress = missions.weekly[userId] ?? 0;
-    goal = 25;
-    title = '🎯 Weekly Missions';
-    reward = '🪙 1000 CGCoins';
-    break;
+    case 'daily':
+      progress = missions.daily[userId] ?? 0;
+      goal = 5;
+      title = '🎯 Daily Missions';
+      reward = '🪙 100 CGCoins';
+      break;
 
-  case 'event':
-    progress = missions.event[userId] ?? 0;
-    goal = 5;
-    title = '⚽ World Cup Mission';
-    reward = '🎁 Exclusive Character';
-    break;
+    case 'weekly':
+      progress = missions.weekly[userId] ?? 0;
+      goal = 25;
+      title = '🎯 Weekly Missions';
+      reward = '🪙 1000 CGCoins';
+      break;
 
-  default:
-    return interaction.reply({
-      content: '❌ Invalid mission type.',
-      ephemeral: true
-    });
+    case 'event':
+      progress = missions.event[userId] ?? 0;
+      goal = 5;
+      title = '⚽ World Cup Mission';
+      reward = '🎁 Exclusive Character';
+      break;
 
-}
+    default:
+      return interaction.reply({
+        content: '❌ Invalid mission type.',
+        ephemeral: true
+      });
 
-return interaction.reply({
-  content:
+  }
+
+  return interaction.reply({
+    content:
 `${title}
 
 📦 Task: Obtain characters
@@ -2503,7 +2562,9 @@ Progress: ${progress}/${goal}
 
 🏆 Reward:
 ${reward}`
-});
+  });
+
+    }
   
     // OWNER
     if (
