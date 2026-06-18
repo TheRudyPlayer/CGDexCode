@@ -55,6 +55,7 @@ let serverLanguages = {};
 let inventories = {};
 let inventorySettings = {};
 let cgCoins = {};
+let redeemedCodes = {};
 
 admin.initializeApp({
   credential: admin.credential.cert({
@@ -182,6 +183,9 @@ const texts = {
     own10000coinstext: 'Own 10000 CGCoins',
     own1mythictext: 'Own 1 Mythic character',
     own5mythicstext: 'Own 5 Mythic characters',
+    thisisnotyourachievementstext: 'This is not your achievements',
+    thisisnotyourcollectiontext: 'This is not your collection',
+    globalrankstext: 'GLOBAL RANKS'
   },
 
   Spanish: {
@@ -245,6 +249,9 @@ const texts = {
     own10000coinstext: 'Posee 10000 CGCoins',
     own1mythictext: 'Posee 1 personaje Mítico',
     own5mythicstext: 'Posee 5 personajes Míticos',
+    thisisnotyourachievementstext: 'Estos no son tus logros',
+    thisisnotyourcollectiontext: 'Esta no es tu colección',
+    globalrankstext: 'RANKING GLOBAL'
   },
 
   Portuguese: {
@@ -308,6 +315,9 @@ const texts = {
     own10000coinstext: 'Possua 10000 CGCoins',
     own1mythictext: 'Possua 1 personagem Mítico',
     own5mythicstext: 'Possua 5 personagens Míticos',
+    thisisnotyourachievementstext: 'Essas não são suas conquistas',
+    thisisnotyourcollectiontext: 'Esta não é a sua coleção',
+    globalrankstext: 'RANKINGS GLOBAIS'
   },
 
   Russian: {
@@ -371,6 +381,9 @@ const texts = {
     own10000coinstext: 'Имейте 10000 CGCoins',
     own1mythictext: 'Получите 1 Мифического персонажа',
     own5mythicstext: 'Получите 5 Мифических персонажей',
+    thisisnotyourachievementstext: 'undefinedtraduction',
+    thisisnotyourcollectiontext: 'undefinedtraduction',
+    globalrankstext: 'undefinedtraduction'
   },
 
   Ukrainian: {
@@ -434,6 +447,9 @@ const texts = {
     own10000coinstext: 'Майте 10000 CGCoins',
     own1mythictext: 'Отримайте 1 міфічного персонажа',
     own5mythicstext: 'Отримайте 5 міфічних персонажів',
+    thisisnotyourachievementstext: 'undefinedtraduction',
+    thisisnotyourcollectiontext: 'undefinedtraduction',
+    globalrankstext: 'undefinedtraduction'
   }
 
 };
@@ -1079,6 +1095,16 @@ const commands = [
   .setDescription('View your achievements'),
 
   new SlashCommandBuilder()
+  .setName('redeem')
+  .setDescription('Redeem a code')
+  .addStringOption(option =>
+    option
+      .setName('code')
+      .setDescription('Redeem code')
+      .setRequired(true)
+  ),
+
+  new SlashCommandBuilder()
   .setName('shop')
   .setDescription('View CGDex shop'),
 
@@ -1696,7 +1722,7 @@ if (
 
         return button.reply({
           content:
-            '❌ This is not your collection.',
+            `❌ ${t.thisisnotyourcollectiontext}.`,
           flags:
             MessageFlags.Ephemeral
         });
@@ -2000,7 +2026,7 @@ if (
 
 ━━━━━━━━━━━━
 
-🌍 GLOBAL RANKS
+🌍 ${t.globalrankstext}
 
 🪙 CGCoins: #${globalCoinsRank || 'N/A'}
 📦 Characters: #${globalCharactersRank || 'N/A'}
@@ -2228,7 +2254,7 @@ ${unlocked}/${achievements.length}`
 
         return button.reply({
           content:
-            '❌ This is not your achievements.',
+            `❌ ${t.thisisnotyourachievementstext}.`,
           flags:
             MessageFlags.Ephemeral
         });
