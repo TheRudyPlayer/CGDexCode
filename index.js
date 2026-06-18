@@ -965,7 +965,8 @@ const commands = [
           { name: '🇺🇸 English', value: 'English' },
           { name: '🇲🇽 Spanish', value: 'Spanish' },
           { name: '🇧🇷 Portuguese', value: 'Portuguese' },
-          { name: '🇷🇺 Russian', value: 'Russian' }
+          { name: '🇷🇺 Russian', value: 'Russian' },
+          { name: '🇺🇦 Ukrainian', value 'Ukrainian' }
         )
     ),
 
