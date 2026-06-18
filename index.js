@@ -2443,10 +2443,7 @@ if (
 
 }
     // MISSIONS
-    if (
-  interaction.commandName ===
-  'missions'
-) {
+    if (interaction.commandName === 'missions') {
 
   const type =
     interaction.options.getString('type');
@@ -2454,73 +2451,74 @@ if (
   const userId =
     interaction.user.id;
 
+  // aseguramos estructura
+  if (!missions.daily) missions.daily = {};
+  if (!missions.weekly) missions.weekly = {};
+  if (!missions.event) missions.event = {};
+
+  let progress = 0;
+  let goal = 0;
+  let title = '';
+  let reward = '';
+
+  // DAILY
   if (type === 'daily') {
 
-    const progress =
-      missions.daily?.[userId] || 0;
+    progress =
+      missions.daily[userId] || 0;
 
-    return interaction.reply({
-      content:
-`🎯 Daily Missions
-
-📦 Obtain 5 characters
-Progress: ${progress}/5
-
-Reward:
-🪙 100 CGCoins`
-    });
+    goal = 5;
+    title = '🎯 Daily Missions';
+    reward = '🪙 100 CGCoins';
 
   }
 
+  // WEEKLY
   if (type === 'weekly') {
 
-    const progress =
-      missions.weekly?.[userId] || 0;
+    progress =
+      missions.weekly[userId] || 0;
 
-    return interaction.reply({
-      content:
-`🎯 Weekly Missions
-
-📦 Obtain 25 characters
-Progress: ${progress}/25
-
-Reward:
-🪙 1000 CGCoins`
-    });
+    goal = 25;
+    title = '🎯 Weekly Missions';
+    reward = '🪙 1000 CGCoins';
 
   }
-      if (type === 'event') {
 
-  const progress =
-    missions.event?.[userId] || 0;
+  // EVENT (WORLD CUP)
+  if (type === 'event') {
 
-  const goal = 5;
+    progress =
+      missions.event[userId] || 0;
 
-  if (progress >= goal) {
+    goal = 5;
+    title = '⚽ World Cup Mission';
+    reward = '🎁 Exclusive Character';
 
-    // Reclamación de Event Mission
+  }
+
+  // seguridad
+  if (!title) {
 
     return interaction.reply({
       content:
-`🏆 Mission Completed!
-
-🎁 You can claim your Exclusive Character!`
+        '❌ Invalid mission type.',
+      flags:
+        MessageFlags.Ephemeral
     });
 
   }
 
   return interaction.reply({
     content:
-`⚽ World Cup Mission
+`${title}
 
-📦 Obtain 5 World Cup Characters
+📦 Task: Obtain characters
 Progress: ${progress}/${goal}
 
-🎁 Reward:
-Exclusive Character`
+🏆 Reward:
+${reward}`
   });
-
-      }
 
     }
   
