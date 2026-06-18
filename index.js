@@ -2445,72 +2445,56 @@ if (
     // MISSIONS
     if (interaction.commandName === 'missions') {
 
-  const type =
-    interaction.options.getString('type');
+  try {
 
-  const userId =
-    interaction.user.id;
+    const type =
+      interaction.options.getString('type');
 
-  // aseguramos estructura
-  if (!missions.daily) missions.daily = {};
-  if (!missions.weekly) missions.weekly = {};
-  if (!missions.event) missions.event = {};
+    const userId =
+      interaction.user.id;
 
-  let progress = 0;
-  let goal = 0;
-  let title = '';
-  let reward = '';
+    if (!missions) missions = {};
+    if (!missions.daily) missions.daily = {};
+    if (!missions.weekly) missions.weekly = {};
+    if (!missions.event) missions.event = {};
 
-  // DAILY
-  if (type === 'daily') {
+    let progress = 0;
+    let goal = 0;
+    let title = '';
+    let reward = '';
 
-    progress =
-      missions.daily[userId] || 0;
+    if (type === 'daily') {
 
-    goal = 5;
-    title = '🎯 Daily Missions';
-    reward = '🪙 100 CGCoins';
+      progress = missions.daily[userId] || 0;
+      goal = 5;
+      title = '🎯 Daily Missions';
+      reward = '🪙 100 CGCoins';
 
-  }
+    } else if (type === 'weekly') {
 
-  // WEEKLY
-  if (type === 'weekly') {
+      progress = missions.weekly[userId] || 0;
+      goal = 25;
+      title = '🎯 Weekly Missions';
+      reward = '🪙 1000 CGCoins';
 
-    progress =
-      missions.weekly[userId] || 0;
+    } else if (type === 'event') {
 
-    goal = 25;
-    title = '🎯 Weekly Missions';
-    reward = '🪙 1000 CGCoins';
+      progress = missions.event[userId] || 0;
+      goal = 5;
+      title = '⚽ World Cup Mission';
+      reward = '🎁 Exclusive Character';
 
-  }
+    } else {
 
-  // EVENT (WORLD CUP)
-  if (type === 'event') {
+      return interaction.reply({
+        content: '❌ Invalid mission type.',
+        flags: MessageFlags.Ephemeral
+      });
 
-    progress =
-      missions.event[userId] || 0;
-
-    goal = 5;
-    title = '⚽ World Cup Mission';
-    reward = '🎁 Exclusive Character';
-
-  }
-
-  // seguridad
-  if (!title) {
+    }
 
     return interaction.reply({
       content:
-        '❌ Invalid mission type.',
-      flags:
-        MessageFlags.Ephemeral
-    });
-
-  }
-
-  return interaction.reply({
-    content:
 `${title}
 
 📦 Task: Obtain characters
@@ -2518,7 +2502,18 @@ Progress: ${progress}/${goal}
 
 🏆 Reward:
 ${reward}`
-  });
+    });
+
+  } catch (err) {
+
+    console.log('MISSIONS ERROR:', err);
+
+    return interaction.reply({
+      content: '❌ Error running missions command.',
+      flags: MessageFlags.Ephemeral
+    });
+
+  }
 
     }
   
