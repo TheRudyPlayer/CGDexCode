@@ -1020,7 +1020,7 @@ const commands = [
           { name: '🇲🇽 Spanish', value: 'Spanish' },
           { name: '🇧🇷 Portuguese', value: 'Portuguese' },
           { name: '🇷🇺 Russian', value: 'Russian' },
-          { name: '🇺🇦 Ukrainian', value 'Ukrainian' }
+          { name: '🇺🇦 Ukrainian', value: 'Ukrainian' }
         )
     ),
 
