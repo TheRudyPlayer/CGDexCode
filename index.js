@@ -69,6 +69,11 @@ let inventories = {};
 let inventorySettings = {};
 let cgCoins = {};
 let redeemedCodes = {};
+let missions = {
+  daily: {},
+  weekly: {},
+  event: {}
+};
 
 admin.initializeApp({
   credential: admin.credential.cert({
@@ -2443,58 +2448,54 @@ if (
 
 }
     // MISSIONS
-    if (interaction.commandName === 'missions') {
+    if (interaction.commandName !== 'missions') return;
 
-  try {
+const type = interaction.options.getString('type');
+const userId = interaction.user.id;
 
-    const type =
-      interaction.options.getString('type');
+missions = missions || {};
+missions.daily = missions.daily || {};
+missions.weekly = missions.weekly || {};
+missions.event = missions.event || {};
 
-    const userId =
-      interaction.user.id;
+let progress = 0;
+let goal = 0;
+let title = '';
+let reward = '';
 
-    if (!missions) missions = {};
-    if (!missions.daily) missions.daily = {};
-    if (!missions.weekly) missions.weekly = {};
-    if (!missions.event) missions.event = {};
+switch (type) {
 
-    let progress = 0;
-    let goal = 0;
-    let title = '';
-    let reward = '';
+  case 'daily':
+    progress = missions.daily[userId] ?? 0;
+    goal = 5;
+    title = '🎯 Daily Missions';
+    reward = '🪙 100 CGCoins';
+    break;
 
-    if (type === 'daily') {
+  case 'weekly':
+    progress = missions.weekly[userId] ?? 0;
+    goal = 25;
+    title = '🎯 Weekly Missions';
+    reward = '🪙 1000 CGCoins';
+    break;
 
-      progress = missions.daily[userId] || 0;
-      goal = 5;
-      title = '🎯 Daily Missions';
-      reward = '🪙 100 CGCoins';
+  case 'event':
+    progress = missions.event[userId] ?? 0;
+    goal = 5;
+    title = '⚽ World Cup Mission';
+    reward = '🎁 Exclusive Character';
+    break;
 
-    } else if (type === 'weekly') {
-
-      progress = missions.weekly[userId] || 0;
-      goal = 25;
-      title = '🎯 Weekly Missions';
-      reward = '🪙 1000 CGCoins';
-
-    } else if (type === 'event') {
-
-      progress = missions.event[userId] || 0;
-      goal = 5;
-      title = '⚽ World Cup Mission';
-      reward = '🎁 Exclusive Character';
-
-    } else {
-
-      return interaction.reply({
-        content: '❌ Invalid mission type.',
-        ephemeral: true
-      });
-
-    }
-
+  default:
     return interaction.reply({
-      content:
+      content: '❌ Invalid mission type.',
+      ephemeral: true
+    });
+
+}
+
+return interaction.reply({
+  content:
 `${title}
 
 📦 Task: Obtain characters
@@ -2502,20 +2503,7 @@ Progress: ${progress}/${goal}
 
 🏆 Reward:
 ${reward}`
-    });
-
-  } catch (err) {
-
-    console.log('MISSIONS ERROR:', err);
-
-    return interaction.reply({
-      content: '❌ Error running missions command.',
-      ephemeral: true
-    });
-
-  }
-
-    }
+});
   
     // OWNER
     if (
