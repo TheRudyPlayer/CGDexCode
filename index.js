@@ -1093,10 +1093,6 @@ const commands = [
   ),
 
   new SlashCommandBuilder()
-  .setName('balance')
-  .setDescription('View your CGCoins'),
-
-  new SlashCommandBuilder()
   .setName('set_mode')
   .setDescription('Change CGDex mode')
   .addStringOption(option =>
@@ -1542,21 +1538,6 @@ if (
 
 }
 
-    // BALANCE
-if (
-  interaction.commandName ===
-  'balance'
-) {
-
-  const coins =
-    cgCoins[interaction.user.id] || 0;
-
-  return interaction.reply({
-    content:
-      `🪙 You have ${coins} CGCoins`
-  });
-
-}
     //SELL
     if (
   interaction.commandName ===
