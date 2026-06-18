@@ -51,6 +51,19 @@ let cgdexSeason = 'Classic';
 let botLanguage = 'English';
 let serverLanguages = {};
 
+// CODES FOR REDEEM
+const redeemCodes = {
+
+  WORLDCUP2026: {
+    coins: 500
+  },
+
+  CGDEX: {
+    coins: 100
+  }
+
+};
+
 // INVENTORY FILE
 let inventories = {};
 let inventorySettings = {};
@@ -95,6 +108,13 @@ const languagesSnapshot =
 serverLanguages =
   languagesSnapshot.val() || {};
 
+const redeemedSnapshot =
+  await db.ref('redeemedCodes')
+    .once('value');
+
+redeemedCodes =
+  redeemedSnapshot.val() || {};
+
 }
 
 async function saveInventories() {
@@ -110,6 +130,9 @@ async function saveInventories() {
 
   await db.ref('languages')
   .set(serverLanguages);
+
+  await db.ref('redeemedCodes')
+  .set(redeemedCodes);
 
 }
 
@@ -2306,6 +2329,80 @@ ${unlocked}/${achievements.length}`
   );
 
    }
+    // REDEEM
+if (
+  interaction.commandName ===
+  'redeem'
+) {
+
+  const code =
+    interaction.options
+      .getString('code')
+      .toUpperCase();
+
+  const reward =
+    redeemCodes[code];
+
+  if (!reward) {
+
+    return interaction.reply({
+      content:
+        '❌ Invalid code.',
+      flags:
+        MessageFlags.Ephemeral
+    });
+
+  }
+
+  if (
+    !redeemedCodes[
+      interaction.user.id
+    ]
+  ) {
+
+    redeemedCodes[
+      interaction.user.id
+    ] = [];
+
+  }
+
+  if (
+    redeemedCodes[
+      interaction.user.id
+    ].includes(code)
+  ) {
+
+    return interaction.reply({
+      content:
+        '❌ You already redeemed this code.',
+      flags:
+        MessageFlags.Ephemeral
+    });
+
+  }
+
+  redeemedCodes[
+    interaction.user.id
+  ].push(code);
+
+  cgCoins[
+    interaction.user.id
+  ] =
+    (cgCoins[
+      interaction.user.id
+    ] || 0)
+    + reward.coins;
+
+  await saveInventories();
+
+  return interaction.reply({
+    content:
+`🎁 Code Redeemed!
+
+🪙 +${reward.coins} CGCoins`
+  });
+
+}
   
     // OWNER
     if (
