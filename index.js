@@ -2488,7 +2488,7 @@ if (
 
       return interaction.reply({
         content: '❌ Invalid mission type.',
-        flags: MessageFlags.Ephemeral
+        ephemeral: true
       });
 
     }
@@ -2510,7 +2510,7 @@ ${reward}`
 
     return interaction.reply({
       content: '❌ Error running missions command.',
-      flags: MessageFlags.Ephemeral
+      ephemeral: true
     });
 
   }
