@@ -1348,7 +1348,7 @@ client.on('interactionCreate', async interaction => {
 
   }
 
-});
+// CIERRE });
 
     // INVENTORY CONFIG
     if (
