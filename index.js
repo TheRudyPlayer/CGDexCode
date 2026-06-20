@@ -1348,8 +1348,6 @@ client.on('interactionCreate', async interaction => {
 
   }
 
-// CIERRE });
-
     // INVENTORY CONFIG
     if (
       interaction.commandName ===
@@ -2872,7 +2870,6 @@ ${t.guess}`
   await interaction.channel.send({
     embeds: [embed]
   });
-}
 
   } catch (err) {
 
