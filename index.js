@@ -2735,20 +2735,18 @@ ${t.guess}`
     // SPAWN CHARACTER
 if (interaction.commandName === 'spawn_character') {
 
-  const code =
-  interaction.options.getString('code');
+const code =
+interaction.options.getString('code');
 
 const name =
-  interaction.options.getString('name');
+interaction.options.getString('name');
 
 if (!code && !name) {
 
-  return interaction.reply({
-    content:
-      '❌ You must provide a name or code.',
-    flags:
-      MessageFlags.Ephemeral
-  });
+return interaction.reply({
+  content: '❌ You must provide a name or code.',
+  flags: MessageFlags.Ephemeral
+});
 
 }
 
@@ -2756,128 +2754,101 @@ let foundCharacter = null;
 
 if (code) {
 
-  foundCharacter =
-    getCurrentCharacters().find(
-      character =>
-        character.code
-          .toLowerCase() ===
-        code.toLowerCase()
-    );
+foundCharacter =
+  getCurrentCharacters().find(
+    character =>
+      character.code.toLowerCase() ===
+      code.toLowerCase()
+  );
 
 }
 
 if (!foundCharacter && name) {
 
-  foundCharacter =
-    getCurrentCharacters().find(
-      character =>
-        character.name
-          .toLowerCase() ===
-        name.toLowerCase()
-    );
+foundCharacter =
+  getCurrentCharacters().find(
+    character =>
+      character.name.toLowerCase() ===
+      name.toLowerCase()
+  );
+
+}
+
+if (code && name) {
+
+const codeCharacter =
+  getCurrentCharacters().find(
+    character =>
+      character.code.toLowerCase() ===
+      code.toLowerCase()
+  );
+
+const nameCharacter =
+  getCurrentCharacters().find(
+    character =>
+      character.name.toLowerCase() ===
+      name.toLowerCase()
+  );
+
+if (
+  !codeCharacter ||
+  !nameCharacter ||
+  codeCharacter.code !== nameCharacter.code
+) {
+
+  return interaction.reply({
+    content: '❌ Name and code do not match.',
+    flags: MessageFlags.Ephemeral
+  });
+
+}
+
+foundCharacter = codeCharacter;
 
 }
 
 if (!foundCharacter) {
 
-  return interaction.reply({
-    content:
-      t.notFound,
-    flags:
-      MessageFlags.Ephemeral
-  });
+return interaction.reply({
+  content: t.notFound,
+  flags: MessageFlags.Ephemeral
+});
 
 }
 
-if (
-  code &&
-  name
-) {
+activeSpawn = foundCharacter;
 
-  const codeCharacter =
-    getCurrentCharacters().find(
-      character =>
-        character.code
-          .toLowerCase() ===
-        code.toLowerCase()
-    );
-
-  const nameCharacter =
-    getCurrentCharacters().find(
-      character =>
-        character.name
-          .toLowerCase() ===
-        name.toLowerCase()
-    );
-
-  if (
-    !codeCharacter ||
-    !nameCharacter ||
-    codeCharacter.code !==
-    nameCharacter.code
-  ) {
-
-    return interaction.reply({
-      content:
-        '❌ Name and code do not match.',
-      flags:
-        MessageFlags.Ephemeral
-    });
-
-  }
-
-  foundCharacter =
-    codeCharacter;
-
-}
-
-  if (!foundCharacter) {
-    return interaction.reply({
-      content: t.notFound,
-      flags: MessageFlags.Ephemeral
-    });
-  }
-
-  const selectedCharacter = foundCharacter;
-
-  activeSpawn = selectedCharacter;
-
-  const embed = new EmbedBuilder()
-    .setColor(
-      rarityColors[selectedCharacter.rarity] || '#FFFFFF'
-    )
-    .setTitle(t.spawned)
-    .setDescription(
-`🆔 ${t.code}: ${selectedCharacter.code}
-⭐ ${t.rarity}: ${getRarityName(selectedCharacter.rarity, t)}
-🌎 ${t.language}: ${getLanguageName(selectedCharacter.language, t)}
+const embed = new EmbedBuilder()
+.setColor(
+rarityColors[foundCharacter.rarity] || '#FFFFFF'
+)
+.setTitle(t.spawned)
+.setDescription(
+`🆔 ${t.code}: ${foundCharacter.code}
+⭐ ${t.rarity}: ${getRarityName(foundCharacter.rarity, t)}
+🌎 ${t.language}: ${getLanguageName(foundCharacter.language, t)}
 
 ${t.guess}`
-    );
+);
 
-  if (
-    selectedCharacter.image &&
-    selectedCharacter.image.startsWith('http')
-  ) {
-    embed.setImage(selectedCharacter.image);
-  }
+if (
+foundCharacter.image &&
+foundCharacter.image.startsWith('http')
+) {
+embed.setImage(foundCharacter.image);
+}
 
-  await interaction.reply({
-    content: '✅',
-    flags: MessageFlags.Ephemeral
-  });
-
-  await interaction.channel.send({
-    embeds: [embed]
-  });
-
-  } catch (err) {
-
-    console.error(err);
-
-  }
-
+await interaction.reply({
+content: '✅',
+flags: MessageFlags.Ephemeral
 });
+
+await interaction.channel.send({
+embeds: [embed]
+});
+
+}
+
     
 // CLAIM
 client.on('messageCreate', async message => {
