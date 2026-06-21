@@ -2817,7 +2817,11 @@ foundCharacter =
 
 }
 
-if (code && name) {
+if (
+code &&
+name &&
+foundCharacter
+) {
 
 const codeCharacter =
   getCurrentCharacters().find(
@@ -2846,7 +2850,8 @@ if (
 
 }
 
-foundCharacter = codeCharacter;
+foundCharacter =
+  codeCharacter;
 
 }
 
@@ -2861,9 +2866,12 @@ return interaction.reply({
 
 activeSpawn = foundCharacter;
 
-const embed = new EmbedBuilder()
+const embed =
+new EmbedBuilder()
 .setColor(
-rarityColors[foundCharacter.rarity] || '#FFFFFF'
+rarityColors[
+foundCharacter.rarity
+] || '#FFFFFF'
 )
 .setTitle(t.spawned)
 .setDescription(
@@ -2878,7 +2886,11 @@ if (
 foundCharacter.image &&
 foundCharacter.image.startsWith('http')
 ) {
-embed.setImage(foundCharacter.image);
+
+embed.setImage(
+  foundCharacter.image
+);
+
 }
 
 await interaction.reply({
@@ -2891,7 +2903,6 @@ embeds: [embed]
 });
 
 }
-  });
 
     
 // CLAIM
