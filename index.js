@@ -1245,6 +1245,49 @@ const rest =
 
 })();
 
+// SPAWN FUNCTIONS
+async function handleSpawn(interaction) {
+
+  const selectedCharacter =
+    getRandomCharacter();
+
+  activeSpawn =
+    selectedCharacter;
+
+  const language =
+    serverLanguages[interaction.guild.id] ||
+    'English';
+
+  const t =
+    texts[language];
+
+  const embed =
+    new EmbedBuilder()
+      .setColor(
+        rarityColors[selectedCharacter.rarity] || '#FFFFFF'
+      )
+      .setTitle(t.spawned)
+      .setDescription(
+`🆔 ${t.code}: ${selectedCharacter.code}
+⭐ ${t.rarity}: ${getRarityName(selectedCharacter.rarity, t)}
+🌎 ${t.language}: ${getLanguageName(selectedCharacter.language, t)}
+
+${t.guess}`
+      );
+
+  if (
+    selectedCharacter.image &&
+    selectedCharacter.image.startsWith('http')
+  ) {
+    embed.setImage(selectedCharacter.image);
+  }
+
+  return interaction.reply({
+    embeds: [embed]
+  });
+
+}
+
 // READY
 client.once('ready', () => {
 
