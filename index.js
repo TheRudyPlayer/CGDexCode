@@ -2848,6 +2848,7 @@ embeds: [embed]
 });
 
 }
+  });
 
     
 // CLAIM
