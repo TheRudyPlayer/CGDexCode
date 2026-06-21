@@ -2903,6 +2903,7 @@ embeds: [embed]
 });
 
 }
+});
 
     
 // CLAIM
