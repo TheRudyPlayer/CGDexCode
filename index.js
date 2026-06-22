@@ -1418,7 +1418,6 @@ embeds: [embed]
 });
 
 }
-});
 
 // READY
 client.once('ready', () => {
