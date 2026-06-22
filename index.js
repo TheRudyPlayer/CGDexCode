@@ -2851,6 +2851,7 @@ if (
     }
 
     let selectedCharacter;
+}
 
 // CLAIM
 client.on('messageCreate', async message => {
