@@ -1289,7 +1289,7 @@ ${t.guess}`
 }
 
 // MISSIONS FUNCTIONS
-    async function handleMissions(...) {
+    async function handleMissions(interaction) {
 
   const type = interaction.options.getString('type');
   const userId = interaction.user.id;
