@@ -2838,6 +2838,7 @@ if (
       });
 
     }
+});
 
 // CLAIM
 client.on('messageCreate', async message => {
