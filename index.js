@@ -1290,8 +1290,6 @@ ${t.guess}`
 
 // SPAWN CHARACTER FUNCTIONS
 async function handleSpawnCharacter(interaction) {
-  
-if (interaction.commandName === 'spawn_character') {
 
 const code =
 interaction.options.getString('code');
