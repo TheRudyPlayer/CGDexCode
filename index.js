@@ -1288,6 +1288,70 @@ ${t.guess}`
 
 }
 
+// MISSIONS FUNCTIONS
+    async function handleMissions(...) {
+
+  const type = interaction.options.getString('type');
+  const userId = interaction.user.id;
+
+  // seguridad total
+  if (!global.missions) global.missions = {
+    daily: {},
+    weekly: {},
+    event: {}
+  };
+
+  const missions = global.missions;
+
+  let progress = 0;
+  let goal = 0;
+  let title = '';
+  let reward = '';
+
+  switch (type) {
+
+    case 'daily':
+      progress = missions.daily[userId] ?? 0;
+      goal = 5;
+      title = '🎯 Daily Missions';
+      reward = '🪙 100 CGCoins';
+      break;
+
+    case 'weekly':
+      progress = missions.weekly[userId] ?? 0;
+      goal = 25;
+      title = '🎯 Weekly Missions';
+      reward = '🪙 1000 CGCoins';
+      break;
+
+    case 'event':
+      progress = missions.event[userId] ?? 0;
+      goal = 5;
+      title = '⚽ World Cup Mission';
+      reward = '🎁 Exclusive Character';
+      break;
+
+    default:
+      return interaction.reply({
+        content: '❌ Invalid mission type.',
+        ephemeral: true
+      });
+
+  }
+
+  return interaction.reply({
+    content:
+`${title}
+
+📦 Task: Obtain characters
+Progress: ${progress}/${goal}
+
+🏆 Reward:
+${reward}`
+  });
+
+    }
+
 // SPAWN CHARACTER FUNCTIONS
 async function handleSpawnCharacter(interaction) {
 
@@ -2673,69 +2737,6 @@ if (
   });
 
 }
-    // MISSIONS
-    async function handleMissions(interaction) {
-
-  const type = interaction.options.getString('type');
-  const userId = interaction.user.id;
-
-  // seguridad total
-  if (!global.missions) global.missions = {
-    daily: {},
-    weekly: {},
-    event: {}
-  };
-
-  const missions = global.missions;
-
-  let progress = 0;
-  let goal = 0;
-  let title = '';
-  let reward = '';
-
-  switch (type) {
-
-    case 'daily':
-      progress = missions.daily[userId] ?? 0;
-      goal = 5;
-      title = '🎯 Daily Missions';
-      reward = '🪙 100 CGCoins';
-      break;
-
-    case 'weekly':
-      progress = missions.weekly[userId] ?? 0;
-      goal = 25;
-      title = '🎯 Weekly Missions';
-      reward = '🪙 1000 CGCoins';
-      break;
-
-    case 'event':
-      progress = missions.event[userId] ?? 0;
-      goal = 5;
-      title = '⚽ World Cup Mission';
-      reward = '🎁 Exclusive Character';
-      break;
-
-    default:
-      return interaction.reply({
-        content: '❌ Invalid mission type.',
-        ephemeral: true
-      });
-
-  }
-
-  return interaction.reply({
-    content:
-`${title}
-
-📦 Task: Obtain characters
-Progress: ${progress}/${goal}
-
-🏆 Reward:
-${reward}`
-  });
-
-    }
   
     // OWNER
     if (
