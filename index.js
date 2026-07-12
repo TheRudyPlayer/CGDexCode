@@ -2839,18 +2839,6 @@ if (
 
     }
 
-    // ACTIVE
-    if (activeSpawn) {
-
-      return interaction.reply({
-        content: t.active,
-        flags: MessageFlags.Ephemeral
-      });
-
-    }
-
-    let selectedCharacter;
-
 // CLAIM
 client.on('messageCreate', async message => {
 
